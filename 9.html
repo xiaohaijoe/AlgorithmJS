@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+</body>
+</html>
+<script>
+    /**
+    * @param {number} x
+    * @return {boolean}
+    */
+    var isPalindrome = function(x) {
+        var temp = x;
+        var res = 0;
+        if(x < 0){
+            return false
+        }
+        while(true){
+            res = res*10 + temp%10;
+            temp = parseInt(temp/10)
+            if(temp <= 0){
+                break;
+            }
+        }
+        if(res == x) {
+            return true;
+        }else{
+            return false;
+        }
+    };
+
+    console.log(isPalindrome(-1))
+</script>
