@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+</body>
+</html>
+<script>
+    /**
+     * @param {number} x
+     * @return {number}
+     */
+    var reverse = function(x) {
+        var res = 0;
+        var temp = x;
+        while(true){
+            res = res*10 + temp%10;
+            temp = parseInt(temp/10);
+            if(temp == 0){
+                break;
+            }
+        }
+        if(Math.pow(2,31) < res || -Math.pow(2,31) > res){
+            return 0
+        }
+        return res;
+    };
+
+    console.log(reverse(1563847412))
+</script>

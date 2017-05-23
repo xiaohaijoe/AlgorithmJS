@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+</body>
+</html>
+<script>
+    var prices =[7,6,5,4,3,1]
+    /**
+     * @param {number[]} prices
+     * @return {number}
+     */
+//    var maxProfit = function(prices) {
+//        var prifit = 0;
+//        var index = 0
+//        for(var i = 0 ; i < prices.length; i++){
+//            for(var j = i+1 ; j < prices.length; j++){
+//                if((prices[j]-prices[i]) > prifit){
+//                    prifit = prices[j]-prices[i]
+//                }
+//                index++;
+//            }
+//        }
+//        return prifit
+//    };
+
+    var maxProfit = function(prices) {
+        var minPrices = Number.MAX_VALUE;
+        var maxProfit = 0
+        for(var i = 0 ; i < prices.length; i++){
+            if(minPrices > prices[i]){
+                minPrices = prices[i]
+            }else if(prices[i] - minPrices > maxProfit){
+                maxProfit = prices[i] - minPrices
+            }
+        }
+        return maxProfit
+    };
+
+    console.log(maxProfit(prices))
+</script>
