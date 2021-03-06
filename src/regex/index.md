@@ -1,4 +1,4 @@
-<a href="#1">给一个连字符串例如：get-element-by-id转化成驼峰形式。</a>
+1. <a href="#1">给一个连字符串例如：get-element-by-id转化成驼峰形式。</a>
 1
 1
 1
