@@ -1,9 +1,10 @@
 ## 索引
 
-1. <a href="#14">14. 二分查找（简单）</a>
-2. <a href="#457">457. 经典二分查找问题（简单）</a>
-3. <a href="#458">458. 目标最后位置（简单）</a>
-4. <a href="#74">74. 第一个错误的代码版本（中等）</a>
+- <a href="#14">14. 二分查找（简单）</a>
+- <a href="#457">457. 经典二分查找问题（简单）</a>
+- <a href="#458">458. 目标最后位置（简单）</a>
+- <a href="#74">74. 第一个错误的代码版本（中等）</a>
+- <a href="#447">447. 在大数组中查找（中等）</a>
 
 ## 二分查找模板
 
@@ -39,7 +40,7 @@
 
 ## <a name='457'>457. 经典二分查找问题
 
-[链接](http://www.lintcode.com/problem/classical-binary-search/)
+**[链接](http://www.lintcode.com/problem/classical-binary-search/)**
 **描述**
 在一个排序数组中找一个数，返回该数出现的任意位置，如果不存在，返回 -1。
 
@@ -95,7 +96,7 @@ class Solution457 {
 
 ## <a name='14'>14. 二分查找
 
-[链接](https://www.lintcode.com/problem/first-position-of-target/)
+**[链接](https://www.lintcode.com/problem/first-position-of-target/)**
 **描述**
 给定一个排序的整数数组（升序）和一个要查找的整数 target，用 O(logn)的时间查找到 target 第一次出现的下标（从 0 开始），如果 target 不存在于数组中，返回-1。
 
@@ -129,6 +130,7 @@ class Solution457 {
 
 ## <a name='458'>458. 目标最后位置
 
+**[链接](https://www.lintcode.com/problem/458)**
 **描述**
 给一个升序数组，找到 target 最后一次出现的位置，如果没出现过返回 -1
 
@@ -188,7 +190,7 @@ export class Solution {
 
 ## <a name='74'>74. 第一个错误的代码版本（中等）
 
-[链接](https://www.lintcode.com/problem/first-bad-version/)
+**[链接](https://www.lintcode.com/problem/first-bad-version/)**
 **描述**
 代码库的版本号是从 1 到 n 的整数。某一天，有人提交了错误版本的代码，因此造成自身及之后版本的代码在单元测试中均出错。请找出第一个错误的版本号。
 <br>
@@ -234,6 +236,72 @@ class Solution74 {
       return start;
     }
     return end;
+  }
+}
+```
+
+## <a name='447'>447. 在大数组中查找（中等）
+
+**[链接](https://www.lintcode.com/problem/search-in-a-big-sorted-array/)**
+**描述**
+给一个按照升序排序的非负整数数组。这个数组很大以至于你只能通过固定的接口 ArrayReader.get(k) 来访问第 k 个数(或者 C++里是 ArrayReader->get(k))，并且你也没有办法得知这个数组有多大。
+<br>
+找到给出的整数 target 第一次出现的位置。你的算法需要在 O(logk)的时间复杂度内完成，k 为 target 第一次出现的位置的下标。
+<br>
+如果找不到 target，返回-1。
+
+**样例**
+
+```
+样例 1:
+
+输入: [1, 3, 6, 9, 21, ...], target = 3
+输出: 1
+样例 2:
+
+输入: [1, 3, 6, 9, 21, ...], target = 4
+输出: -1
+```
+
+```javascript
+export class Solution447 {
+  /**
+   * searchBigSortedArray
+   *
+   * @param reader: An instance of ArrayReader.
+   * @param target: An integer
+   * @return: An integer which is the first index of target.
+   */
+  searchBigSortedArray(reader, target) {
+    // write your code here
+    let start = 0,
+      end = 10;
+    let mid = 0;
+
+    while (reader.get(end) < target && reader.get(end) !== 2147483647) {
+      start = end;
+      end *= 2;
+    }
+
+    while (start + 1 < end) {
+      mid = start + parseInt((end - start) / 2);
+
+      if (reader.get(mid) === target) {
+        end = mid;
+      } else if (reader.get(mid) > target) {
+        end = mid;
+      } else {
+        start = mid;
+      }
+    }
+
+    if (reader.get(start) === target) {
+      return start;
+    }
+    if (reader.get(end) === target) {
+      return end;
+    }
+    return -1;
   }
 }
 ```
