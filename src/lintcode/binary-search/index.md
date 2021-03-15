@@ -10,6 +10,7 @@
 - <a href="#61">61. 搜索区间（中等）</a>
 - <a href="#585">585. 山脉序列中的最大值（中等）</a>
 - <a href="#62">62. 搜索旋转排序数组（中等）</a>
+- <a href="#75">75. 寻找峰值（中等）</a>
 
 ## 二分查找模板
 
@@ -700,6 +701,71 @@ class Solution62 {
       return start;
     }
     return -1;
+  }
+}
+```
+
+## <a name='75'>75. 寻找峰值（中等）
+
+**[链接](https://www.lintcode.com/problem/find-peak-element/)**
+
+**描述**
+你给出一个整数数组(size 为 n)，其具有以下特点：
+
+- 相邻位置的数字是不同的
+- A[0] < A[1] 并且 A[n - 2] > A[n - 1]
+
+假定 P 是峰值的位置则满足 A[P] > A[P-1]且 A[P] > A[P+1]，返回数组中任意一个峰值的位置。
+
+**样例**
+
+```
+样例 1:
+	输入:  [1, 2, 1, 3, 4, 5, 7, 6]
+	输出:  1 or 6
+
+	解释:
+	返回峰顶元素的下标
+
+
+样例 2:
+	输入: [1,2,3,4,1]
+	输出:  3
+```
+
+```javascript
+class Solution75 {
+  /**
+   * findPeak
+   *
+   * @param A: An integers array.
+   * @return: return any of peek positions.
+   */
+  findPeak(A) {
+    // write your code here
+    if (!A || A.length === 0) {
+      return 0;
+    }
+
+    let start = 0,
+      end = A.length - 1;
+    let mid = 0;
+    while (start + 1 < end) {
+      mid = start + parseInt((end - start) / 2);
+
+      if (A[mid] > A[mid - 1] && A[mid] > A[mid + 1]) {
+        return mid;
+      } else if (A[mid] > A[mid - 1] && A[mid] < A[mid + 1]) {
+        start = mid;
+      } else {
+        end = mid;
+      }
+    }
+    if (A[start] > A[end]) {
+      return start;
+    } else {
+      return end;
+    }
   }
 }
 ```
