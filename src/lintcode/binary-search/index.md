@@ -6,6 +6,7 @@
 - <a href="#74">74. 第一个错误的代码版本（中等）</a>
 - <a href="#447">447. 在大数组中查找（中等）</a>
 - <a href="#159">159. 寻找旋转排序数组中的最小值（中等）</a>
+- <a href="#28">28. 搜索二维矩阵（中等）</a>
 
 ## 二分查找模板
 
@@ -359,6 +360,110 @@ export class Solution159 {
     } else {
       return nums[end];
     }
+  }
+}
+```
+
+## <a name='28'>28. 搜索二维矩阵（中等）
+
+**[链接](https://www.lintcode.com/problem/search-a-2d-matrix/)**
+
+**描述**
+写出一个高效的算法来搜索 m × n 矩阵中的值。
+<br>
+这个矩阵具有以下特性：
+<br>
+
+- 每行中的整数从左到右是排序的。
+- 每行的第一个数大于上一行的最后一个整数。
+
+**样例**
+
+```
+样例  1:
+	输入: [[5]],2
+	输出: false
+
+	样例解释:
+  没有包含，返回false。
+
+样例 2:
+	输入:
+[
+  [1, 3, 5, 7],
+  [10, 11, 16, 20],
+  [23, 30, 34, 50]
+],3
+	输出: true
+
+	样例解释:
+	包含则返回true。
+```
+
+```javascript
+class Solution28 {
+  /**
+   * searchMatrix
+   *
+   * @param matrix: matrix, a list of lists of integers
+   * @param target: An integer
+   * @return: a boolean, indicate whether matrix contains target
+   */
+  searchMatrix(matrix, target) {
+    // write your code here
+    if (!matrix || matrix.length === 0) {
+      return false;
+    }
+    let start = 0,
+      end = matrix.length - 1;
+    let mid = 0;
+    while (start + 1 < end) {
+      mid = start + parseInt((end - start) / 2);
+
+      const midLastIndex = matrix[mid].length - 1;
+      if (matrix[mid][midLastIndex] > target) {
+        end = mid;
+      } else {
+        start = mid;
+      }
+    }
+
+    const startLastIndex = matrix[start].length - 1;
+    const endLastIndex = matrix[end].length - 1;
+    let targetIndex = -1;
+    if (matrix[start][0] <= target && matrix[start][startLastIndex] >= target) {
+      targetIndex = start;
+    }
+    if (matrix[end][0] <= target && matrix[end][endLastIndex] >= target) {
+      targetIndex = end;
+    }
+
+    if (targetIndex < 0) {
+      return false;
+    }
+
+    start = 0;
+    end = matrix[targetIndex].length - 1;
+    while (start + 1 < end) {
+      mid = start + parseInt((end - start) / 2);
+
+      if (matrix[targetIndex][mid] == target) {
+        // end = mid;
+        return true;
+      } else if (matrix[targetIndex][mid] > target) {
+        end = mid;
+      } else {
+        start = mid;
+      }
+    }
+
+    if (matrix[targetIndex][start] === target) {
+      return true;
+    }
+    if (matrix[targetIndex][end] === target) {
+      return true;
+    }
+    return false;
   }
 }
 ```
