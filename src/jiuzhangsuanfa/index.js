@@ -10,7 +10,7 @@ function fun1(nums) {
   const subset = [];
 
   subsetHelper(nums, 0, subset, results);
-//   console.log(results);
+  console.log(results);
   return results;
 }
 
