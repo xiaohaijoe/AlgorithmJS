@@ -9,6 +9,7 @@
 - <a href="#28">28. 搜索二维矩阵（中等）</a>
 - <a href="#61">61. 搜索区间（中等）</a>
 - <a href="#585">585. 山脉序列中的最大值（中等）</a>
+- <a href="#62">62. 搜索旋转排序数组（中等）</a>
 
 ## 二分查找模板
 
@@ -616,6 +617,76 @@ class Solution585 {
     } else {
       return nums[end];
     }
+  }
+}
+```
+
+## <a name='62'>62. 搜索旋转排序数组（中等）
+
+**[链接](https://www.lintcode.com/problem/search-in-rotated-sorted-array/)**
+
+**描述**
+假设有一个排序的按未知的旋转轴旋转的数组(比如，0 1 2 4 5 6 7 可能成为 4 5 6 7 0 1 2)。
+<br>
+给定一个目标值进行搜索，如果在数组中找到目标值返回数组中的索引位置，否则返回-1。你可以假设数组中不存在重复的元素。
+
+**样例**
+
+```
+例1:
+
+输入: [4, 5, 1, 2, 3] and target=1,
+输出: 2.
+例2:
+
+输入: [4, 5, 1, 2, 3] and target=0,
+输出: -1.
+```
+
+```javascript
+class Solution62 {
+  /**
+   * search
+   *
+   * @param A: an integer rotated sorted array
+   * @param target: an integer to be searched
+   * @return: an integer
+   */
+  search(A, target) {
+    // write your code here
+    if (!A || A.length === 0) {
+      return -1;
+    }
+    let start = 0,
+      end = A.length - 1;
+    let mid = 0;
+    while (start + 1 < end) {
+      mid = start + parseInt((end - start) / 2);
+
+      if (A[mid] === target) {
+        return mid;
+      } else if (A[mid] > target) {
+        if (A[mid] > A[end] && target <= A[end]) {
+          start = mid;
+        } else {
+          end = mid;
+        }
+      } else {
+        if (A[mid] <= A[end] && target <= A[end]) {
+          start = mid;
+        } else {
+          end = mid;
+        }
+      }
+    }
+
+    if (A[end] === target) {
+      return end;
+    }
+    if (A[start] === target) {
+      return start;
+    }
+    return -1;
   }
 }
 ```
