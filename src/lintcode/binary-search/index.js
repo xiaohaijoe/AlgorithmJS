@@ -62,3 +62,43 @@ class Solution14 {
     return -1;
   }
 }
+
+// 458. 目标最后位置
+// 给一个升序数组，找到 target 最后一次出现的位置，如果没出现过返回 -1
+class Solution458 {
+  /**
+   * lastPosition
+   *
+   * @param nums: An integer array sorted in ascending order
+   * @param target: An integer
+   * @return: An integer
+   */
+  lastPosition(nums, target) {
+    if (!nums || nums.length === 0) {
+      return -1;
+    }
+
+    let start = 0,
+      end = nums.length - 1;
+    let mid = 0;
+    while (start + 1 < end) {
+      mid = start + parseInt((end - start) / 2);
+
+      if (nums[mid] === target) {
+        start = mid;
+      } else if (nums[mid] > target) {
+        end = mid;
+      } else {
+        start = mid;
+      }
+    }
+
+    if (nums[end] === target) {
+      return end;
+    }
+    if (nums[start] === target) {
+      return start;
+    }
+    return -1;
+  }
+}

@@ -1,6 +1,8 @@
 ## 索引
+
 14. <a href="#14">二分查找（简单）</a>
 457. <a href="#457">经典二分查找问题（简单）</a>
+458. <a href="#458">目标最后位置（简单）</a>
 
 ## 二分查找模板
 
@@ -123,3 +125,63 @@ class Solution457 {
 
 **挑战**
 如果数组中的整数个数超过了 2^32，你的算法是否会出错？
+
+458. <a name='458'>目标最后位置
+
+**描述**
+给一个升序数组，找到 target 最后一次出现的位置，如果没出现过返回 -1
+
+**样例**
+
+```
+样例 1：
+
+输入：nums = [1,2,2,4,5,5], target = 2
+输出：2
+样例 2：
+
+输入：nums = [1,2,2,4,5,5], target = 6
+输出：-1
+```
+
+```javascript
+export class Solution {
+
+  /**
+   * lastPosition
+   *
+   * @param nums: An integer array sorted in ascending order
+   * @param target: An integer
+   * @return: An integer
+   */
+  lastPosition(nums, target) {
+    // write your code here
+    if(!nums || nums.length === 0) {
+        return -1;
+    }
+
+    let start = 0, end = nums.length - 1;
+    let mid = 0;
+    while(start + 1 < end) {
+        mid = start + parseInt((end - start) / 2);
+        
+        if(nums[mid] === target) {
+            start = mid;
+        } else if (nums[mid] > target) {
+            end = mid;
+        } else {
+            start = mid;
+        }
+    }
+
+    if(nums[end] === target) {
+        return end;
+    }
+    if(nums[start] === target) {
+        return start;
+    }
+    return -1;
+  }
+
+}
+```
