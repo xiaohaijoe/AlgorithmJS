@@ -13,6 +13,19 @@
 
 ## 二分查找模板
 
+**二分法模板的四点要素**
+
+- start + 1 < end
+- start + (end - start) / 2
+- A[mid] ==, <, >
+- A[start] A[end] ? target
+
+**三个境界**
+
+- 二分法模板
+- OOXX
+- Half half
+
 ```javascript
   binarySearch(nums, target) {
     if (!nums || nums.length === 0) {
