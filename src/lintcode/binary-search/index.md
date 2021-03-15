@@ -8,6 +8,7 @@
 - <a href="#159">159. 寻找旋转排序数组中的最小值（中等）</a>
 - <a href="#28">28. 搜索二维矩阵（中等）</a>
 - <a href="#61">61. 搜索区间（中等）</a>
+- <a href="#585">585. 山脉序列中的最大值（中等）</a>
 
 ## 二分查找模板
 
@@ -560,6 +561,61 @@ class Solution61 {
       return [end, end];
     }
     return [-1, -1];
+  }
+}
+```
+
+## <a name='585'>585. 山脉序列中的最大值（中等）
+
+**[链接](https://www.lintcode.com/problem/maximum-number-in-mountain-sequence/)**
+
+**描述**
+给 n 个整数的山脉数组，即先增后减的序列，找到山顶（最大值）。
+
+**样例**
+
+```
+例1:
+
+输入: nums = [1, 2, 4, 8, 6, 3]
+输出: 8
+例2:
+
+输入: nums = [10, 9, 8, 7],
+输出: 10
+```
+
+```javascript
+class Solution585 {
+  /**
+   * mountainSequence
+   *
+   * @param nums: a mountain sequence which increase firstly and then decrease
+   * @return: then mountain top
+   */
+  mountainSequence(nums) {
+    // write your code here
+    let start = 0,
+      end = nums.length - 1;
+    let mid = 0;
+
+    while (start + 1 < end) {
+      mid = start + parseInt((end - start) / 2);
+
+      if (nums[mid] > nums[mid - 1] && nums[mid] > nums[mid + 1]) {
+        return nums[mid];
+      } else if (nums[mid] > nums[mid - 1] && nums[mid] < nums[mid + 1]) {
+        start = mid;
+      } else {
+        end = mid;
+      }
+    }
+
+    if (nums[start] > nums[end]) {
+      return nums[start];
+    } else {
+      return nums[end];
+    }
   }
 }
 ```
