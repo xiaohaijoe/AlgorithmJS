@@ -179,3 +179,36 @@ export class Solution447 {
     return -1;
   }
 }
+
+// 159. 寻找旋转排序数组中的最小值
+// 假设一个排好序的数组在其某一未知点发生了旋转（比如0 1 2 4 5 6 7 可能变成4 5 6 7 0 1 2）。你需要找到其中最小的元素。
+export class Solution159 {
+  /**
+   * findMin
+   *
+   * @param nums: a rotated sorted array
+   * @return: the minimum number in the array
+   */
+  findMin(nums) {
+    // write your code here
+    let start = 0,
+      end = nums.length - 1;
+    let mid = 0;
+
+    while (start + 1 < end) {
+      mid = start + parseInt((end - start) / 2);
+
+      if (nums[mid] > nums[end]) {
+        start = mid;
+      } else {
+        end = mid;
+      }
+    }
+
+    if (nums[end] > nums[start]) {
+      return nums[start];
+    } else {
+      return nums[end];
+    }
+  }
+}

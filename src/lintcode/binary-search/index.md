@@ -5,6 +5,7 @@
 - <a href="#458">458. 目标最后位置（简单）</a>
 - <a href="#74">74. 第一个错误的代码版本（中等）</a>
 - <a href="#447">447. 在大数组中查找（中等）</a>
+- <a href="#159">159. 寻找旋转排序数组中的最小值（中等）</a>
 
 ## 二分查找模板
 
@@ -302,6 +303,62 @@ export class Solution447 {
       return end;
     }
     return -1;
+  }
+}
+```
+
+## <a name='159'>159. 寻找旋转排序数组中的最小值（中等）
+
+**[链接](https://www.lintcode.com/problem/find-minimum-in-rotated-sorted-array/)**
+**描述**
+假设一个排好序的数组在其某一未知点发生了旋转（比如 0 1 2 4 5 6 7 可能变成 4 5 6 7 0 1 2）。你需要找到其中最小的元素。
+
+**样例**
+
+```
+样例 1:
+
+输入：[4, 5, 6, 7, 0, 1, 2]
+输出：0
+解释：
+数组中的最小值为0
+样例 2:
+
+输入：[2,1]
+输出：1
+解释：
+数组中的最小值为1
+```
+
+```javascript
+export class Solution159 {
+  /**
+   * findMin
+   *
+   * @param nums: a rotated sorted array
+   * @return: the minimum number in the array
+   */
+  findMin(nums) {
+    // write your code here
+    let start = 0,
+      end = nums.length - 1;
+    let mid = 0;
+
+    while (start + 1 < end) {
+      mid = start + parseInt((end - start) / 2);
+
+      if (nums[mid] > nums[end]) {
+        start = mid;
+      } else {
+        end = mid;
+      }
+    }
+
+    if (nums[end] > nums[start]) {
+      return nums[start];
+    } else {
+      return nums[end];
+    }
   }
 }
 ```
