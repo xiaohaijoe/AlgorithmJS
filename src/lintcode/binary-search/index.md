@@ -1,3 +1,35 @@
+## 二分查找模板
+
+```javascript
+  binarySearch(nums, target) {
+    if (!nums || nums.length === 0) {
+      return -1;
+    }
+
+    let start = 0,
+      end = nums.length - 1;
+    let mid = 0;
+    while (start + 1 < end) { // 结束条件
+      mid = start + parseInt((end - start) / 2); // 中间切两刀
+      if (nums[mid] === target) {
+        end = mid;
+      } else if (nums[mid] > target) {
+        end = mid;
+      } else {
+        start = mid;
+      }
+    }
+
+    if (nums[start] === target) {
+      return start;
+    }
+    if (nums[end] === target) {
+      return end;
+    }
+    return -1;
+  }
+```
+
 ## 457. 经典二分查找问题
 
 **描述**
@@ -6,16 +38,17 @@
 **样例**
 样例 1：
 
-<code>
+```
 输入：nums = [1,2,2,4,5,5], target = 2
 输出：1 或者 2
-样例 2：
-</code>
+```
 
-<code>
+样例 2：
+
+```
 输入：nums = [1,2,2,4,5,5], target = 6
 输出：-1
-</code>
+```
 
 **挑战**
 O(logn) 的时间
