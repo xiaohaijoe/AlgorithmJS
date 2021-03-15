@@ -284,13 +284,66 @@ class Solution28 {
   }
 }
 
-const a = new Solution28();
-const r = a.searchMatrix(
-  [
-    [1, 3, 5, 7],
-    [10, 11, 16, 20],
-    [23, 30, 34, 50],
-  ],
-  7
+// 61. 搜索区间
+// 给定一个包含 n 个整数的排序数组，找出给定目标值 target 的起始和结束位置。
+// 如果目标值不在数组中，则返回[-1, -1]
+class Solution61 {
+  /**
+   * searchRange
+   *
+   * @param A: an integer sorted array
+   * @param target: an integer to be inserted
+   * @return: a list of length 2, [index1, index2]
+   */
+  searchRange(A, target) {
+    // write your code here
+    if (!A || A.length === 0) {
+      return [-1, -1];
+    }
+    let start = 0,
+      end = A.length - 1;
+    let mid = 0;
+
+    while (start + 1 < end) {
+      mid = start + parseInt((end - start) / 2);
+
+      if (A[mid] === target) {
+        let left = mid;
+        let right = mid;
+        while (left >= start || right <= end) {
+          if (A[left] === target) {
+            left--;
+          }
+          if (A[right] === target) {
+            right++;
+          }
+          if (A[left] !== target && A[right] !== target) {
+            break;
+          }
+        }
+        start = left + 1;
+        end = right - 1;
+        return [start, end];
+      } else if (A[mid] > target) {
+        end = mid;
+      } else {
+        start = mid;
+      }
+    }
+
+    if (A[start] === target) {
+      return [start, start];
+    }
+    if (A[end] === target) {
+      return [end, end];
+    }
+    return [-1, -1];
+  }
+}
+
+const a = new Solution61();
+const r = a.searchRange(
+  [-1, 0, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 6, 90, 92, 93, 101],
+  2
 );
 console.log(r);

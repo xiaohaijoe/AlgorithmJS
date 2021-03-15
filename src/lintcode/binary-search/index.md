@@ -7,6 +7,7 @@
 - <a href="#447">447. 在大数组中查找（中等）</a>
 - <a href="#159">159. 寻找旋转排序数组中的最小值（中等）</a>
 - <a href="#28">28. 搜索二维矩阵（中等）</a>
+- <a href="#61">61. 搜索区间（中等）</a>
 
 ## 二分查找模板
 
@@ -43,6 +44,7 @@
 ## <a name='457'>457. 经典二分查找问题
 
 **[链接](http://www.lintcode.com/problem/classical-binary-search/)**
+
 **描述**
 在一个排序数组中找一个数，返回该数出现的任意位置，如果不存在，返回 -1。
 
@@ -99,6 +101,7 @@ class Solution457 {
 ## <a name='14'>14. 二分查找
 
 **[链接](https://www.lintcode.com/problem/first-position-of-target/)**
+
 **描述**
 给定一个排序的整数数组（升序）和一个要查找的整数 target，用 O(logn)的时间查找到 target 第一次出现的下标（从 0 开始），如果 target 不存在于数组中，返回-1。
 
@@ -133,6 +136,7 @@ class Solution457 {
 ## <a name='458'>458. 目标最后位置
 
 **[链接](https://www.lintcode.com/problem/458)**
+
 **描述**
 给一个升序数组，找到 target 最后一次出现的位置，如果没出现过返回 -1
 
@@ -193,6 +197,7 @@ export class Solution {
 ## <a name='74'>74. 第一个错误的代码版本（中等）
 
 **[链接](https://www.lintcode.com/problem/first-bad-version/)**
+
 **描述**
 代码库的版本号是从 1 到 n 的整数。某一天，有人提交了错误版本的代码，因此造成自身及之后版本的代码在单元测试中均出错。请找出第一个错误的版本号。
 <br>
@@ -245,6 +250,7 @@ class Solution74 {
 ## <a name='447'>447. 在大数组中查找（中等）
 
 **[链接](https://www.lintcode.com/problem/search-in-a-big-sorted-array/)**
+
 **描述**
 给一个按照升序排序的非负整数数组。这个数组很大以至于你只能通过固定的接口 ArrayReader.get(k) 来访问第 k 个数(或者 C++里是 ArrayReader->get(k))，并且你也没有办法得知这个数组有多大。
 <br>
@@ -311,6 +317,7 @@ export class Solution447 {
 ## <a name='159'>159. 寻找旋转排序数组中的最小值（中等）
 
 **[链接](https://www.lintcode.com/problem/find-minimum-in-rotated-sorted-array/)**
+
 **描述**
 假设一个排好序的数组在其某一未知点发生了旋转（比如 0 1 2 4 5 6 7 可能变成 4 5 6 7 0 1 2）。你需要找到其中最小的元素。
 
@@ -400,6 +407,10 @@ export class Solution159 {
 	包含则返回true。
 ```
 
+**笔记**
+
+将 2D Matrix 进行两次二分查找，第一次找出具体的行下标，第二次找出该行具体的下标
+
 ```javascript
 class Solution28 {
   /**
@@ -464,6 +475,91 @@ class Solution28 {
       return true;
     }
     return false;
+  }
+}
+```
+
+## <a name='61'>61. 搜索区间（中等）
+
+**[链接](https://www.lintcode.com/problem/search-for-a-range/)**
+
+**描述**
+给定一个包含 n 个整数的排序数组，找出给定目标值 target 的起始和结束位置。
+<br>
+如果目标值不在数组中，则返回[-1, -1]
+
+**样例**
+
+```
+例1:
+
+输入:
+[]
+9
+输出:
+[-1,-1]
+
+例2:
+
+输入:
+[5, 7, 7, 8, 8, 10]
+8
+输出:
+[3, 4]
+```
+
+```javascript
+class Solution61 {
+  /**
+   * searchRange
+   *
+   * @param A: an integer sorted array
+   * @param target: an integer to be inserted
+   * @return: a list of length 2, [index1, index2]
+   */
+  searchRange(A, target) {
+    // write your code here
+    if (!A || A.length === 0) {
+      return [-1, -1];
+    }
+    let start = 0,
+      end = A.length - 1;
+    let mid = 0;
+
+    while (start + 1 < end) {
+      mid = start + parseInt((end - start) / 2);
+
+      if (A[mid] === target) {
+        let left = mid;
+        let right = mid;
+        while (left >= start || right <= end) {
+          if (A[left] === target) {
+            left--;
+          }
+          if (A[right] === target) {
+            right++;
+          }
+          if (A[left] !== target && A[right] !== target) {
+            break;
+          }
+        }
+        start = left + 1;
+        end = right - 1;
+        return [start, end];
+      } else if (A[mid] > target) {
+        end = mid;
+      } else {
+        start = mid;
+      }
+    }
+
+    if (A[start] === target) {
+      return [start, start];
+    }
+    if (A[end] === target) {
+      return [end, end];
+    }
+    return [-1, -1];
   }
 }
 ```
