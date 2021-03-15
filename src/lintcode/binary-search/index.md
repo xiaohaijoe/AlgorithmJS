@@ -1,3 +1,7 @@
+## 索引
+14. <a href="#14">二分查找（简单）</a>
+457. <a href="#457">经典二分查找问题（简单）</a>
+
 ## 二分查找模板
 
 ```javascript
@@ -30,7 +34,7 @@
   }
 ```
 
-## 457. 经典二分查找问题
+457. <a name='457'>经典二分查找问题
 
 [链接](http://www.lintcode.com/problem/classical-binary-search/)
 **描述**
@@ -86,7 +90,7 @@ class Solution457 {
 }
 ```
 
-## 14. 二分查找
+14. <a name='14'>二分查找
 
 [描述](https://www.lintcode.com/problem/first-position-of-target/)
 **描述**
