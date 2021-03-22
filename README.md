@@ -8,3 +8,4 @@
 | lintcode                               |
 | ---------------------------------- |
 | [二分法](./src/lintcode/binary-search/index.md) |
+| [二叉树](./src/lintcode/binary-tree/index.md) |
