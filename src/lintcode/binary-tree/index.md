@@ -39,7 +39,7 @@
 前序遍历
 ```
 
-## 利用分治法(Divide Conquer)
+**利用分治法(Divide Conquer)**
 
 ```java
 /**
@@ -78,7 +78,7 @@ public class Solution {
 }
 ```
 
-## 利用非递归(non-recursion)
+**利用非递归(non-recursion)**
 
 ```java
 
@@ -111,7 +111,6 @@ public class Solution {
     }
 }
 ```
-
 
 ## <a name='67'>67. 二叉树的中序遍历
 
@@ -147,7 +146,7 @@ public class Solution {
 中序遍历
 ```
 
-## 利用分治法(Divide Conquer)
+**利用分治法(Divide Conquer)**
 
 ```java
 /**
@@ -181,12 +180,12 @@ public class Solution {
         result.add(root.val);
         result.addAll(right);
 
-        return result; 
+        return result;
     }
 }
 ```
 
-## 利用非递归(non-recursion)
+**利用非递归(non-recursion)**
 
 ```java
 
