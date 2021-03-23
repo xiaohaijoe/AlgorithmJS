@@ -3,6 +3,7 @@
 1. <a href="#66">66. 二叉树的前序遍历（简单）</a>
 2. <a href="#67">67. 二叉树的中序遍历（简单）</a>
 3. <a href="#97">97. 二叉树的最大深度（简单）</a>
+4. <a href="#93">93. 平衡二叉树（简单）</a>
 
 ## 分治法(Divide Conquer Algorithm)
 
@@ -293,6 +294,205 @@ public class Solution {
         int right = maxDepth(root.right);
 
         return Math.max(left, right) + 1;
+    }
+}
+```
+
+## <a name='93'>93. 平衡二叉树
+
+**[链接](https://www.lintcode.com/problem/balanced-binary-tree/)**
+
+**描述**
+给定一个二叉树,确定它是高度平衡的。对于这个问题,一棵高度平衡的二叉树的定义是：
+
+一棵二叉树中每个节点的两个子树的深度相差不会超过 1。
+
+**样例**
+
+```
+样例  1:
+	输入: tree = {1,2,3}
+	输出: true
+
+	样例解释:
+	如下，是一个平衡的二叉树。
+		  1
+		 / \
+		2  3
+
+
+样例  2:
+	输入: tree = {3,9,20,#,#,15,7}
+	输出: true
+
+	样例解释:
+	如下，是一个平衡的二叉树。
+		  3
+		 / \
+		9  20
+		  /  \
+		 15   7
+
+
+样例  2:
+	输入: tree = {1,#,2,3,4}
+	输出: false
+
+	样例解释:
+	如下，是一个不平衡的二叉树。1的左右子树高度差2
+		  1
+		   \
+		   2
+		  /  \
+		 3   4
+```
+
+**利用分治法(Divide Conquer)**
+
+```java
+/**
+ * Definition of TreeNode:
+ * public class TreeNode {
+ *     public int val;
+ *     public TreeNode left, right;
+ *     public TreeNode(int val) {
+ *         this.val = val;
+ *         this.left = this.right = null;
+ *     }
+ * }
+ */
+
+class ResultType {
+    public int maxDepth;
+    public int depth;
+    public boolean isBalanced;
+    public ResultType(boolean isBalanced, int depth, int maxDepth) {
+        this.isBalanced = isBalanced;
+        this.depth = depth;
+        this.maxDepth = maxDepth;
+    }
+}
+
+public class Solution {
+    /**
+     * @param root: The root of binary tree.
+     * @return: True if this Binary tree is Balanced, or false.
+     */
+    public boolean isBalanced(TreeNode root) {
+        // write your code here
+        ResultType node = helper(root, 0);
+        return node.isBalanced;
+    }
+
+    private ResultType helper(TreeNode root, int depth) {
+        if(root == null) {
+            return new ResultType(true, depth, 0);
+        }
+
+        ResultType left = helper(root.left, depth + 1);
+        ResultType right = helper(root.right, depth + 1);
+
+        if(!left.isBalanced || !right.isBalanced) {
+            return new ResultType(false, depth, -1);
+        }
+
+        if(Math.abs(left.maxDepth - right.maxDepth) > 1) {
+            return new ResultType(false, depth, -1);
+        }
+
+        return new ResultType(true, depth, Math.max(left.maxDepth, right.maxDepth) + 1);
+    }
+}
+```
+
+## <a name='597'>597. 具有最大平均数的子树
+
+**[链接](https://www.lintcode.com/problem/subtree-with-maximum-average/)**
+
+**描述**
+给一棵二叉树，找到有最大平均值的子树。返回子树的根结点。
+
+**样例**
+
+```
+样例1
+
+输入：
+{1,-5,11,1,2,4,-2}
+输出：11
+说明:
+这棵树如下所示：
+     1
+   /   \
+ -5     11
+ / \   /  \
+1   2 4    -2
+11子树的平均值是4.333，为最大的。
+样例2
+
+输入：
+{1,-5,11}
+输出：11
+说明:
+     1
+   /   \
+ -5     11
+1,-5,11 三棵子树的平均值分别是 2.333,-5,11。因此11才是最大的
+```
+
+**利用分治法(Divide Conquer)**
+
+```java
+/**
+ * Definition of TreeNode:
+ * public class TreeNode {
+ *     public int val;
+ *     public TreeNode left, right;
+ *     public TreeNode(int val) {
+ *         this.val = val;
+ *         this.left = this.right = null;
+ *     }
+ * }
+ */
+
+class ResultType {
+    public int count;
+    public int sum;
+    public ResultType(int count, int sum) {
+        this.count = count;
+        this.sum = sum;
+    }
+}
+public class Solution {
+    private ResultType subtreeResult;
+    private TreeNode subtree;
+    /**
+     * @param root: the root of binary tree
+     * @return: the root of the maximum average of subtree
+     */
+    public TreeNode findSubtree2(TreeNode root) {
+        // write your code here
+        helper(root);
+        return subtree;
+    }
+
+    private ResultType helper(TreeNode root) {
+        if(root == null) {
+            return new ResultType(0,0);
+        }
+
+        ResultType left = helper(root.left);
+        ResultType right = helper(root.right);
+
+        int count = left.count + right.count + 1;
+        int sum = left.sum + right.sum + root.val;
+        ResultType result = new ResultType(count, sum);
+        if(subtree == null || subtreeResult.sum * result.count < result.sum * subtreeResult.count) {
+            subtreeResult = result;
+            subtree = root;
+        }
+
+        return result;
     }
 }
 ```
