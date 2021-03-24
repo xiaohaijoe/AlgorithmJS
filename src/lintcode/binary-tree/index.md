@@ -25,9 +25,99 @@
 
 - DFS 深度优先搜索
   - 用递归实现
-    - 分治法
-    - 遍历法
+    - 分治法（Divide Conquer）
+    - 遍历法（Traversal）
   - 用非递归实现
+
+## 前序遍历的三种写法
+
+- 遍历法（Taversal）
+- 分治法（Divide Conquer）
+- 非递归法（Non Recursion）
+
+```javascript
+// 前序遍历的三种写法
+class SolutionPostOrder {
+  postorderTraversal(root) {
+    const helper = (root, result) => {
+      if (root == null) {
+        return null;
+      }
+
+      result.push(root.val);
+      helper(root.left, result);
+      helper(root.right, result);
+    };
+    const result = [];
+    helper(root, result);
+    return result;
+  }
+
+  postorderDivideConquer(root) {
+    const helper = (root) => {
+      const result = [];
+      if (root == null) {
+        return result;
+      }
+
+      const left = helper(root.left);
+      const right = helper(root.right);
+
+      result.push(root.val);
+      result.push(...left);
+      result.push(...right);
+
+      return result;
+    };
+    const result = helper(root);
+    return result;
+  }
+
+  postorderNonRecursion(root) {
+    const result = [];
+    if (root == null) {
+      return result;
+    }
+
+    const stack = [];
+    stack.push(root);
+    while (stack.length !== 0) {
+      const node = stack.pop();
+      result.push(node.val);
+      if (node.right) {
+        stack.push(node.right);
+      }
+      if (node.left) {
+        stack.push(node.left);
+      }
+    }
+    return result;
+  }
+
+  static test() {
+    const solution = new SolutionPostOrder();
+    const root = {
+      val: 2,
+      left: {
+        val: 1,
+        left: {
+          val: 4,
+        },
+        right: {
+          val: 5,
+        },
+      },
+      right: {
+        val: 3,
+      },
+    };
+    const a = solution.postorderTraversal(root);
+    const b = solution.postorderDivideConquer(root);
+    const c = solution.postorderNonRecursion(root);
+    console.log(a, b, c);
+  }
+}
+```
 
 ## <a name='66'>66. 二叉树的前序遍历
 
@@ -1107,8 +1197,7 @@ public class Solution {
 }
 ```
 
-
-## <a name='448'>11. 二叉查找树中搜索区间
+## <a name='11'>11. 二叉查找树中搜索区间
 
 **[链接](https://www.lintcode.com/problem/11)**
 
@@ -1182,6 +1271,92 @@ public class Solution {
             helper(root.right, k1, k2);
         }
 
+    }
+}
+```
+
+## <a name='85'>85. 在二叉查找树中插入节点
+
+**[链接](https://www.lintcode.com/problem/insert-node-in-a-binary-search-tree/)**
+
+**描述**
+给定一棵二叉查找树和一个新的树节点，将节点插入到树中。
+
+你需要保证该树仍然是一棵二叉查找树。
+
+**样例**
+
+```
+样例  1:
+	输入: tree = {}, node= 1
+	输出: {1}
+
+	样例解释:
+	在空树中插入一个点，应该插入为根节点。
+
+
+样例 2:
+	输入: tree = {2,1,4,3}, node = 6
+	输出: {2,1,4,3,6}
+
+	样例解释:
+	如下：
+
+	  2             2
+	 / \           / \
+	1   4   -->   1   4
+	   /             / \
+	  3             3   6
+```
+
+```java
+/**
+ * Definition of TreeNode:
+ * public class TreeNode {
+ *     public int val;
+ *     public TreeNode left, right;
+ *     public TreeNode(int val) {
+ *         this.val = val;
+ *         this.left = this.right = null;
+ *     }
+ * }
+ */
+
+
+public class Solution {
+    private TreeNode result;
+    /*
+     * @param root: The root of the binary search tree.
+     * @param node: insert this node into the binary search tree
+     * @return: The root of the new binary search tree.
+     */
+    public TreeNode insertNode(TreeNode root, TreeNode node) {
+        // write your code here
+        if(root == null) {
+            return node;
+        }
+        helper(root, node);
+        return root;
+    }
+
+    private TreeNode helper(TreeNode root, TreeNode node) {
+        if(root == null) {
+            return null;
+        }
+        if(root.val > node.val) {
+            helper(root.left, node);
+        }
+        if(root.val <= node.val) {
+            helper(root.right, node);
+        }
+
+        if(root.left == null && root.val > node.val) {
+            root.left = node;
+        }
+        if(root.right == null && root.val <= node.val) {
+            root.right = node;
+        }
+        return root;
     }
 }
 ```

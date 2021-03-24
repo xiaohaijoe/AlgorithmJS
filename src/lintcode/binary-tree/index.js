@@ -306,7 +306,7 @@ class Solution1311 {
     const p = {
       val: 8,
     };
-    const p = {
+    const q = {
       val: 61,
     };
     const root = {
@@ -478,11 +478,11 @@ class BSTIterator86 {
 // 448. 二叉查找树的中序后继
 class Solution448 {
   inorderSuccessor(root, p) {
-    if(root == null || p == null) {
+    if (root == null || p == null) {
       return null;
     }
 
-    if(root.val <= p.val) {
+    if (root.val <= p.val) {
       return this.inorderSuccessor(root.right, p);
     } else {
       const left = this.inorderSuccessor(root.left, p);
@@ -512,4 +512,176 @@ class Solution448 {
   }
 }
 
-Solution448.test();
+// 前序遍历的三种写法
+class SolutionPostOrder {
+  postorderTraversal(root) {
+    const helper = (root, result) => {
+      if (root == null) {
+        return null;
+      }
+
+      result.push(root.val);
+      helper(root.left, result);
+      helper(root.right, result);
+    };
+    const result = [];
+    helper(root, result);
+    return result;
+  }
+
+  postorderDivideConquer(root) {
+    const helper = (root) => {
+      const result = [];
+      if (root == null) {
+        return result;
+      }
+
+      const left = helper(root.left);
+      const right = helper(root.right);
+
+      result.push(root.val);
+      result.push(...left);
+      result.push(...right);
+
+      return result;
+    };
+    const result = helper(root);
+    return result;
+  }
+
+  postorderNonRecursion(root) {
+    const result = [];
+    if (root == null) {
+      return result;
+    }
+
+    const stack = [];
+    stack.push(root);
+    while (stack.length !== 0) {
+      const node = stack.pop();
+      result.push(node.val);
+      if (node.right) {
+        stack.push(node.right);
+      }
+      if (node.left) {
+        stack.push(node.left);
+      }
+    }
+    return result;
+  }
+
+  static test() {
+    const solution = new SolutionPostOrder();
+    const root = {
+      val: 2,
+      left: {
+        val: 1,
+        left: {
+          val: 4,
+        },
+        right: {
+          val: 5,
+        },
+      },
+      right: {
+        val: 3,
+      },
+    };
+    const a = solution.postorderTraversal(root);
+    const b = solution.postorderDivideConquer(root);
+    const c = solution.postorderNonRecursion(root);
+    console.log(a, b, c);
+  }
+}
+
+// 11. 二叉查找树中搜索区间
+class Solution11 {
+  searchRange(root, k1, k2) {
+    const result = [];
+    this.helper(root, k1, k2, result);
+    return result;
+  }
+  helper(root, k1, k2, result) {
+    if (root == null) {
+      return null;
+    }
+
+    if (root.val >= k1) {
+      this.helper(root.left, k1, k2, result);
+    }
+    if (root.val >= k1 && root.val <= k2) {
+      result.push(root.val);
+    }
+    if (root.val <= k2) {
+      this.helper(root.right, k1, k2, result);
+    }
+    return root;
+  }
+  static test() {
+    const solution = new Solution11();
+    const root = {
+      val: 2,
+      left: {
+        val: 1,
+      },
+    };
+    const res = solution.searchRange(root, 0, 4);
+    console.log(res);
+  }
+}
+
+// 85. 在二叉查找树中插入节点
+class Solution85 {
+  insertNode(root, node) {
+    if (root == null) {
+      return node;
+    }
+    this.helper(root, node);
+    return root;
+  }
+  helper(root, node) {
+    if (root == null) {
+      return null;
+    }
+
+    if (root.val > node.val) {
+      this.helper(root.left, node);
+    }
+
+    if (root.val <= node.val) {
+      this.helper(root.right, node);
+    }
+
+    if (root.left == null && root.val > node.val) {
+      root.left = node;
+    }
+    if (root.right == null && root.val <= node.val) {
+      root.right = node;
+    }
+    return root;
+  }
+  static test() {
+    const solution = new Solution85();
+    const root = {
+      val: 2,
+      left: {
+        val: 1,
+      },
+      right: {
+        val: 4,
+        left: {
+          val: 3,
+        },
+      },
+    };
+    const node = {
+      val: 6,
+    };
+    const res = solution.insertNode(root, node);
+    console.log(res);
+  }
+}
+Solution85.test();
+// Solution11.test();
+// SolutionPostOrder.test();
+// Solution448.test();
