@@ -126,8 +126,10 @@ class Solution93 {
 
 // 597. 具有最大平均数的子树
 class Solution597 {
-  subtree = null;
-  subtreeResult = null;
+  constructor() {
+    this.subtree = null;
+    this.subtreeResult = null;
+  }
   findSubtree2(root) {
     this.helper(root);
     return this.subtree;
@@ -278,4 +280,236 @@ class Solution596 {
     console.log;
   }
 }
-// Solution597.test();
+
+class Solution1311 {
+  lowestCommonAncestor(root, p, q) {
+    if (root == null || root == p || root == q) {
+      return root;
+    }
+
+    const left = this.lowestCommonAncestor(root.left, p, q);
+    const right = this.lowestCommonAncestor(root.right, p, q);
+
+    if (left != null && right != null) {
+      return root;
+    }
+    if (left != null) {
+      return left;
+    }
+    if (right != null) {
+      return right;
+    }
+    return null;
+  }
+  static test() {
+    const solution = new Solution1311();
+    const p = {
+      val: 8,
+    };
+    const p = {
+      val: 61,
+    };
+    const root = {
+      val: 31,
+      left: {
+        val: 11,
+        left: p,
+      },
+      right: {
+        val: 51,
+        left: {
+          val: 41,
+        },
+        right: q,
+      },
+    };
+    const res = solution.lowestCommonAncestor(root, p, q);
+    console.log(res);
+  }
+}
+
+// 95. 验证二叉查找树
+class Solution95 {
+  isValidBST(root) {
+    const result = this.helper(root);
+    return result.isBST;
+  }
+  helper(root) {
+    if (root == null) {
+      return { isBST: true };
+    }
+
+    const left = this.helper(root.left);
+    const right = this.helper(root.right);
+
+    if (!left.isBST && !right.isBST) {
+      return { isBST: false };
+    }
+
+    if (left.maxNode != null && left.maxNode.val >= root.val) {
+      return { isBST: false };
+    }
+
+    if (right.minNode != null && right.minNode.val <= root.val) {
+      return { isBST: false };
+    }
+
+    const maxNode = right.maxNode != null ? right.maxNode : root;
+    const minNode = left.minNode != null ? left.minNode : root;
+    return { isBST: true, maxNode, minNode };
+  }
+  static test() {
+    const solution = new Solution95();
+    const root = {
+      val: 10,
+      left: {
+        val: 5,
+        left: {
+          val: 1,
+        },
+        right: {
+          val: 100,
+        },
+      },
+    };
+    const res = solution.isValidBST(root);
+    console.log(res);
+  }
+}
+// Solution95.test();
+
+// 453. 将二叉树拆成链表
+class Solution453 {
+  flatten(root) {
+    this.helper(root);
+    return root;
+  }
+  helper(root) {
+    if (root == null) {
+      return null;
+    }
+
+    // 获取左节点叶子节点
+    const leftLast = this.helper(root.left);
+    // 获取右节点叶子节点
+    const rightLast = this.helper(root.right);
+
+    if (leftLast != null) {
+      leftLast.right = root.right;
+      root.right = root.left;
+      root.left = null;
+    }
+
+    if (rightLast != null) {
+      return rightLast;
+    }
+
+    if (leftLast != null) {
+      return leftLast;
+    }
+
+    return root;
+  }
+  static test() {
+    const solution = new Solution453();
+    const root = {
+      val: 1,
+      left: {
+        val: 2,
+        left: {
+          val: 3,
+        },
+        right: {
+          val: 4,
+        },
+      },
+      right: {
+        val: 5,
+        right: {
+          val: 6,
+        },
+      },
+    };
+    const res = solution.flatten(root);
+    console.log(res);
+  }
+}
+
+// 86. 二叉查找树迭代器
+class BSTIterator86 {
+  constructor(root) {
+    this.array = helper(root);
+  }
+
+  helper(root) {
+    const result = [];
+    if (root == null) {
+      return result;
+    }
+
+    const leftResult = this.helper(root.left);
+    const rightResult = this.helper(root.right);
+
+    result.push(...leftResult);
+    result.push(root);
+    result.push(...rightResult);
+
+    return result;
+  }
+
+  hasNext() {
+    if (this.array.length === 0) {
+      return false;
+    }
+    return true;
+  }
+
+  next() {
+    if (this.array.length == 0) {
+      return null;
+    }
+    const node = this.array[0];
+    this.array = this.array.splice(0, 1);
+    return node;
+  }
+}
+// Solution453.test();
+
+// 448. 二叉查找树的中序后继
+class Solution448 {
+  inorderSuccessor(root, p) {
+    if(root == null || p == null) {
+      return null;
+    }
+
+    if(root.val <= p.val) {
+      return this.inorderSuccessor(root.right, p);
+    } else {
+      const left = this.inorderSuccessor(root.left, p);
+      return left != null ? left : root;
+    }
+  }
+  static test() {
+    const solution = new Solution448();
+    const p = {
+      val: 2,
+    };
+    const root = {
+      val: 4,
+      left: {
+        val: 3,
+        left: p,
+      },
+      right: {
+        val: 5,
+        right: {
+          val: 6,
+        },
+      },
+    };
+    const res = solution.inorderSuccessor(root, p);
+    console.log(res);
+  }
+}
+
+Solution448.test();
