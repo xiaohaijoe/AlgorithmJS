@@ -3,6 +3,8 @@
 1. <a href="#66">66. 二叉树的前序遍历（简单）</a>
 2. <a href="#67">67. 二叉树的中序遍历（简单）</a>
 3. <a href="#97">97. 二叉树的最大深度（简单）</a>
+4. <a href="#480">480. 二叉树的所有路径（简单）</a>
+5. <a href="#596">596. 最小子树（简单）</a>
 
 ## 分治法(Divide Conquer Algorithm)
 
@@ -233,7 +235,7 @@ public class Solution {
 }
 ```
 
-## <a name='67'>67. 二叉树的中序遍历
+## <a name='97'>97. 二叉树的中序遍历
 
 **[链接](https://www.lintcode.com/problem/maximum-depth-of-binary-tree/)**
 
@@ -293,6 +295,164 @@ public class Solution {
         int right = maxDepth(root.right);
 
         return Math.max(left, right) + 1;
+    }
+}
+```
+
+## <a name='480'>480. 二叉树的所有路径
+
+**[链接](https://www.lintcode.com/problem/binary-tree-paths/)**
+
+**描述**
+给一棵二叉树，找出从根节点到叶子节点的所有路径。
+
+**样例**
+
+```
+样例 1:
+
+输入：{1,2,3,#,5}
+输出：["1->2->5","1->3"]
+解释：
+   1
+ /   \
+2     3
+ \
+  5
+样例 2:
+
+输入：{1,2}
+输出：["1->2"]
+解释：
+   1
+ /
+2
+```
+
+**利用分治法(Divide Conquer)**
+
+```java
+/**
+ * Definition of TreeNode:
+ * public class TreeNode {
+ *     public int val;
+ *     public TreeNode left, right;
+ *     public TreeNode(int val) {
+ *         this.val = val;
+ *         this.left = this.right = null;
+ *     }
+ * }
+ */
+
+public class Solution {
+    /**
+     * @param root: the root of the binary tree
+     * @return: all root-to-leaf paths
+     */
+    public ArrayList<String> binaryTreePaths(TreeNode root) {
+        // write your code here
+        ArrayList<String> result = new ArrayList<String>();
+        if(root == null) {
+            return result;
+        }
+
+        ArrayList<String> leftPaths = binaryTreePaths(root.left);
+        ArrayList<String> rightPaths = binaryTreePaths(root.right);
+
+        for (String path : leftPaths) {
+            result.add(root.val + "->" + path);
+        }
+        for (String path : rightPaths) {
+            result.add(root.val + "->" + path);
+        }
+
+        if(result.size() == 0) {
+            result.add("" + root.val);
+        }
+        return result;
+    }
+}
+```
+
+## <a name='596'>596. 最小子树
+
+**[链接](https://www.lintcode.com/problem/minimum-subtree/)**
+
+**描述**
+给一棵二叉树, 找到和为最小的子树, 返回其根节点。
+
+输入输出数据范围都在 int 内。
+
+**样例**
+
+```
+样例 1:
+
+输入:
+{1,-5,2,1,2,-4,-5}
+输出:1
+说明
+这棵树如下所示：
+     1
+   /   \
+ -5     2
+ / \   /  \
+1   2 -4  -5
+整颗树的和是最小的，所以返回根节点1.
+样例 2:
+
+输入:
+{1}
+输出:1
+说明:
+这棵树如下所示：
+   1
+这棵树只有整体这一个子树，所以返回1.
+```
+
+**利用分治法(Divide Conquer)**
+
+```java
+/**
+ * Definition of TreeNode:
+ * public class TreeNode {
+ *     public int val;
+ *     public TreeNode left, right;
+ *     public TreeNode(int val) {
+ *         this.val = val;
+ *         this.left = this.right = null;
+ *     }
+ * }
+ */
+
+public class Solution {
+    private TreeNode subtree;
+    private int subtreeSum = Integer.MAX_VALUE;
+    /**
+     * @param root: the root of binary tree
+     * @return: the root of the minimum subtree
+     */
+    public TreeNode findSubtree(TreeNode root) {
+        // write your code here
+
+        helper(root);
+        return subtree;
+    }
+
+    private int helper(TreeNode root) {
+        if(root == null) {
+            return 0;
+        }
+
+        int left = helper(root.left);
+        int right = helper(root.right);
+
+        int sum = left + right + root.val;
+        if(sum <= subtreeSum) {
+            subtree = root;
+            subtreeSum = sum;
+        }
+        return sum;
     }
 }
 ```
