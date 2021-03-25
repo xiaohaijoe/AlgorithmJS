@@ -1,3 +1,10 @@
+class TreeNode {
+  constructor(val) {
+    this.val = val;
+    this.left = null;
+    this.right = null;
+  }
+}
 // 69. 二叉树的层次遍历
 class Solution69 {
   levelOrder(root) {
@@ -49,48 +56,48 @@ class Solution69 {
   }
 }
 
-class Solution11 {
+// 7. 二叉树的序列化和反序列化
+class Solution7 {
+  serialize(root) {
+    if(root == null) {
+      return "{}";
+    }
+    
+  }
   deserialize(data) {
-    // write your code here
-    if (data == null || data.length <= 2) {
+    if (data == null || data === "{}") {
       return null;
     }
-    console.log(data);
-    const substring = data.substring(1, data.length - 1);
-    console.log(substring)
-    const strs = substring.split(",");
 
-    // TreeNode root = new TreeNode(0);
-    const head = {};
-    this.helper(root, strs, 0, 1);
-    return root.right;
-  }
+    const strs = data.substring(1, data.length - 1).split(",");
 
-  helper(root, strs, nextStart, nextEnd) {
-    let i = nextStart;
-    // console.log(nextStart, nextEnd, strs.length);
-    while (i < nextEnd && i < strs.length) {
-      const val = strs[i];
-      const left = i % 2 == 1;
-      console.log(val, left, i, strs);
-      if (val == "#") {
-      } else {
-        const node = { val: parseInt(val) };
-        if (left) {
-          root.left = node;
+    const root = new TreeNode(parseInt(strs[0]));
+    const queue = [root];
+
+    let index = 0;
+    let isLeft = true;
+    for (let i = 1; i < strs.length; i++) {
+      if (strs[i] != "#") {
+        const node = new TreeNode(parseInt(strs[i]));
+        if (isLeft) {
+          queue[index].left = node;
         } else {
-          root.right = node;
+          queue[index].right = node;
         }
-        this.helper(node, strs, nextEnd, 2 * nextEnd + 1);
+        queue.push(node);
       }
-      i++;
+      isLeft = !isLeft;
+      if (isLeft) {
+        index++;
+      }
     }
+    return root;
   }
   static test() {
-      const solution = new Solution11();
-      const root = "{3,1,2,#,5}";
-      const res = solution.deserialize(root);
-      console.log(res);
+    const solution = new Solution7();
+    const root = "{3,9,20,#,#,15,7}";
+    const res = solution.deserialize(root);
+    console.log(res);
   }
 }
-Solution11.test();
+Solution7.test();
