@@ -59,10 +59,36 @@ class Solution69 {
 // 7. 二叉树的序列化和反序列化
 class Solution7 {
   serialize(root) {
-    if(root == null) {
+    if (root == null) {
       return "{}";
     }
-    
+
+    const queue = [root];
+    // 宽度优先搜索将元素放进队列中
+    for (let i = 0; i < queue.length; i++) {
+      const node = queue[i];
+      if (node == null) {
+        continue;
+      }
+      queue.push(node.left);
+      queue.push(node.right);
+    }
+
+    while (queue[queue.length - 1] == null) {
+      queue.splice(queue.length - 1, 1);
+    }
+
+    let result = "{";
+    result += queue[0].val;
+    for (let i = 1; i < queue.length; i++) {
+      if (queue[i] == null) {
+        result += ",#";
+      } else {
+        result += "," + queue[i].val;
+      }
+    }
+    result += "}";
+    return result;
   }
   deserialize(data) {
     if (data == null || data === "{}") {
@@ -97,7 +123,9 @@ class Solution7 {
     const solution = new Solution7();
     const root = "{3,9,20,#,#,15,7}";
     const res = solution.deserialize(root);
+    const serial = solution.serialize(res);
     console.log(res);
+    console.log(serial);
   }
 }
 Solution7.test();
