@@ -5,6 +5,13 @@ class TreeNode {
     this.right = null;
   }
 }
+
+class ListNode {
+  constructor(val) {
+    this.val = val;
+    this.next = null;
+  }
+}
 // 69. 二叉树的层次遍历
 class Solution69 {
   levelOrder(root) {
@@ -128,4 +135,144 @@ class Solution7 {
     console.log(serial);
   }
 }
-Solution7.test();
+
+// 70. 二叉树的层次遍历 II
+class Solution70 {
+  levelOrderBottom(root) {
+    const result = [];
+    if (root == null) {
+      return result;
+    }
+
+    const queue = [root];
+
+    while (queue.length > 0) {
+      const size = queue.length;
+      const level = [];
+      for (let i = 0; i < size; i++) {
+        const node = queue.shift();
+        if (node.left) {
+          queue.push(node.left);
+        }
+        if (node.right) {
+          queue.push(node.right);
+        }
+        level.push(node.val);
+      }
+      result.push(level);
+    }
+    return result.reverse();
+  }
+
+  static test() {
+    const solution = new Solution70();
+    const root = {
+      val: 1,
+      left: {
+        val: 2,
+      },
+      right: {
+        val: 3,
+      },
+    };
+    const res = solution.levelOrderBottom(root);
+    console.log(res);
+  }
+}
+
+// 71. 二叉树的锯齿形层次遍历
+class Solution71 {
+  zigzagLevelOrder(root) {
+    const result = [];
+    if (root == null) {
+      return result;
+    }
+    const queue = [root];
+    let isReverse = false;
+    while (queue.length > 0) {
+      const size = queue.length;
+      const level = [];
+      for (let i = 0; i < size; i++) {
+        const node = queue.shift();
+        if (node.left) {
+          queue.push(node.left);
+        }
+        if (node.right) {
+          queue.push(node.right);
+        }
+        level.push(node.val);
+      }
+      if (isReverse) {
+        level.reverse();
+      }
+      isReverse = !isReverse;
+      result.push(level);
+    }
+    return result;
+  }
+  static test() {
+    const solution = new Solution71();
+    const root = {
+      val: 1,
+      left: {
+        val: 2,
+      },
+      right: {
+        val: 3,
+      },
+    };
+    const res = solution.zigzagLevelOrder(root);
+    console.log(res);
+  }
+}
+
+// 242. 将二叉树按照层级转化为链表
+class Solution242 {
+  binaryTreeToLists(root) {
+    const result = [];
+    if (root == null) {
+      return result;
+    }
+
+    const queue = [root];
+    while (queue.length > 0) {
+      const size = queue.length;
+      let level = null;
+      let pointer = null;
+      for (let i = 0; i < size; i++) {
+        const node = queue.shift();
+        if (node.left) {
+          queue.push(node.left);
+        }
+        if (node.right) {
+          queue.push(node.right);
+        }
+        if (level == null) {
+          level = new ListNode(node.val);
+          pointer = level;
+        } else {
+          pointer.next = new ListNode(node.val);
+          pointer = pointer.next;
+        }
+      }
+      result.push(level);
+    }
+    return result;
+  }
+
+  static test() {
+    const solution = new Solution242();
+    const root = {
+      val: 1,
+      left: {
+        val: 2,
+      },
+      right: {
+        val: 3,
+      },
+    };
+    const res = solution.binaryTreeToLists(root);
+    console.log(res);
+  }
+}
+Solution242.test();

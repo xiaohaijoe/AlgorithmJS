@@ -2,6 +2,9 @@
 
 1. <a href="#69">69. 二叉树的层次遍历（中等）</a>
 2. <a href="#7">7. 二叉树的序列化和反序列化（中等）</a>
+3. <a href="#70">70. 二叉树的层次遍历 II（中等）</a>
+4. <a href="#71">71. 二叉树的锯齿形层次遍历（中等）</a>
+5. <a href="#242">242. 将二叉树按照层级转化为链表（简单）</a>
 
 ## BFS 应用范围
 
@@ -241,6 +244,276 @@ public class Solution {
             }
         }
         return root;
+    }
+}
+```
+
+## <a name='70'>70. 二叉树的层次遍历 II
+
+**[链接](https://www.lintcode.com/problem/binary-tree-level-order-traversal-ii/)**
+
+**描述**
+给出一棵二叉树，返回其节点值从底向上的层次序遍历（按从叶节点所在层到根节点所在的层遍历，然后逐层从左往右遍历）
+
+**样例**
+
+```
+例1:
+
+输入:
+{1,2,3}
+输出:
+[[2,3],[1]]
+解释:
+1
+/ \
+2 3
+它将被序列化为 {1,2,3}
+层次遍历
+例2:
+
+输入:
+{3,9,20,#,#,15,7}
+输出:
+[[15,7],[9,20],[3]]
+解释:
+3
+/ \
+9 20
+/ \
+15 7
+它将被序列化为 {3,9,20,#,#,15,7}
+层次遍历
+```
+
+**笔记**
+
+从上到下进行层次遍历，最后结果进行翻转即可得到结果
+
+```java
+/**
+ * Definition of TreeNode:
+ * public class TreeNode {
+ *     public int val;
+ *     public TreeNode left, right;
+ *     public TreeNode(int val) {
+ *         this.val = val;
+ *         this.left = this.right = null;
+ *     }
+ * }
+ */
+
+public class Solution {
+    /**
+     * @param root: A tree
+     * @return: buttom-up level order a list of lists of integer
+     */
+    public List<List<Integer>> levelOrderBottom(TreeNode root) {
+        // write your code here
+        List<List<Integer>> result = new ArrayList<>();
+        if(root == null) {
+            return result;
+        }
+
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.offer(root);
+
+        while(!queue.isEmpty()) {
+            int size = queue.size();
+            List<Integer> level = new ArrayList<>();
+            for(int i = 0 ; i < size ; i++) {
+                TreeNode node = queue.poll();
+                if(node.left != null) {
+                    queue.offer(node.left);
+                }
+                if(node.right != null) {
+                    queue.offer(node.right);
+                }
+                level.add(node.val);
+            }
+            result.add(level);
+        }
+        Collections.reverse(result);
+        return result;
+    }
+}
+```
+
+## <a name='71'>71. 二叉树的锯齿形层次遍历
+
+**[链接](https://www.lintcode.com/problem/binary-tree-zigzag-level-order-traversal/)**
+
+**描述**
+给出一棵二叉树，返回其节点值的锯齿形层次遍历（先从左往右，下一层再从右往左，层与层之间交替进行）
+
+**样例**
+
+```
+样例 1:
+
+输入:{1,2,3}
+输出:[[1],[3,2]]
+解释:
+1
+/ \
+2 3
+它将被序列化为 {1,2,3}
+样例 2:
+
+输入:{3,9,20,#,#,15,7}
+输出:[[3],[20,9],[15,7]]
+解释:
+3
+/ \
+9 20
+/ \
+15 7
+它将被序列化为 {3,9,20,#,#,15,7}
+```
+
+```java
+/**
+ * Definition of TreeNode:
+ * public class TreeNode {
+ *     public int val;
+ *     public TreeNode left, right;
+ *     public TreeNode(int val) {
+ *         this.val = val;
+ *         this.left = this.right = null;
+ *     }
+ * }
+ */
+
+public class Solution {
+    /**
+     * @param root: A Tree
+     * @return: A list of lists of integer include the zigzag level order traversal of its nodes' values.
+     */
+    public List<List<Integer>> zigzagLevelOrder(TreeNode root) {
+        // write your code here
+        List<List<Integer>> result = new ArrayList<>();
+        if(root == null) {
+            return result;
+        }
+
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.offer(root);
+
+        boolean isReverse = false;
+        while(!queue.isEmpty()) {
+            int size = queue.size();
+            List<Integer> level = new ArrayList<Integer>();
+            for(int i = 0 ; i < size ; i++) {
+                TreeNode node = queue.poll();
+                if(node.left != null) {
+                    queue.offer(node.left);
+                }
+                if(node.right != null) {
+                    queue.offer(node.right);
+                }
+                level.add(node.val);
+
+            }
+            if(isReverse) {
+                Collections.reverse(level);
+            }
+            result.add(level);
+            isReverse = !isReverse;
+        }
+        return result;
+    }
+}
+```
+
+## <a name='242'>242. 将二叉树按照层级转化为链表
+
+**[链接](https://www.lintcode.com/problem/binary-tree-zigzag-level-order-traversal/)**
+
+**描述**
+给一棵二叉树，设计一个算法为每一层的节点建立一个链表。也就是说，如果一棵二叉树有 D 层，那么你需要创建 D 条链表。
+
+**样例**
+
+```
+样例 1:
+
+输入: {1,2,3,4}
+输出: [1->null,2->3->null,4->null]
+解释:
+1
+/ \
+2 3
+/
+4
+样例 2:
+
+输入: {1,#,2,3}
+输出: [1->null,2->null,3->null]
+解释:
+1
+\
+2
+/
+3
+```
+
+```java
+/**
+ * Definition of TreeNode:
+ * public class TreeNode {
+ *     public int val;
+ *     public TreeNode left, right;
+ *     public TreeNode(int val) {
+ *         this.val = val;
+ *         this.left = this.right = null;
+ *     }
+ * }
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) { val = x; }
+ * }
+ */
+public class Solution {
+    /**
+     * @param root the root of binary tree
+     * @return a lists of linked list
+     */
+    public List<ListNode> binaryTreeToLists(TreeNode root) {
+        // Write your code here
+        List<ListNode> result = new ArrayList<>();
+        if(root == null) {
+            return result;
+        }
+
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.offer(root);
+
+        while(!queue.isEmpty()) {
+            int size = queue.size();
+            ListNode header = null;
+            ListNode listNode = null;
+            for(int i = 0 ; i < size ; i++) {
+                TreeNode node = queue.poll();
+
+                if(node.left != null) {
+                    queue.offer(node.left);
+                }
+                if(node.right != null) {
+                    queue.offer(node.right);
+                }
+                if(header == null) {
+                    header = new ListNode(node.val);
+                    listNode = header;
+                } else {
+                    listNode.next = new ListNode(node.val);
+                    listNode = listNode.next;
+                }
+            }
+            result.add(header);
+        }
+        return result;
     }
 }
 ```
