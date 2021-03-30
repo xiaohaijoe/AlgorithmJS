@@ -19,6 +19,13 @@ class UndirectedGraphNode {
     this.neighbors = [];
   }
 }
+
+class DirectedGraphNode {
+  constructor(label) {
+    this.label = label;
+    this.neighbors = [];
+  }
+}
 // 69. 二叉树的层次遍历
 class Solution69 {
   levelOrder(root) {
@@ -403,4 +410,66 @@ class Solution137 {
     console.log(res);
   }
 }
-Solution137.test();
+
+// 127. 拓扑排序
+class Solution127 {
+  topSort(graph) {
+    const result = [];
+    if(graph == null || graph.length === 0) {
+      return result;
+    }
+
+    // 1. 找出所有入度>0的节点
+    const indegree = new Map();
+    graph.forEach(n => {
+      n.neighbors.forEach(neighbor => {
+        if(indegree.has(neighbor)) {
+          indegree.set(neighbor, indegree.get(neighbor) + 1);
+        } else {
+          indegree.set(neighbor, 1);
+        }
+      });
+    });
+
+    // 2. 将入度为0的插入到queue和result中
+    const queue = [];
+    graph.forEach(n => {
+      if(!indegree.has(n)) {
+        queue.push(n);
+        result.push(n);
+      }
+    });
+
+    // 3. 遍历所有neighbor，每次indegree-1,直到indegree==0，就插入到result中
+    while(queue.length > 0) {
+      const n = queue.shift();
+      n.neighbors.forEach(neighbor => {
+        indegree.set(neighbor, indegree.get(neighbor) - 1);
+        if(indegree.get(neighbor) === 0) {
+          result.push(neighbor);
+          queue.push(neighbor);
+        }
+      })
+    }
+
+    return result;
+  }
+
+  static test() {
+    const solution = new Solution127();
+    const n1 = new DirectedGraphNode(1);
+    const n2 = new DirectedGraphNode(2);
+    const n3 = new DirectedGraphNode(3);
+    const n4 = new DirectedGraphNode(4);
+    n1.neighbors = [n2,n3];
+    n2.neighbors = [n4];
+    n3.neighbors = [n4];
+    const graph = [n1,n2,n3,n4];
+
+    const res = solution.topSort(graph);
+    console.log(res);
+  }
+}
+
+
+Solution127.test();

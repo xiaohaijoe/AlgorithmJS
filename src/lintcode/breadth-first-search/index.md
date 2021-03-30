@@ -6,6 +6,7 @@
 4. <a href="#71">71. 二叉树的锯齿形层次遍历（中等）</a>
 5. <a href="#242">242. 将二叉树按照层级转化为链表（简单）</a>
 6. <a href="#178">178. 图是否是树（中等）</a>
+7. <a href="#127">127. 拓扑排序（中等）</a>
 
 ## BFS 应用范围
 
@@ -687,5 +688,91 @@ public class Solution {
 
       return new ArrayList<UndirectedGraphNode>(set);
     }
+}
+```
+
+## <a name='127'>127. 拓扑排序
+
+**[链接](https://www.lintcode.com/problem/topological-sorting/)**
+
+**描述**
+给定一个有向图，图节点的拓扑排序定义如下:
+
+- 对于图中的每一条有向边 A -> B , 在拓扑排序中 A 一定在 B 之前.
+- 拓扑排序中的第一个节点可以是图中的任何一个没有其他节点指向它的节点.
+
+针对给定的有向图找到任意一种拓扑排序的顺序.
+
+**样例**
+
+![alt 属性文本](./assets/127.jpg)
+```
+拓扑排序可以为:
+
+[0, 1, 2, 3, 4, 5]
+[0, 2, 3, 1, 5, 4]
+```
+
+```java
+/**
+ * Definition for Directed graph.
+ * class DirectedGraphNode {
+ *     int label;
+ *     List<DirectedGraphNode> neighbors;
+ *     DirectedGraphNode(int x) {
+ *         label = x;
+ *         neighbors = new ArrayList<DirectedGraphNode>();
+ *     }
+ * }
+ */
+
+public class Solution {
+    /**
+     * @param graph: A list of Directed graph node
+     * @return: Any topological order for the given graph.
+     */
+    public ArrayList<DirectedGraphNode> topSort(ArrayList<DirectedGraphNode> graph) {
+        // write your code here
+        ArrayList<DirectedGraphNode> result = new ArrayList<>();
+        if(graph == null || graph.size() == 0) {
+          return result;
+        }
+
+        // 1. 找出所有neighbors（入度>0）节点
+        HashMap<DirectedGraphNode, Integer> indegree = new HashMap<>();
+        // HashSet<DirectedGraphNode> set = new HashSet<>();
+        for(DirectedGraphNode n : graph) {
+          for(DirectedGraphNode neighbor : n.neighbors) {
+            if(indegree.containsKey(neighbor)) {
+              indegree.put(neighbor, indegree.get(neighbor) + 1);
+            } else {
+              indegree.put(neighbor, 1);
+            }
+          }
+        }
+       
+        // 2. 将所有顶点边插入queue和result
+        Queue<DirectedGraphNode> queue = new LinkedList<>();
+        for(DirectedGraphNode n : graph) {
+          if(!indegree.containsKey(n)) {
+            queue.offer(n);
+            result.add(n);
+          }
+        }
+
+        // 3. 遍历queue，将所有节点的入度依次-1，直到==0，就加入result
+        while(!queue.isEmpty()) {
+          DirectedGraphNode n = queue.poll();
+          for(DirectedGraphNode neighbor : n.neighbors) {
+            indegree.put(neighbor, indegree.get(neighbor) - 1);
+            if(indegree.get(neighbor) == 0) {
+              queue.offer(neighbor);
+              result.add(neighbor);
+            }
+          }
+        }
+        return result;
+    }
+
 }
 ```
