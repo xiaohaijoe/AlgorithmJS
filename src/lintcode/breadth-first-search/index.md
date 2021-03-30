@@ -5,6 +5,7 @@
 3. <a href="#70">70. 二叉树的层次遍历 II（中等）</a>
 4. <a href="#71">71. 二叉树的锯齿形层次遍历（中等）</a>
 5. <a href="#242">242. 将二叉树按照层级转化为链表（简单）</a>
+6. <a href="#178">178. 图是否是树（中等）</a>
 
 ## BFS 应用范围
 
@@ -514,6 +515,177 @@ public class Solution {
             result.add(header);
         }
         return result;
+    }
+}
+```
+
+## <a name='178'>178. 图是否是树
+
+**[链接](https://www.lintcode.com/problem/graph-valid-tree/)**
+
+**描述**
+给出 n 个节点，标号分别从 0 到 n - 1 并且给出一个 无向 边的列表 (给出每条边的两个顶点), 写一个函数去判断这张｀无向｀图是否是一棵树
+
+**样例**
+
+```
+样例 1:
+
+输入: n = 5 edges = [[0, 1], [0, 2], [0, 3], [1, 4]]
+输出: true.
+样例 2:
+
+输入: n = 5 edges = [[0, 1], [1, 2], [2, 3], [1, 3], [1, 4]]
+输出: false.
+```
+
+```java
+public class Solution {
+    /**
+     * @param n: An integer
+     * @param edges: a list of undirected edges
+     * @return: true if it's a valid tree, or false
+     */
+    public boolean validTree(int n, int[][] edges) {
+        // write your code here
+        if(n == 0) {
+            return false;
+        }
+        if(edges.length != n-1) {
+            return false;
+        }
+
+        Map<Integer, Set<Integer>> map = initializeMap(n, edges);
+
+        Queue<Integer> queue = new LinkedList<>();
+        Set<Integer> set = new HashSet<>();
+
+        queue.offer(0);
+        set.add(0);
+
+        while(!queue.isEmpty()) {
+            int num = queue.poll();
+            for(Integer neighbor : map.get(num)) {
+                if(set.contains(neighbor)) {
+                    continue;
+                }
+                queue.offer(neighbor);
+                set.add(neighbor);
+            }
+        }
+
+        return set.size() == n;
+    }
+
+    private Map<Integer, Set<Integer>> initializeMap(int n, int[][] edges) {
+        Map<Integer, Set<Integer>> map = new HashMap<>();
+        for(int i = 0 ; i < n ; i++) {
+            map.put(i, new HashSet<Integer>());
+        }
+
+        for(int i = 0 ; i < edges.length ; i++) {
+            int u = edges[i][0];
+            int v = edges[i][1];
+            map.get(u).add(v);
+            map.get(v).add(u);
+        }
+
+        return map;
+    }
+}
+```
+
+## <a name='178'>178. 图是否是树
+
+**[链接](https://www.lintcode.com/problem/graph-valid-tree/)**
+
+**描述**
+克隆一张无向图. 无向图的每个节点包含一个 label 和一个列表 neighbors. 保证每个节点的 label 互不相同.
+
+你的程序需要返回一个经过深度拷贝的新图. 新图和原图具有同样的结构, 并且对新图的任何改动不会对原图造成任何影响.
+
+**样例**
+
+```
+样例1
+
+输入:
+{1,2,4#2,1,4#4,1,2}
+输出:
+{1,2,4#2,1,4#4,1,2}
+解释:
+1----2
+ \   |
+  \  |
+   \ |
+    \|
+     4
+```
+
+```java
+/**
+ * Definition for Undirected graph.
+ * class UndirectedGraphNode {
+ *     int label;
+ *     List<UndirectedGraphNode> neighbors;
+ *     UndirectedGraphNode(int x) {
+ *         label = x;
+ *         neighbors = new ArrayList<UndirectedGraphNode>();
+ *     }
+ * }
+ */
+
+public class Solution {
+    /**
+     * @param node: A undirected graph node
+     * @return: A undirected graph node
+     */
+    public UndirectedGraphNode cloneGraph(UndirectedGraphNode node) {
+        // write your code here
+        if(node == null) {
+          return node;
+        }
+
+        // 1. 使用bfs遍历所有的点
+        List<UndirectedGraphNode> nodes = getAllNodes(node);
+
+        // 2. 复制所有的点
+        HashMap<UndirectedGraphNode,UndirectedGraphNode> mapping = new HashMap<>();
+        for(UndirectedGraphNode n : nodes) {
+          mapping.put(n, new UndirectedGraphNode(n.label));
+        }
+
+        // 3. 复制所有的边
+        for(UndirectedGraphNode n : nodes) {
+          UndirectedGraphNode newNode = mapping.get(n);
+          for(UndirectedGraphNode neighbor : n.neighbors) {
+            UndirectedGraphNode newNeighbor = mapping.get(neighbor);
+            newNode.neighbors.add(newNeighbor);
+          }
+
+        }
+        return mapping.get(node);
+    }
+
+    private List<UndirectedGraphNode> getAllNodes(UndirectedGraphNode node) {
+      Queue<UndirectedGraphNode> queue = new LinkedList<>();
+      Set<UndirectedGraphNode> set = new HashSet<>();
+
+      queue.offer(node);
+      set.add(node);
+
+      while(!queue.isEmpty()) {
+        UndirectedGraphNode n = queue.poll();
+        for(UndirectedGraphNode neighbor : n.neighbors) {
+          if(set.contains(neighbor)) {
+            continue;
+          }
+          queue.offer(neighbor);
+          set.add(neighbor);
+        }
+      }
+
+      return new ArrayList<UndirectedGraphNode>(set);
     }
 }
 ```
