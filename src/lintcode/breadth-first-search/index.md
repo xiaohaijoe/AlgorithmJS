@@ -9,6 +9,8 @@
 7. <a href="#127">127. 拓扑排序（中等）</a>
 8. <a href="#615">615. 课程表(拓扑排序)（中等）</a>
 9. <a href="#605">605. 序列重构(拓扑排序)（中等）</a>
+10. <a href="#433">433. 岛屿的个数（中等）</a>
+11. <a href="#598">598. 僵尸矩阵（中等）</a>
 
 ## BFS 应用范围
 
@@ -1081,6 +1083,234 @@ public class Solution {
         }
 
         return null;
+    }
+}
+```
+
+## <a name='433'>433. 岛屿的个数
+
+**[链接](https://www.lintcode.com/problem/number-of-islands/)**
+
+**描述**
+给一个 01 矩阵，求不同的岛屿的个数。
+
+0 代表海，1 代表岛，如果两个 1 相邻，那么这两个 1 属于同一个岛。我们只考虑上下左右为相邻。
+
+**样例**
+
+```
+样例 1：
+
+输入：
+[
+  [1,1,0,0,0],
+  [0,1,0,0,1],
+  [0,0,0,1,1],
+  [0,0,0,0,0],
+  [0,0,0,0,1]
+]
+输出：
+3
+样例 2：
+
+输入：
+[
+  [1,1]
+]
+输出：
+1
+```
+
+```java
+class Coordinate {
+    public int x;
+    public int y;
+    public Coordinate(int x,int y) {
+        this.x = x;
+        this.y = y;
+    }
+}
+
+public class Solution {
+    int[] deltaX = { -1, 0, 1, 0}; // 上右下左
+    int[] deltaY = { 0, 1, 0, -1}; // 上右下左
+    /**
+     * @param grid: a boolean 2D matrix
+     * @return: an integer
+     */
+    public int numIslands(boolean[][] grid) {
+        // write your code here
+        if(grid == null || grid.length == 0) {
+            return 0;
+        }
+        if(grid[0] == null || grid[0].length == 0) {
+            return 0;
+        }
+        int islands = 0;
+        int n = grid.length; // 纵像
+        int m = grid[0].length; // 横向
+        boolean[][] visited = new boolean[n][m];
+
+        // 查找岛屿
+        for(int i = 0 ; i < n ; i++) {
+            for(int j = 0 ; j < m ; j++) {
+                // 找到了没有访问过的岛
+                if(grid[i][j] && !visited[i][j]) {
+                    bfs(grid, i, j, visited);
+                    islands++;
+                }
+            }
+        }
+
+        return islands;
+    }
+
+    private void bfs(boolean[][] grid, int x, int y, boolean[][] visited) {
+        Coordinate coord = new Coordinate(x,y);
+        Queue<Coordinate> queue = new LinkedList<>();
+        queue.offer(coord);
+        visited[x][y] = true;
+
+        while(!queue.isEmpty()) {
+            Coordinate c = queue.poll();
+            // 向每个方向移动
+            for(int direction = 0 ; direction < 4 ; direction++) {
+                int newX = c.x + deltaX[direction];
+                int newY = c.y + deltaY[direction];
+                if(!isValid(grid, newX, newY, visited)) {
+                    continue;
+                }
+                queue.offer(new Coordinate(newX, newY));
+                visited[newX][newY] = true;
+            }
+        }
+    }
+
+    private boolean isValid(boolean[][] grid, int newX, int newY, boolean[][] visited) {
+        int n = grid.length;
+        int m = grid[0].length;
+        if(newX < 0 || newX >= n || newY < 0 || newY >= m) {
+            return false;
+        }
+        if(visited[newX][newY]) {
+            return false;
+        }
+        return grid[newX][newY];
+    }
+}
+```
+
+## <a name='598'>598. 僵尸矩阵
+
+**[链接](https://www.lintcode.com/problem/zombie-in-matrix/)**
+
+**描述**
+给一个二维网格，每一个格子都有一个值，2 代表墙，1 代表僵尸，0 代表人类(数字 0, 1, 2)。
+
+僵尸每天可以将上下左右最接近的人类感染成僵尸，但不能穿墙。将所有人类感染为僵尸需要多久，如果不能感染所有人则返回 -1。
+
+**样例**
+
+```
+例1:
+
+输入:
+[[0,1,2,0,0],
+ [1,0,0,2,1],
+ [0,1,0,0,0]]
+输出:
+2
+例2:
+
+输入:
+[[0,0,0],
+ [0,0,0],
+ [0,0,1]]
+输出:
+4
+```
+
+```java
+class Coordinate {
+    public int x;
+    public int y;
+    public Coordinate(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
+}
+public class Solution {
+    private int HUMAN = 0;
+    private int ZOMBIE = 1;
+    private int WALL = 2;
+
+    private int[] deltaX = {-1, 0, 1, 0};
+    private int[] deltaY = {0, 1, 0 , -1};
+    /**
+     * @param grid: a 2D integer grid
+     * @return: an integer
+     */
+    public int zombie(int[][] grid) {
+        // write your code here
+        if(grid == null || grid.length == 0) {
+            return -1;
+        }
+        if(grid[0] == null || grid[0].length == 0) {
+            return -1;
+        }
+
+        int n = grid.length;
+        int m = grid[0].length;
+        int human = 0;
+        Queue<Coordinate> queue = new LinkedList();
+        for(int i = 0 ; i < n ; i++) {
+            for(int j = 0 ; j < m ; j++) {
+                if(grid[i][j] == HUMAN) {
+                    human++;
+                } else if (grid[i][j] == ZOMBIE){
+                    queue.offer(new Coordinate(i,j));
+                }
+            }
+        }
+
+        if(human == 0) {
+            return 0;
+        }
+
+        int days = 0;
+        while(!queue.isEmpty()) {
+            int size = queue.size();
+            days++;
+            for(int i = 0 ; i < size ; i++) {
+                Coordinate zb = queue.poll();
+
+                for(int direction = 0 ; direction < 4 ; direction++) {
+
+                    int newX = zb.x + deltaX[direction];
+                    int newY = zb.y + deltaY[direction];
+                    // Coordinate nCoor = new Coordinate(newX, newY);
+                    if(!isHuman(grid, newX, newY)) {
+                        continue;
+                    }
+                    grid[newX][newY] = ZOMBIE;
+                    human--;
+                    if(human == 0) {
+                        return days;
+                    }
+                    queue.offer(new Coordinate(newX, newY));
+                }
+            }
+        }
+        return -1;
+    }
+
+    private boolean isHuman(int[][] grid, int x, int y) {
+        int n = grid.length;
+        int m = grid[0].length;
+        if(x < 0 || x >= n || y < 0 || y >= m) {
+            return false;
+        }
+        return (grid[x][y] == HUMAN);
     }
 }
 ```

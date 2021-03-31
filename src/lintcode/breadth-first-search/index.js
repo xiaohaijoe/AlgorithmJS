@@ -662,24 +662,24 @@ class Solution605 {
     }
 
     const queue = [];
-    for(let key of graph.keys()) {
-      if(!indegree.has(key)) {
+    for (let key of graph.keys()) {
+      if (!indegree.has(key)) {
         queue.push(key);
       }
     }
 
     const result = [];
-    while(queue.length > 0) {
-      if(queue.length > 1) {
+    while (queue.length > 0) {
+      if (queue.length > 1) {
         return null;
       }
-      
+
       const num = queue.shift();
       result.push(num);
       const neighbors = graph.get(num);
-      for(let neighbor of neighbors.values()) {
+      for (let neighbor of neighbors.values()) {
         indegree.set(neighbor, indegree.get(neighbor) - 1);
-        if(indegree.get(neighbor) == 0) {
+        if (indegree.get(neighbor) == 0) {
           queue.push(neighbor);
         }
       }
@@ -687,8 +687,6 @@ class Solution605 {
 
     return result;
   }
-
-  
 
   static test() {
     const solution = new Solution605();
@@ -703,4 +701,234 @@ class Solution605 {
   }
 }
 
-Solution605.test();
+// 433. 岛屿的个数
+class Solution433 {
+  /**
+   *
+   * @param {int[][]} grid
+   */
+  numIslands(grid) {
+    if (grid == null || grid.length == 0) {
+      return 0;
+    }
+    if (grid[0] == null || grid[0].length == 0) {
+      return 0;
+    }
+
+    const n = grid.length;
+    const m = grid[0].length;
+    const visited = new Array(n).fill(1).map((i) => {
+      return new Array(m).fill(false);
+    });
+
+    let islands = 0;
+    for (let i = 0; i < n; i++) {
+      for (let j = 0; j < m; j++) {
+        if (grid[i][j] && !visited[i][j]) {
+          this.bfs(grid, i, j, visited);
+          islands++;
+        }
+      }
+    }
+    return islands;
+  }
+
+  bfs(grid, x, y, visited) {
+    const queue = [{ x, y }];
+    visited[x][y] = true;
+    const deltaX = [-1, 0, 1, 0]; // 上右下左
+    const deltaY = [0, 1, 0, -1]; // 上右下左
+
+    while (queue.length > 0) {
+      const coord = queue.shift();
+      for (let direction = 0; direction < 4; direction++) {
+        const newX = coord.x + deltaX[direction];
+        const newY = coord.y + deltaY[direction];
+        if (!this.isValid(grid, newX, newY, visited)) {
+          continue;
+        }
+        queue.push({ x: newX, y: newY });
+        visited[newX][newY] = true;
+      }
+    }
+  }
+
+  isValid(grid, x, y, visited) {
+    const n = grid.length;
+    const m = grid[0].length;
+    if (x < 0 || x >= n || y < 0 || y >= m) {
+      return false;
+    }
+    if (visited[x][y]) {
+      return false;
+    }
+    return grid[x][y];
+  }
+
+  static test() {
+    const solution = new Solution433();
+    const grid = [
+      [1, 1, 0, 0, 0],
+      [0, 1, 0, 0, 1],
+      [0, 0, 0, 1, 1],
+      [0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 1],
+    ];
+    const res = solution.numIslands(grid);
+    console.log(res);
+  }
+}
+
+// 598. 僵尸矩阵
+class Solution598 {
+  constructor() {
+    this.HUMAN = 0;
+    this.ZOMBIE = 1;
+    this.WALL = 2;
+    this.deltaX = [-1, 0, 1, 0];
+    this.deltaY = [0, 1, 0, -1];
+  }
+  /**
+   *
+   * @param {int[][]} grid
+   */
+  zombie(grid) {
+    if (grid == null || grid.length == 0 || grid[0].length == 0) {
+      return -1;
+    }
+
+    // 1. 找出所有人类，找出所有僵尸
+    const n = grid.length;
+    const m = grid[0].length;
+    const queue = [];
+    let human = 0;
+    for (let i = 0; i < n; i++) {
+      for (let j = 0; j < m; j++) {
+        if (grid[i][j] == this.HUMAN) {
+          human++;
+        } else if (grid[i][j] == this.ZOMBIE) {
+          queue.push({ x: i, y: j });
+        }
+      }
+    }
+
+    if (human === 0) {
+      return 0;
+    }
+
+    let days = 0;
+    while (queue.length > 0) {
+      days++;
+      const size = queue.length;
+      for (let i = 0; i < size; i++) {
+        const zb = queue.shift();
+        for (let direction = 0; direction < 4; direction++) {
+          const newX = zb.x + this.deltaX[direction];
+          const newY = zb.y + this.deltaY[direction];
+          if (!this.isHuman(grid, newX, newY)) {
+            continue;
+          }
+          human--;
+          grid[newX][newY] = this.ZOMBIE;
+          if (human == 0) {
+            return days;
+          }
+          queue.push({ x: newX, y: newY });
+        }
+      }
+    }
+  }
+
+  isHuman(grid, x, y) {
+    const n = grid.length;
+    const m = grid[0].length;
+    if (x < 0 || x >= n || y < 0 || y >= m) {
+      return false;
+    }
+
+    return grid[x][y] == this.HUMAN;
+  }
+
+  static test() {
+    const solution = new Solution598();
+    const grid = [
+      [0, 1, 2, 0, 0],
+      [1, 0, 0, 2, 1],
+      [0, 1, 0, 0, 0],
+    ];
+    const res = solution.zombie(grid);
+    console.log(res);
+  }
+}
+
+// 600. 包裹黑色像素点的最小矩形
+class Solution600 {
+  /**
+   *
+   * @param {char[][]} image
+   * @param {int} x
+   * @param {int} y
+   */
+  minArea(image, x, y) {
+    if (image == null || image.length === 0 || image[0].length === 0) {
+      return 0;
+    }
+
+    const deltaX = [-1, 0, 1, 0];
+    const deltaY = [0, 1, 0, -1];
+    const n = image.length;
+    const m = image[0].length;
+    const visited = new Array(n).fill(1).map((i) => {
+      return new Array(m).fill(false);
+    });
+    const queue = [{ x, y }];
+    visited[x][y] = true;
+
+    const result = [];
+    while (queue.length > 0) {
+      const coor = queue.shift();
+      result.push(coor);
+      for (let direction = 0; direction < 4; direction++) {
+        const newX = coor.x + deltaX[direction];
+        const newY = coor.y + deltaY[direction];
+        if (!this.isResolution(image, newX, newY, visited)) {
+          continue;
+        }
+        visited[newX][newY] = true;
+        queue.push({ x: newX, y: newY });
+      }
+    }
+
+    let left = Number.MAX_VALUE;
+    let right = Number.MIN_VALUE;
+    let top = Number.MAX_VALUE;
+    let bottom = Number.MIN_VALUE;
+    result.forEach(coor => {
+      left = left > coor.x ? coor.x : left;
+      right = right < coor.x ? coor.x : right;
+      top = top > coor.y ? coor.y : top;
+      bottom = bottom < coor.y ? coor.y : bottom;
+    })
+    return (right - left + 1) * (bottom - top + 1);
+  }
+
+  isResolution(image, x, y, visited) {
+    const n = image.length;
+    const m = image[0].length;
+    if (x < 0 || x >= n || y < 0 || y >= m) {
+      return false;
+    }
+    if(visited[x][y]) {
+      return false;
+    }
+    return image[x][y] == "1";
+  }
+
+  static test() {
+    const solution = new Solution600();
+    const image = ["0010", "0110", "0100"];
+    const res = solution.minArea(image, 0, 2);
+    console.log(res);
+  }
+}
+Solution600.test();
