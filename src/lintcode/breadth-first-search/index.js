@@ -415,15 +415,16 @@ class Solution137 {
 class Solution127 {
   topSort(graph) {
     const result = [];
-    if(graph == null || graph.length === 0) {
+    if (graph == null || graph.length === 0) {
       return result;
     }
 
+    // 1. 拓扑排序先决条件
     // 1. 找出所有入度>0的节点
     const indegree = new Map();
-    graph.forEach(n => {
-      n.neighbors.forEach(neighbor => {
-        if(indegree.has(neighbor)) {
+    graph.forEach((n) => {
+      n.neighbors.forEach((neighbor) => {
+        if (indegree.has(neighbor)) {
           indegree.set(neighbor, indegree.get(neighbor) + 1);
         } else {
           indegree.set(neighbor, 1);
@@ -433,23 +434,23 @@ class Solution127 {
 
     // 2. 将入度为0的插入到queue和result中
     const queue = [];
-    graph.forEach(n => {
-      if(!indegree.has(n)) {
+    graph.forEach((n) => {
+      if (!indegree.has(n)) {
         queue.push(n);
         result.push(n);
       }
     });
 
     // 3. 遍历所有neighbor，每次indegree-1,直到indegree==0，就插入到result中
-    while(queue.length > 0) {
+    while (queue.length > 0) {
       const n = queue.shift();
-      n.neighbors.forEach(neighbor => {
+      n.neighbors.forEach((neighbor) => {
         indegree.set(neighbor, indegree.get(neighbor) - 1);
-        if(indegree.get(neighbor) === 0) {
+        if (indegree.get(neighbor) === 0) {
           result.push(neighbor);
           queue.push(neighbor);
         }
-      })
+      });
     }
 
     return result;
@@ -461,15 +462,245 @@ class Solution127 {
     const n2 = new DirectedGraphNode(2);
     const n3 = new DirectedGraphNode(3);
     const n4 = new DirectedGraphNode(4);
-    n1.neighbors = [n2,n3];
+    n1.neighbors = [n2, n3];
     n2.neighbors = [n4];
     n3.neighbors = [n4];
-    const graph = [n1,n2,n3,n4];
+    const graph = [n1, n2, n3, n4];
 
     const res = solution.topSort(graph);
     console.log(res);
   }
 }
 
+// 615. 课程表(拓扑排序)
+class Solution615 {
+  /**
+   *
+   * @param {int} numCourses
+   * @param {int[][]} prerequisites
+   */
+  canFinish(numCourses, prerequisites) {
+    if (numCourses === 0) {
+      return true;
+    }
+    if (prerequisites.length === 0) {
+      return true;
+    }
 
-Solution127.test();
+    // 拓扑排序需要提前准备的数据
+    // 1. 所有节点的indegree(入度>1的节点)
+    // 2. 所有节点的neighbors(边)
+    const neighbors = new Array(numCourses).fill(true).map((i) => {
+      return [];
+    });
+    const indegree = new Array(numCourses).fill(0);
+    prerequisites.forEach((courses) => {
+      indegree[courses[1]]++;
+      neighbors[courses[0]].push(courses[1]);
+    });
+
+    // 3. 把所有入度==0的节点插入到queue中
+    // const queue = indegree.filter((i) => i === 0);
+    const queue = [];
+    for (let i = 0; i < indegree.length; i++) {
+      if (indegree[i] === 0) {
+        queue.push(i);
+      }
+    }
+
+    // 4. 遍历queue
+    let count = 0;
+    while (queue.length > 0) {
+      console.log(queue);
+      const course = queue.shift();
+      count++;
+      // 遍历所有neighbor
+      for (let i = 0; i < neighbors[course].length; i++) {
+        const neighbor = neighbors[course][i];
+        indegree[neighbor]--;
+        if (indegree[neighbor] === 0) {
+          queue.push(parseInt(neighbor));
+        }
+      }
+    }
+
+    return count === numCourses;
+  }
+
+  static test() {
+    const solution = new Solution615();
+    const numCourses = 6;
+    // 比如要学习课程 0 你需要先学习课程 1 ，表示为[0,1]
+    // 1 -> 0
+    const prerequisites = [
+      [0, 1],
+      [2, 3],
+      [1, 4],
+      [1, 5],
+    ];
+    const res = solution.canFinish(numCourses, prerequisites);
+    console.log(res);
+  }
+}
+
+// 616. 课程表 II
+class Solution616 {
+  /**
+   *
+   * @param {int} numCourses
+   * @param {int[][]} prerequisites
+   */
+  findOrder(numCourses, prerequisites) {
+    const result = [];
+
+    // 1. 找出所有indegree
+    // 2. 找出所有neighbors
+    const neighbors = new Array(numCourses).fill(true).map((i) => {
+      return [];
+    });
+    const indegree = new Array(numCourses).fill(0);
+    for (let i = 0; i < prerequisites.length; i++) {
+      const courses = prerequisites[i];
+      indegree[courses[1]];
+      neighbors[courses[0]].push(courses[1]);
+    }
+
+    // 3. 放入queue
+    const queue = [];
+    for (let i = 0; i < indegree.length; i++) {
+      if (indegree[i] === 0) {
+        queue.push(i);
+      }
+    }
+
+    // 4. bfs
+    while (queue.length > 0) {
+      const course = queue.shift();
+      result.push(course);
+      for (let i = 0; i < neighbors[course].length; i++) {
+        const neighbor = neighbors[course][i];
+        indegree[neighbor]--;
+        if (indegree[neighbor] === 0) {
+          queue.push(neighbor);
+        }
+      }
+    }
+
+    if (result.length != numCourses) {
+      return [];
+    }
+    return result;
+  }
+
+  static test() {
+    const solution = new Solution616();
+    const numCourses = 4;
+    // 比如如果你要上课程0，你需要先学课程1，我们用一个匹配来表示他们： [0,1]
+    // 1 -> 0
+    const prerequisites = [
+      [1, 0], // 0 -> 1
+      [2, 0], // 0 -> 2
+      [3, 1], // 1 -> 3
+      [3, 2], // 2 -> 3
+    ];
+    const res = solution.findOrder(numCourses, prerequisites);
+    console.log(res);
+  }
+}
+
+// 605. 序列重构
+class Solution605 {
+  /**
+   *
+   * @param {int[]} org
+   * @param {int[][]} seqs
+   */
+  sequenceReconstruction(org, seqs) {
+    const graph = this.getGraph(seqs);
+    const topoOrder = this.getTopoList(graph);
+
+    if (topoOrder == null || topoOrder.length != org.length) {
+      return false;
+    }
+    for (let i = 0; i < org.length; i++) {
+      if (org[i] != topoOrder[i]) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  getGraph(seqs) {
+    const graph = new Map();
+    seqs.forEach((seq) => {
+      seq.forEach((num) => {
+        if (!graph.has(num)) {
+          graph.set(num, new Set());
+        }
+      });
+    });
+
+    seqs.forEach((seq) => {
+      for (let i = 1; i < seq.length; i++) {
+        graph.get(seq[i - 1]).add(seq[i]);
+      }
+    });
+
+    return graph;
+  }
+
+  getTopoList(graph) {
+    const indegree = new Map();
+    for (let set of graph.values()) {
+      for (let num of set.values()) {
+        if (indegree.has(num)) {
+          indegree.set(num, indegree.get(num) + 1);
+        } else {
+          indegree.set(num, 1);
+        }
+      }
+    }
+
+    const queue = [];
+    for(let key of graph.keys()) {
+      if(!indegree.has(key)) {
+        queue.push(key);
+      }
+    }
+
+    const result = [];
+    while(queue.length > 0) {
+      if(queue.length > 1) {
+        return null;
+      }
+      
+      const num = queue.shift();
+      result.push(num);
+      const neighbors = graph.get(num);
+      for(let neighbor of neighbors.values()) {
+        indegree.set(neighbor, indegree.get(neighbor) - 1);
+        if(indegree.get(neighbor) == 0) {
+          queue.push(neighbor);
+        }
+      }
+    }
+
+    return result;
+  }
+
+  
+
+  static test() {
+    const solution = new Solution605();
+    const org = [1, 2, 3];
+    const seqs = [
+      [1, 2],
+      [1, 3],
+      [2, 3],
+    ];
+    const res = solution.sequenceReconstruction(org, seqs);
+    console.log(res);
+  }
+}
+
+Solution605.test();

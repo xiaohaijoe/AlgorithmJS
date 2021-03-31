@@ -7,6 +7,8 @@
 5. <a href="#242">242. 将二叉树按照层级转化为链表（简单）</a>
 6. <a href="#178">178. 图是否是树（中等）</a>
 7. <a href="#127">127. 拓扑排序（中等）</a>
+8. <a href="#615">615. 课程表(拓扑排序)（中等）</a>
+9. <a href="#605">605. 序列重构(拓扑排序)（中等）</a>
 
 ## BFS 应用范围
 
@@ -30,6 +32,18 @@
 **宽度优先搜索要点 BFS Key Points**
 
 - 使用队列作为主要的数据结构 Queue
+
+**拓扑排序**
+
+- 需要提前准备的数据
+  1. 所有节点的入度(indegree > 1)
+  2. 所有节点的边(neighbors)
+- 拓扑排序步骤
+  1. 遍历出所有入度(indegree)
+  2. 遍历找出所有的边(neighbors)
+  3. 将 indegree==0 的节点插入到 queue 中，插入到结果
+  4. 遍历 queue 中的节点的所有 neighbors，并把 indegree-1
+  5. 重复 3，4 步骤
 
 ## <a name='69'>69. 二叉树的层次遍历
 
@@ -706,6 +720,7 @@ public class Solution {
 **样例**
 
 ![alt 属性文本](./assets/127.jpg)
+
 ```
 拓扑排序可以为:
 
@@ -750,7 +765,7 @@ public class Solution {
             }
           }
         }
-       
+
         // 2. 将所有顶点边插入queue和result
         Queue<DirectedGraphNode> queue = new LinkedList<>();
         for(DirectedGraphNode n : graph) {
@@ -774,5 +789,298 @@ public class Solution {
         return result;
     }
 
+}
+```
+
+## <a name='615'>615. 课程表(拓扑排序)
+
+**[链接](https://www.lintcode.com/problem/course-schedule/)**
+
+**描述**
+现在你总共有 n 门课需要选，记为 0 到 n - 1.
+
+一些课程在修之前需要先修另外的一些课程，比如要学习课程 0 你需要先学习课程 1 ，表示为[0,1]
+
+给定 n 门课以及他们的先决条件，判断是否可能完成所有课程？
+
+**样例**
+
+```
+例1:
+
+输入: n = 2, prerequisites = [[1,0]]
+输出: true
+例2:
+
+输入: n = 2, prerequisites = [[1,0],[0,1]]
+输出: false
+```
+
+```java
+public class Solution {
+    /**
+     * @param numCourses: a total of n courses
+     * @param prerequisites: a list of prerequisite pairs
+     * @return: true if can finish all courses or false
+     */
+    public boolean canFinish(int numCourses, int[][] prerequisites) {
+        // write your code here
+        if(numCourses == 0) {
+          return true;
+        }
+        if(prerequisites.length == 0) {
+          return true;
+        }
+        // 拓扑排序需要提前准备的数据
+        // 1. 每个节点的入度indegree
+        // 2. 每个节点的neighbors（边）
+
+        List<Integer>[] neighbors = new ArrayList[numCourses];
+        for(int i = 0 ; i < numCourses; i++) {
+          neighbors[i] = new ArrayList<Integer>();
+        }
+
+        int[] indegree = new int[numCourses];
+        for(int[] courses : prerequisites) {
+          // 1. 每个index的入度
+          indegree[courses[0]]++;
+          // 2. 每个index的neighbors
+          neighbors[courses[1]].add(courses[0]);
+        }
+
+        // 3. 将入度==0的插入到queue中
+        Queue<Integer> queue = new LinkedList<>();
+        for(int i = 0 ; i < numCourses ; i++) {
+          if(indegree[i] == 0) {
+            queue.offer(i);
+          }
+        }
+
+        // 4. 取出queue，遍历所有neighbor，直到indegree==0
+        int count = 0;
+        while(!queue.isEmpty()) {
+          int course = queue.poll();
+          count++;
+          for(Integer neighbor : neighbors[course]) {
+            indegree[neighbor]--;
+            if(indegree[neighbor] == 0) {
+              // 入度==0，插入到queue中
+              queue.offer(neighbor);
+            }
+          }
+        }
+
+        return count == numCourses;
+    }
+}
+```
+
+## <a name='616'>616. 课程表 II(拓扑排序)
+
+**[链接](https://www.lintcode.com/problem/course-schedule-ii/)**
+
+**描述**
+你需要去上 n 门九章的课才能获得 offer，这些课被标号为 0 到 n-1 。
+
+有一些课程需要“前置课程”，比如如果你要上课程 0，你需要先学课程 1，我们用一个匹配来表示他们： [0,1]
+
+给你课程的总数量和一些前置课程的需求，返回你为了学完所有课程所安排的学习顺序。
+
+可能会有多个正确的顺序，你只要返回一种就可以了。如果不可能完成所有课程，返回一个空数组。
+
+**样例**
+
+```
+例1:
+
+输入: n = 2, prerequisites = [[1,0]]
+输出: [0,1]
+例2:
+
+输入: n = 4, prerequisites = [[1,0],[2,0],[3,1],[3,2]]
+输出: [0,1,2,3] or [0,2,1,3]
+```
+
+```java
+public class Solution {
+    /*
+     * @param numCourses: a total of n courses
+     * @param prerequisites: a list of prerequisite pairs
+     * @return: the course order
+     */
+    public int[] findOrder(int numCourses, int[][] prerequisites) {
+        // write your code here
+        int[] result = new int[numCourses];
+        int index = numCourses - 1;
+
+        List<Integer>[] neighbors = new ArrayList[numCourses];
+        int[] indegree = new int[numCourses];
+        for(int i = 0 ; i < numCourses ; i++) {
+          neighbors[i] = new ArrayList<Integer>();
+        }
+        // 1. 找出所有的indegree
+        // 2. 找出所有的neighbors
+        for(int i = 0 ; i < prerequisites.length ;i++) {
+          int[] course = prerequisites[i];
+          indegree[course[1]]++;
+          neighbors[course[0]].add(course[1]);
+        }
+
+        Queue<Integer> queue = new LinkedList();
+        // 把所有indegree==0的节点插入到queue中
+        for(int i = 0 ; i < indegree.length ; i++) {
+          if(indegree[i] == 0) {
+            queue.offer(i);
+          }
+        }
+
+        // 遍历queue
+        while(!queue.isEmpty()) {
+          int course = queue.poll();
+          // result.push(course);
+          result[index--] = course;
+          for(Integer neighbor : neighbors[course]) {
+            // 查找所有neighbor的入度
+            indegree[neighbor]--;
+            if(indegree[neighbor] == 0) {
+              queue.offer(neighbor);
+            }
+          }
+        }
+
+        if(index > 0) {
+          return new int[]{};
+        }
+        return result;
+    }
+}
+```
+
+## <a name='605'>605. 序列重构(拓扑排序)
+
+**[链接](https://www.lintcode.com/problem/sequence-reconstruction/)**
+
+**描述**
+判断是否序列 org 能唯一地由 seqs 重构得出.
+
+org 是一个由从 1 到 n 的正整数排列而成的序列，1≤n≤10^4。
+
+重构表示组合成 seqs 的一个最短的父序列 (意思是，一个最短的序列使得所有 seqs 里的序列都是它的子序列).
+
+判断是否有且仅有一个能从 seqs 重构出来的序列，并且这个序列是 org。
+
+**样例**
+
+```
+例1:
+
+输入:org = [1,2,3], seqs = [[1,2],[1,3]]
+输出: false
+解释:
+[1,2,3] 并不是唯一可以被重构出的序列，还可以重构出 [1,3,2]
+例2:
+
+输入: org = [1,2,3], seqs = [[1,2]]
+输出: false
+解释:
+能重构出的序列只有 [1,2].
+例3:
+
+输入: org = [1,2,3], seqs = [[1,2],[1,3],[2,3]]
+输出: true
+解释:
+序列 [1,2], [1,3], 和 [2,3] 可以唯一重构出 [1,2,3].
+例4:
+
+输入:org = [4,1,5,2,6,3], seqs = [[5,2,6,3],[4,1,5,2]]
+输出:true
+```
+
+```java
+public class Solution {
+    /**
+     * @param org: a permutation of the integers from 1 to n
+     * @param seqs: a list of sequences
+     * @return: true if it can be reconstructed only one or false
+     */
+    public boolean sequenceReconstruction(int[] org, int[][] seqs) {
+        // write your code here
+              Map<Integer, Set<Integer>> graph = buildGraph(seqs);
+        List<Integer> topoOrder = getTopoOrder(graph);
+
+        if (topoOrder == null || topoOrder.size() != org.length) {
+            return false;
+        }
+        for (int i = 0; i < org.length; i++) {
+            if (org[i] != topoOrder.get(i)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private Map<Integer, Set<Integer>> buildGraph(int[][] seqs) {
+        Map<Integer, Set<Integer>> graph = new HashMap();
+        for (int[] seq : seqs) {
+            for (int i = 0; i < seq.length; i++) {
+                if (!graph.containsKey(seq[i])) {
+                    graph.put(seq[i], new HashSet<Integer>());
+                }
+            }
+        }
+        for (int[] seq : seqs) {
+            for (int i = 1; i < seq.length; i++) {
+                graph.get(seq[i - 1]).add(seq[i]);
+            }
+        }
+        return graph;
+    }
+
+    private Map<Integer, Integer> getIndegrees(Map<Integer, Set<Integer>> graph) {
+        Map<Integer, Integer> indegrees = new HashMap();
+        for (Integer node : graph.keySet()) {
+            indegrees.put(node, 0);
+        }
+        for (Integer node : graph.keySet()) {
+            for (Integer neighbor : graph.get(node)) {
+                indegrees.put(neighbor, indegrees.get(neighbor) + 1);
+            }
+        }
+        return indegrees;
+    }
+
+    private List<Integer> getTopoOrder(Map<Integer, Set<Integer>> graph) {
+        Map<Integer, Integer> indegrees = getIndegrees(graph);
+        Queue<Integer> queue = new LinkedList();
+        List<Integer> topoOrder = new ArrayList();
+
+        for (Integer node : graph.keySet()) {
+            if (indegrees.get(node) == 0) {
+                queue.offer(node);
+                topoOrder.add(node);
+            }
+        }
+
+        while (!queue.isEmpty()) {
+            if (queue.size() > 1) {
+                return null;
+            }
+
+            Integer node = queue.poll();
+            for (Integer neighbor : graph.get(node)) {
+                indegrees.put(neighbor, indegrees.get(neighbor) - 1);
+                if (indegrees.get(neighbor) == 0) {
+                    queue.offer(neighbor);
+                    topoOrder.add(neighbor);
+                }
+            }
+        }
+
+        if (graph.size() == topoOrder.size()) {
+            return topoOrder;
+        }
+
+        return null;
+    }
 }
 ```
