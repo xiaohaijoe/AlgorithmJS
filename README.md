@@ -10,3 +10,4 @@
 | [二分法](./src/lintcode/binary-search/index.md) |
 | [二叉树](./src/lintcode/binary-tree/index.md) |
 | [宽度优先搜索](./src/lintcode/breadth-first-search/index.md) |
+| [深度优先搜索](./src/lintcode/depth-first-search/index.md) |
