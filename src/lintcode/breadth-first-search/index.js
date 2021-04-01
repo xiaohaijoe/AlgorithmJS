@@ -903,12 +903,12 @@ class Solution600 {
     let right = Number.MIN_VALUE;
     let top = Number.MAX_VALUE;
     let bottom = Number.MIN_VALUE;
-    result.forEach(coor => {
+    result.forEach((coor) => {
       left = left > coor.x ? coor.x : left;
       right = right < coor.x ? coor.x : right;
       top = top > coor.y ? coor.y : top;
       bottom = bottom < coor.y ? coor.y : bottom;
-    })
+    });
     return (right - left + 1) * (bottom - top + 1);
   }
 
@@ -918,7 +918,7 @@ class Solution600 {
     if (x < 0 || x >= n || y < 0 || y >= m) {
       return false;
     }
-    if(visited[x][y]) {
+    if (visited[x][y]) {
       return false;
     }
     return image[x][y] == "1";
@@ -931,4 +931,70 @@ class Solution600 {
     console.log(res);
   }
 }
-Solution600.test();
+
+// 120. 成语接龙
+class Solution120 {
+  /**
+   *
+   * @param {String} start
+   * @param {String} end
+   * @param {Set<String>} dict
+   */
+  ladderLength(start, end, dict) {
+    dict.add(start);
+    dict.add(end);
+
+    const queue = [start];
+    const visited = new Set([start]);
+    let count = 1;
+
+    while (queue.length > 0) {
+      const size = queue.length;
+      count++;
+      for (let i = 0; i < size; i++) {
+        const word = queue.shift();
+        const nextWords = this.getNextWords(dict, word);
+        for (let j = 0; j < nextWords.length; j++) {
+          const nextWord = nextWords[j];
+          if (visited.has(nextWord)) {
+            continue;
+          }
+          if (nextWord == end) {
+            return count;
+          }
+
+          queue.push(nextWord);
+          visited.add(nextWord);
+        }
+      }
+    }
+
+    return 0;
+  }
+
+  getNextWords(dict, word) {
+    const nextWords = [];
+    for (let str of dict) {
+      let diff = 0;
+      for (let i = 0; i < str.length; i++) {
+        if (str[i] != word[i]) {
+          diff++;
+        }
+      }
+      // console.log(diff, str, word);
+      if (diff == 1) {
+        nextWords.push(str);
+      }
+    }
+    return nextWords;
+  }
+  static test() {
+    const solution = new Solution120();
+    const start = "hit";
+    const end = "cog";
+    const dict = new Set(["hot", "dot", "dog", "lot", "log"]);
+    const res = solution.ladderLength(start, end, dict);
+    console.log(res);
+  }
+}
+Solution120.test();

@@ -11,6 +11,7 @@
 9. <a href="#605">605. 序列重构(拓扑排序)（中等）</a>
 10. <a href="#433">433. 岛屿的个数（中等）</a>
 11. <a href="#598">598. 僵尸矩阵（中等）</a>
+12. <a href="#120">120. 单词接龙（困难）</a>
 
 ## BFS 应用范围
 
@@ -1311,6 +1312,104 @@ public class Solution {
             return false;
         }
         return (grid[x][y] == HUMAN);
+    }
+}
+```
+
+## <a name='120'>120. 单词接龙
+
+**[链接](https://www.lintcode.com/problem/word-ladder/)**
+
+**描述**
+给出两个单词（start 和 end）和一个字典，找出从 start 到 end 的最短转换序列，输出最短序列的长度。
+
+变换规则如下：
+
+1. 每次只能改变一个字母。
+2. 变换过程中的中间单词必须在字典中出现。(起始单词和结束单词不需要出现在字典中)
+
+**样例**
+
+```
+样例 1:
+
+输入：start = "a"，end = "c"，dict =["a","b","c"]
+输出：2
+解释：
+"a"->"c"
+样例 2:
+
+输入：start ="hit"，end = "cog"，dict =["hot","dot","dog","lot","log"]
+输出：5
+解释：
+"hit"->"hot"->"dot"->"dog"->"cog"
+```
+
+```java
+public class Solution {
+    /*
+     * @param start: a string
+     * @param end: a string
+     * @param dict: a set of string
+     * @return: An integer
+     */
+    public int ladderLength(String start, String end, Set<String> dict) {
+        // write your code here
+        if(start == null || start.length() == 0) {
+          return 0;
+        }
+        if(end == null || end.length() == 0) {
+          return 0;
+        }
+        dict.add(start);
+        dict.add(end);
+
+        Set<String> visited = new HashSet();
+        Queue<String> queue = new LinkedList();
+        queue.offer(start);
+        visited.add(start);
+
+        int count = 1;
+        while(!queue.isEmpty()) {
+          int size = queue.size();
+          count++;
+          for(int i = 0 ; i < size; i++) {
+            String str = queue.poll();
+            for(String nextWord : getNextWords(dict, str, visited)) {
+              // if (visited.contains(nextWord)) {
+              //   continue;
+              // }
+              if (nextWord.equals(end)) {
+                  return count;
+              }
+              visited.add(nextWord);				//存入新单词
+              queue.offer(nextWord);
+            }
+          }
+        }
+
+        return 0;
+    }
+
+    private List<String> getNextWords(Set<String> dict, String current, Set<String> visited) {
+      List<String> nextWords = new ArrayList();
+      for(String str : dict) {
+        int diff = 0;
+        if(visited.contains(str)) {
+          continue;
+        }
+        for(int i = 0 ; i < str.length() ; i++) {
+          char c = str.charAt(i);
+          char cc = current.charAt(i);
+          if(c != cc) {
+            diff++;
+          }
+        }
+        if(diff == 1) {
+          nextWords.add(str);
+        }
+      }
+      return nextWords;
     }
 }
 ```
