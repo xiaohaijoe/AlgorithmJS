@@ -228,4 +228,72 @@ class Solution16 {
     console.log(res);
   }
 }
-Solution16.test();
+
+// 33. N皇后问题
+class Solution33 {
+  /**
+   *
+   * @param {int} n
+   */
+  solveNQueens(n) {
+    const results = [];
+    if (n <= 0) {
+      return results;
+    }
+
+    const cols = [];
+    this.dfs(n, cols, results);
+
+    return results;
+  }
+
+  dfs(n, cols, results) {
+    if (cols.length === n) {
+      results.push([].concat(cols));
+      return;
+    }
+
+    for (let i = 0; i < n; i++) {
+      if (!this.isValid(cols, i, n)) {
+        continue;
+      }
+      const str = new Array(n)
+        .fill(".")
+        .map((s, j) => {
+          return j === i ? "Q" : s;
+        })
+        .join("");
+      cols.push(str);
+      this.dfs(n, cols, results);
+      cols.pop();
+    }
+  }
+
+  isValid(cols, colIndex, n) {
+    const rows = cols.length;
+    for (let rowIndex = 0; rowIndex < cols.length; rowIndex++) {
+      // 正上方
+      if (cols[rowIndex][colIndex] == "Q") {
+        return false;
+      }
+      // 左上方
+      const leftTop = -rows + rowIndex + colIndex;
+      if (leftTop >= 0 && cols[rowIndex][leftTop] == "Q") {
+        return false;
+      }
+      // 右上方
+      const rightTop = rows - rowIndex + colIndex;
+      if(rightTop <= n && cols[rowIndex][rightTop] == 'Q') {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  static test() {
+    const solution = new Solution33();
+    const res = solution.solveNQueens(4);
+    console.log(res);
+  }
+}
+Solution33.test();

@@ -5,6 +5,7 @@
 3. <a href="#136">136. 分割回文串（中等）</a>
 4. <a href="#15">15. 全排列（中等）</a>
 5. <a href="#16">16. 带重复元素的排列（中等）</a>
+6. <a href="#33">33. N 皇后问题（中等）</a>
 
 **提示**
 
@@ -390,4 +391,109 @@ public class Solution {
       }
     }
 };
+```
+
+## <a name='33'>33. N皇后问题
+
+**[链接](https://www.lintcode.com/problem/n-queens/)**
+
+**描述**
+n 皇后问题是将 n 个皇后放置在 n\*n 的棋盘上，皇后彼此之间不能相互攻击(任意两个皇后不能位于同一行，同一列，同一斜线)。
+
+给定一个整数 n，返回所有不同的 n 皇后问题的解决方案。
+
+每个解决方案包含一个明确的 n 皇后放置布局，其中“Q”和“.”分别表示一个女王和一个空位置。
+
+**样例**
+
+```
+例1:
+
+输入:1
+输出:
+   [["Q"]]
+
+
+例2:
+
+输入:4
+输出:
+[
+  // Solution 1
+  [".Q..",
+   "...Q",
+   "Q...",
+   "..Q."
+  ],
+  // Solution 2
+  ["..Q.",
+   "Q...",
+   "...Q",
+   ".Q.."
+  ]
+]
+
+```
+
+```java
+public class Solution {
+    /*
+     * @param n: The number of queens
+     * @return: All distinct solutions
+     */
+    public List<List<String>> solveNQueens(int n) {
+        // write your code here
+        List<List<String>> results = new ArrayList();
+        if(n <= 0) {
+            return results;
+        }
+
+        List<String> cols = new ArrayList();
+        dfs(n, cols, results);
+
+        return results;
+    }
+
+    private void dfs(int n, List<String> cols, List<List<String>> results) {
+        if(cols.size() == n) {
+            results.add(new ArrayList<String>(cols));
+            return;
+        }
+
+        for(int i = 0 ; i < n ; i++) {
+            if(!isValid(n, cols, i)){
+                continue;
+            }
+            StringBuilder sb = new StringBuilder();
+            for(int j = 0 ; j < n ; j++) {
+                sb.append('.');
+            }
+            sb.replace(i,i+1, "Q");
+            cols.add(sb.toString());
+            dfs(n, cols, results);
+            cols.remove(cols.size() - 1);
+        }
+    }
+
+    private boolean isValid(int n, List<String> cols, int colIndex) {
+        int rows = cols.size();
+        for(int rowIndex = 0 ; rowIndex < cols.size() ; rowIndex++) {
+            // 竖直方向
+            if(cols.get(rowIndex).charAt(colIndex) == 'Q') {
+                return false;
+            }
+            // 左斜上方
+            int leftTop = rowIndex - rows + colIndex;
+            if(leftTop >= 0 && cols.get(rowIndex).charAt(leftTop) == 'Q') {
+                return false;
+            }
+            // row + colIndex - rowIndex
+            int rightTop = rows + colIndex - rowIndex;
+            if(rightTop < n && cols.get(rowIndex).charAt(rightTop) == 'Q') {
+                return false;
+            }
+        }
+        return true;
+    }
+}
 ```
