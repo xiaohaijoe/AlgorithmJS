@@ -480,6 +480,45 @@ class Solution75 {
   }
 }
 
-const a = new Solution75();
-const r = a.findPeak([1, 2, 1, 3, 4, 5, 0, 1, 3, 4, 1]);
-console.log(r);
+// 937. 可以完成的题目数量
+class Solution937 {
+  /**
+   *
+   * @param {int} n
+   * @param {int} k
+   */
+  canAccept(n, k) {
+    if (n < k) {
+      return 0;
+    }
+    let start = 0;
+    let end = n;
+    const sum = n / k;
+    while (start + 1 < end) {
+      const mid = parseInt((start + end) / 2);
+
+      const total = ((1 + mid) * mid) / 2;
+      if (total == sum) {
+        return mid;
+      } else if (total < sum) {
+        start = mid;
+      } else {
+        end = mid;
+      }
+    }
+
+    const endTotal = ((1 + end) * end) / 2;
+    if (endTotal <= sum) {
+      return end;
+    }
+    return start;
+  }
+
+  static test() {
+    const solution = new Solution937();
+    const res = solution.canAccept(30, 1);
+    console.log(res);
+  }
+}
+
+Solution937.test();

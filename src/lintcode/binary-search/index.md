@@ -11,6 +11,7 @@
 - <a href="#585">585. 山脉序列中的最大值（中等）</a>
 - <a href="#62">62. 搜索旋转排序数组（中等）</a>
 - <a href="#75">75. 寻找峰值（中等）</a>
+- <a href="#937">937. 可以完成的题目数量（中等）</a>
 
 ## 二分查找模板
 
@@ -767,5 +768,73 @@ class Solution75 {
       return end;
     }
   }
+}
+```
+
+## <a name='937'>937. 可以完成的题目数量（中等）
+
+**[链接](https://www.lintcode.com/problem/937/)**
+
+**描述**
+给定一个正整数 n，表示一场比赛的时间，比赛中题目的难度是递增的，你每完成一个题目，就要花费 k × i 的时间，其中 k 是输入的一个系数，i 表示题目的序号(从 1 开始)。
+
+根据这些信息，返回这场比赛中，你最多能完成几个题目。
+
+**样例**
+
+```
+样例1
+
+输入: n = 30 和 k = 1
+输出: 7
+解释:
+因为 1 * 1 + 1 * 2 + 1 * 3 + 1 * 4 + 1 * 5 + 1 * 6 + 1 * 7 = 28 < 30
+且   1 * 1 + 1 * 2 + 1 * 3 + 1 * 4 + 1 * 5 + 1 * 6 + 1 * 7 + 1 * 8 = 36 > 30
+样例2
+
+输入: n = 31, k = 2
+输出: 5
+解释:
+因为 2 * 1 + 2 * 2 + 2 * 3 + 2 * 4 + 2 * 5 = 30 < 31 且 2 * 1 + 2 * 2 + 2 * 3 + 2 * 4 + 2 * 5 + 2 * 6 = 42 > 31
+
+```
+
+```javascript
+public class Solution {
+    /**
+     * @param n: an integer
+     * @param k: an integer
+     * @return: how many problem can you accept
+     */
+    public long canAccept(long n, int k) {
+        // Write your code here
+        if(n < k) {
+          return 0;
+        }
+
+        double start = 0;
+        double end = n;
+        double sum = n / k;
+        // double total = 0;
+        while(start + 1 < end) {
+          double mid = Math.floor(start + (end-start)/2);
+
+          double total = (1+mid)* mid/2;
+          if(total == sum) {
+            return (long)mid;
+          } else if(total < sum) {
+            start = mid;
+          } else {
+            end = mid;
+          }
+        }
+
+        double endTotal = (1+end)*end /2;
+        if(endTotal <= sum) {
+          return (long)end;
+        }
+        return (long)start;
+    }
+
 }
 ```
