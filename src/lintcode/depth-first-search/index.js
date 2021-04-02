@@ -283,7 +283,7 @@ class Solution33 {
       }
       // 右上方
       const rightTop = rows - rowIndex + colIndex;
-      if(rightTop <= n && cols[rowIndex][rightTop] == 'Q') {
+      if (rightTop <= n && cols[rowIndex][rightTop] == "Q") {
         return false;
       }
     }
@@ -296,4 +296,90 @@ class Solution33 {
     console.log(res);
   }
 }
-Solution33.test();
+
+// 121. 单词接龙 II
+class Solution121 {
+  /**
+   *
+   * @param {String} start
+   * @param {String} end
+   * @param {Set<String>} dict
+   */
+  findLadders(start, end, dict) {
+    const results = [];
+
+    dict.add(start);
+    dict.add(end);
+    const neighbors = new Map();
+    const distance = new Map();
+    // bfs找出所有点到起点的距离
+    this.bfs(start, end, dict, distance, neighbors);
+
+    const path = [];
+    // dfs从起点出发根据距离每次离终点更近一步
+    this.dfs(start, end, dict, distance, results, path, neighbors);
+
+    return results;
+  }
+
+  bfs(start, end, dict, distance, neighbors) {
+    const queue = [start];
+    distance.set(start, 0);
+
+    while (queue.length > 0) {
+      const crt = queue.shift();
+
+      const nextWords = this.getNextWords(crt, dict);
+      neighbors.set(crt, nextWords);
+      for (let i = 0 ; i < nextWords.length ; i++) {
+        const next = nextWords[i];
+        if (distance.has(next)) {
+          continue;
+        }
+        distance.set(next, distance.get(crt) + 1);
+        queue.push(next);
+      }
+    }
+  }
+
+  dfs(crt, end, dict, distance, results, path, neighbors) {
+    path.push(crt);
+    if (crt === end) {
+      results.push([].concat(path));
+    } else {
+      const nextWords = neighbors.get(crt);
+      for (let next of nextWords) {
+        if (distance.get(next) === distance.get(crt) + 1) {
+          this.dfs(next, end, dict, distance, results, path, neighbors);
+        }
+      }
+    }
+    path.pop();
+  }
+
+  getNextWords(crt, dict) {
+    const nextWords = [];
+    for (let i = 0; i < crt.length; i++) {
+
+      for (let c = "a".charCodeAt(); c <= "z".charCodeAt(); c++) {
+        const ch = String.fromCharCode(c);
+        if (crt.charAt(i) != ch) {
+          const newStr = crt.substring(0,i) + ch + crt.substring(i+1);
+          if (dict.has(newStr)) {
+            nextWords.push(newStr);
+          }
+        }
+      }
+    }
+    return nextWords;
+  }
+  static test() {
+    const solution = new Solution121();
+    const start = "hit";
+    const end = "cog";
+    const dict = new Set(["hot", "dot", "dog", "lot", "log"]);
+    const res = solution.findLadders(start, end, dict);
+    console.log(res);
+  }
+}
+Solution121.test();

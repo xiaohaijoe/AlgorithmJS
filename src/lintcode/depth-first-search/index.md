@@ -6,6 +6,16 @@
 4. <a href="#15">15. 全排列（中等）</a>
 5. <a href="#16">16. 带重复元素的排列（中等）</a>
 6. <a href="#33">33. N 皇后问题（中等）</a>
+7. <a href="#121">121. 单词接龙 II（困难）</a>
+
+**必背算法**
+
+1. <a href="#66">二叉树的前序遍历 Binary Tree Preorder Traversal</a>
+2. <a href="#67">二叉树中序遍历 Binary Tree Inorder Traversal</a>
+3. <a href="68">二叉树后序遍历 Binary Tree Postorder Traversal<a>
+4. 二叉查找树迭代器 Binary Search Tree Iterator
+5. <a href="17">子集 Subsets</a>
+6. <a href="15">全排列 Permutations</a>
 
 **提示**
 
@@ -196,6 +206,19 @@ public class Solution {
 解释: 有两种分割的方式.
     1. 将 "aab" 分割成 "aa" 和 "b", 它们都是回文的.
     2. 将 "aab" 分割成 "a", "a" 和 "b", 它们全都是回文的.
+```
+
+**笔记**
+
+- 所有的切割问题，都是组合问题
+- n 个字符的切割问题，就是 n-1 个数字的组合问题
+
+```
+"abc" -> a 1 b 2 c
+a b c -> [1,2] // 选择1和2作为切割位
+ab c -> [2] // 选择2作为切割位
+a bc -> [1] // 选择1作为切割位
+abc -> [] // 没有切割位
 ```
 
 ```java
@@ -393,7 +416,7 @@ public class Solution {
 };
 ```
 
-## <a name='33'>33. N皇后问题
+## <a name='33'>33. N 皇后问题
 
 **[链接](https://www.lintcode.com/problem/n-queens/)**
 
@@ -494,6 +517,371 @@ public class Solution {
             }
         }
         return true;
+    }
+}
+```
+
+## <a name='121'>121. 单词接龙 II
+
+**[链接](https://www.lintcode.com/problem/word-ladder-ii/)**
+
+**描述**
+给出两个单词（start 和 end）和一个字典，找出所有从 start 到 end 的最短转换序列。
+
+变换规则如下：
+
+1. 每次只能改变一个字母。
+2. 变换过程中的中间单词必须在字典中出现。
+
+**样例**
+
+```
+样例 1:
+
+输入：start = "a"，end = "c"，dict =["a","b","c"]
+输出：[["a","c"]]
+解释：
+"a"->"c"
+样例 2:
+
+输入：start ="hit"，end = "cog"，dict =["hot","dot","dog","lot","log"]
+输出：[["hit","hot","dot","dog","cog"],["hit","hot","lot","log","cog"]]
+解释：
+1."hit"->"hot"->"dot"->"dog"->"cog"
+2."hit"->"hot"->"lot"->"log"->"cog"
+```
+
+**笔记**
+
+- 先做 bfs，从起点出发，计算每个点到终点的距离，还有每个点的 neighbors
+- 然后做 dfs，从起点出发，每一次移动都离终点更近一步
+
+```java
+public class Solution {
+    /*
+     * @param start: a string
+     * @param end: a string
+     * @param dict: a set of string
+     * @return: a list of lists of string
+     */
+    public List<List<String>> findLadders(String start, String end, Set<String> dict) {
+        // write your code here
+        dict.add(start);
+        dict.add(end);
+        // 保存每一个字符串的邻居
+        Map<String, List<String>> neighbors = new HashMap();
+        // 保存每一个字符串到起点的距离
+        Map<String, Integer> distance = new HashMap();
+        // 从起点往终点做bfs，计算每个点到起点的距离，保存到distance中
+        bfs(start, end, dict, distance, neighbors);
+
+        List<List<String>> ladders = new ArrayList();
+        List<String> path = new ArrayList();
+        // 从起点到终点做dfs，
+        dfs(start,end,dict,ladders,distance,neighbors, path);
+
+        return ladders;
+    }
+
+    private void bfs(String start, String end, Set<String> dict, Map<String, Integer> distance, Map<String, List<String>> neighbors) {
+      Queue<String> queue = new LinkedList();
+      queue.offer(start);
+      distance.put(start, 0);
+      // 初始化paths
+      for(String key : dict) {
+        neighbors.put(key, new ArrayList<String>());
+      }
+
+      while(!queue.isEmpty()) {
+        String crt = queue.poll();
+
+        for(String next : getNextWords(crt, dict)) {
+          neighbors.get(next).add(crt);
+          if (!distance.containsKey(next)) {
+            distance.put(next, distance.get(crt) + 1);
+            queue.offer(next);
+          }
+        }
+      }
+
+    }
+
+    private void dfs(String crt, String end, Set<String> dict, List<List<String>> ladders, Map<String, Integer> distance, Map<String, List<String>> neighbors, List<String> path) {
+      path.add(crt);
+      if(crt.equals(end)) {
+        ladders.add(new ArrayList<String>(path));
+      } else {
+        for(String next : neighbors.get(crt)) {
+          if(distance.containsKey(next) && distance.get(next) == distance.get(crt) + 1) {
+            dfs(next, end, dict, ladders,distance,neighbors,path);
+          }
+        }
+      }
+      path.remove(path.size() - 1);
+    }
+
+    private List<String> getNextWords(String crt, Set<String> dict) {
+      List<String> nextWords = new ArrayList();
+
+      for(int i = 0 ; i < crt.length() ; i++) {
+        for(char c = 'a' ; c <= 'z' ; c++) {
+          if(crt.charAt(i) != c) {
+            String newStr = crt.substring(0,i) + c + crt.substring(i+1);
+            if(dict.contains(newStr)) {
+              nextWords.add(newStr);
+            }
+          }
+
+        }
+      }
+
+      return nextWords;
+    }
+}
+```
+
+## <a name='66'>66. 二叉树的前序遍历
+
+**[链接](https://www.lintcode.com/problem/66/)**
+
+```java
+/**
+ * Definition of TreeNode:
+ * public class TreeNode {
+ *     public int val;
+ *     public TreeNode left, right;
+ *     public TreeNode(int val) {
+ *         this.val = val;
+ *         this.left = this.right = null;
+ *     }
+ * }
+ */
+
+public class Solution {
+    /**
+     * @param root: A Tree
+     * @return: Preorder in ArrayList which contains node values.
+     */
+    public List<Integer> preorderTraversal(TreeNode root) {
+        // write your code here
+        // 1. dfs
+        List<Integer> results = new ArrayList();
+        traversal(root, results);
+        // 2. 分治
+        // List<Integer> results = divideConquer(root);
+        // 3. 非递归
+        // List<Integer> results = nonRecursion(root);
+        return results;
+    }
+
+    private void traversal(TreeNode root, List<Integer> results) {
+      if(root == null) {
+        return;
+      }
+
+      results.add(root.val);
+      traversal(root.left, results);
+      traversal(root.right, results);
+    }
+
+    private List<Integer> divideConquer(TreeNode node) {
+      List<Integer> result = new ArrayList();
+      if(node == null) {
+        return result;
+      }
+
+      result.add(node.val);
+      List<Integer> left = divideConquer(node.left);
+      List<Integer> right = divideConquer(node.right);
+      result.addAll(left);
+      result.addAll(right);
+
+      return result;
+    }
+
+    private List<Integer> nonRecursion(TreeNode root) {
+      List<Integer> result = new ArrayList();
+      Stack<TreeNode> stack = new Stack();
+
+      if(root == null) {
+        return result;
+      }
+
+      stack.push(root);
+      while(!stack.isEmpty()) {
+        TreeNode node = stack.pop();
+        result.add(node.val);
+        if(node.right != null) {
+          stack.push(node.right);
+        }
+        if(node.left != null) {
+          stack.push(node.left);
+        }
+      }
+      return result;
+    }
+}
+```
+
+## <a name='67'>67. 二叉树的中序遍历
+
+**[链接](https://www.lintcode.com/problem/67/)**
+
+**笔记**
+按照左根右的次序遍历二叉树，搜索左子树，存入当前点，搜索右子树。
+
+```java
+/**
+ * Definition of TreeNode:
+ * public class TreeNode {
+ *     public int val;
+ *     public TreeNode left, right;
+ *     public TreeNode(int val) {
+ *         this.val = val;
+ *         this.left = this.right = null;
+ *     }
+ * }
+ */
+
+public class Solution {
+    /**
+     * @param root: A Tree
+     * @return: Inorder in ArrayList which contains node values.
+     */
+    public ArrayList<Integer> inorderTraversal(TreeNode root) {
+        // write your code here
+        ArrayList<Integer> result = new ArrayList();
+        if(root == null) {
+          return result;
+        }
+
+        Stack<TreeNode> stack = new Stack();
+        TreeNode curt = root;
+
+        while(curt != null || !stack.isEmpty()) {
+          while(curt != null) {
+            stack.push(curt);
+            curt = curt.left;
+          }
+          curt = stack.pop();
+          result.add(curt.val);
+          curt = curt.right;
+        }
+        return result;
+    }
+}
+```
+
+## <a name='68'>68. 二叉树的后序遍历
+
+**[链接](https://www.lintcode.com/problem/67/)**
+
+**笔记**
+使用栈进行二叉树后序遍历，首先对左子树进行遍历压入栈中，直至左子树为空，然后访问右子树。故每个节点会被访问两次，当节点被第二次访问时，该节点出栈。
+
+```java
+/**
+ * Definition of TreeNode:
+ * public class TreeNode {
+ *     public int val;
+ *     public TreeNode left, right;
+ *     public TreeNode(int val) {
+ *         this.val = val;
+ *         this.left = this.right = null;
+ *     }
+ * }
+ */
+
+public class Solution {
+    /**
+     * @param root: A Tree
+     * @return: Inorder in ArrayList which contains node values.
+     */
+    public ArrayList<Integer> inorderTraversal(TreeNode root) {
+        // write your code here
+        ArrayList<Integer> result = new ArrayList();
+        if(root == null) {
+          return result;
+        }
+
+        Stack<TreeNode> stack = new Stack();
+        TreeNode curt = root;
+
+        while(curt != null || !stack.isEmpty()) {
+          while(curt != null) {
+            stack.push(curt);
+            curt = curt.left;
+          }
+          curt = stack.pop();
+          result.add(curt.val);
+          curt = curt.right;
+        }
+        return result;
+    }
+}
+```
+
+## <a name='17'>17. 子集
+
+**[链接](https://www.lintcode.com/problem/17/)**
+
+**描述**
+
+给定一个含不同整数的集合，返回其所有的子集。
+
+**样例**
+
+```
+样例 1：
+
+输入：[0]
+输出：
+[
+  [],
+  [0]
+]
+样例 2：
+
+输入：[1,2,3]
+输出：
+[
+  [3],
+  [1],
+  [2],
+  [1,2,3],
+  [1,3],
+  [2,3],
+  [1,2],
+  []
+]
+```
+
+```java
+public class Solution {
+    /**
+     * @param nums: A set of numbers
+     * @return: A list of lists
+     */
+    public List<List<Integer>> subsets(int[] nums) {
+        // write your code here
+        List<List<Integer>> results = new ArrayList();
+        if(nums == null) {
+          return results;
+        }
+
+        List<Integer> combination = new ArrayList();
+        dfs(nums, 0, combination, results);
+
+        return results;
+    }
+    private void dfs(int[] nums, int startIndex, List<Integer> combination, List<List<Integer>> results) {
+      results.add(new ArrayList<Integer>(combination));
+
+      for(int i = startIndex ; i < nums.length ; i++) {
+        combination.add(nums[i]);
+        dfs(nums, i + 1, combination, results);
+        combination.remove(combination.size() - 1);
+      }
     }
 }
 ```
