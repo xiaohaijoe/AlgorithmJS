@@ -477,4 +477,80 @@ class Solution105 {
   }
 }
 
-Solution105.test();
+// 102。 带环链表
+class Solution102 {
+  hasCycle(head) {
+    if (head == null || head.next == null) {
+      return false;
+    }
+    let slow = head;
+    let fast = head.next;
+    while (slow != fast) {
+      if (fast == null || fast.next == null) {
+        return false;
+      }
+      slow = slow.next;
+      fast = fast.next.next;
+    }
+    return true;
+  }
+  static test() {
+    const solution = new Solution102();
+    const n1 = new ListNode(1);
+    const n2 = new ListNode(2);
+    const n3 = new ListNode(3);
+    const n4 = new ListNode(4);
+    const n5 = new ListNode(5);
+    n1.next = n2;
+    n2.next = n3;
+    n3.next = n4;
+    n4.next = n5;
+    n5.next = n3;
+    const res = solution.hasCycle(n1);
+    console.log(res);
+  }
+}
+
+class Solution103 {
+  /**
+   *
+   * @param {ListNode} head
+   */
+  detectCycle(head) {
+    if (head == null || head.next == null) {
+      return null;
+    }
+    let slow = head;
+    let fast = head.next;
+
+    while (slow != fast) {
+      if (fast == null || fast.next == null) {
+        return null;
+      }
+      slow = slow.next;
+      fast = fast.next.next;
+    }
+
+    while (head != slow.next) {
+      head = head.next;
+      slow = slow.next;
+    }
+    return head;
+  }
+  static test() {
+    const solution = new Solution103();
+    const n1 = new ListNode(1);
+    const n2 = new ListNode(2);
+    const n3 = new ListNode(3);
+    const n4 = new ListNode(4);
+    const n5 = new ListNode(5);
+    n1.next = n2;
+    n2.next = n3;
+    n3.next = n4;
+    n4.next = n5;
+    n5.next = n3;
+    const res = solution.detectCycle(n1);
+    console.log(res);
+  }
+}
+Solution103.test();

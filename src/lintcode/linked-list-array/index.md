@@ -10,6 +10,8 @@
 6. <a href="#99">99. 重排链表(中等)</a>
 7. <a href="#170">170. 旋转链表(中等)</a>
 8. <a href="#105">105. 复制带随机指针的链表(中等)</a>
+9. <a href="#102">102. 带环链表(中等)</a>
+10. <a href="#103">103. 带环链表 II(困难)</a>
 
 ## <a name='450'>450. K 组翻转链表
 
@@ -762,6 +764,167 @@ public class Solution {
         }
 
         return dummy.next;
+    }
+}
+```
+
+## <a name='102'>102. 带环链表
+
+**[链接](https://www.lintcode.com/problem/linked-list-cycle/)**
+
+**描述**
+
+给定一个链表，判断它是否有环。
+
+**样例**
+
+```
+样例 1:
+
+输入: 21->10->4->5, then tail connects to node index 1(value 10).
+输出: true
+样例 2:
+
+输入: 21->10->4->5->null
+输出: false
+```
+
+```java
+/**
+ * Definition for ListNode
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) {
+ *         val = x;
+ *         next = null;
+ *     }
+ * }
+ */
+
+public class Solution {
+    /**
+     * @param head: The first node of linked list.
+     * @return: True if it has a cycle, or false
+     */
+    public boolean hasCycle(ListNode head) {
+        // write your code here
+        if (head == null || head.next == null) {
+            return false;
+        }
+        ListNode slow = head;
+        ListNode fast = head.next;
+        while(slow != fast) {
+          if(fast == null || fast.next == null) {
+            return false;
+          }
+          fast = fast.next.next;
+          slow = slow.next;
+        }
+        return true;
+    }
+}
+```
+
+## <a name='103'>103. 带环链表 II
+
+**[链接](https://www.lintcode.com/problem/linked-list-cycle-ii/)**
+
+**描述**
+
+给定一个链表，如果链表中存在环，则返回到链表中环的起始节点，如果没有环，返回 null。
+
+**样例**
+
+```
+样例 1:
+
+输入：null，no cycle
+输出：no cycle
+解释：
+链表为空，所以没有环存在。
+样例 2:
+
+输入：-21->10->4->5，tail connects to node index 1
+输出：10
+解释：
+最后一个节点5指向下标为1的节点，也就是10，所以环的入口为10。
+挑战
+```
+
+**笔记**
+
+1. 使用快慢指针，慢指针走一步，快指针走两步，如果最后两指针相遇，则说明链表中有环；
+2. 假设环的长度为 l，环上入口距离链表头距离为 a，两指针第一次相遇处距离环入口为 b，则另一段环的长度为 c=l-b，由于快指针走过的距离是慢指针的两倍，则有 <code>a+b+(l-b)+b=2\*(a+b)</code>,又有 l=b+c，可得 a=c，故当判断有环时(slow==fast)时，移动头指针，同时移动慢指针，两指针相遇处即为环的入口。
+
+```
+1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 9
+^    ^         |    ^              |
+s    f         ---------------------
+1. 找出相遇点
+slow = 5, fast = 5
+快慢指针在5相遇
+
+2. 头指针和快指针同时向后移动
+1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 9
+               ^                   ^
+               ---------------------
+              head                slow
+假设
+a = 1 -> 4 // 环入口距离链头长度
+b = 4 -> 5 // 第一次相遇距离环入口长度
+l = 4 -> 9 // 环长度
+c = l - b // 环剩余长度
+那么
+a+b+(l-b)+b = 2*(a+b)
+快指针走过的距离 = 慢指针的距离*2
+又因为l=b+c
+所以a=c
+
+```
+```java
+/**
+ * Definition for ListNode
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) {
+ *         val = x;
+ *         next = null;
+ *     }
+ * }
+ */
+
+public class Solution {
+    /**
+     * @param head: The first node of linked list.
+     * @return: The node where the cycle begins. if there is no cycle, return null
+     */
+    public ListNode detectCycle(ListNode head) {
+        // write your code here
+        if(head == null || head.next == null) {
+          return null;
+        }
+        ListNode slow = head;
+        ListNode fast = head.next;
+
+        while(slow != fast) {
+          if(fast == null || fast.next == null) {
+            return null;
+          }
+          slow = slow.next;
+          fast = fast.next.next;
+        }
+
+        // 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9
+        //                |                        |
+        //                --------------------------
+        while(head != slow.next) {
+          slow = slow.next;
+          head = head.next;
+        }
+
+        return head;
     }
 }
 ```
