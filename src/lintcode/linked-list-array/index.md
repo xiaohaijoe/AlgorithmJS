@@ -7,6 +7,9 @@
 3. <a href="#165">165. 合并两个排序链表(简单)</a>
 4. <a href="#36">36. 翻转链表 II(中等)</a>
 5. <a href="#511">511. 交换链表当中两个节点(中等)</a>
+6. <a href="#99">99. 重排链表(中等)</a>
+7. <a href="#170">170. 旋转链表(中等)</a>
+8. <a href="#105">105. 复制带随机指针的链表(中等)</a>
 
 ## <a name='450'>450. K 组翻转链表
 
@@ -475,6 +478,290 @@ public class Solution {
       rightDummy.next = left;
       right.next = left.next;
       left.next = temp;
+    }
+}
+```
+
+## <a name='99'>99. 重排链表
+
+**[链接](https://www.lintcode.com/problem/reorder-list/)**
+
+**描述**
+
+给定一个单链表 L: L0→L1→…→Ln-1→Ln,
+
+重新排列后为：L0→Ln→L1→Ln-1→L2→Ln-2→…
+
+必须在不改变节点值的情况下进行原地操作。
+
+**样例**
+
+```
+样例 1:
+	输入: 1->2->3->4->null
+	输出: 1->4->2->3->null
+
+样例 2:
+	输入: 1->2->3->4->5->null
+	输出: 1->5->2->4->3->null
+
+```
+
+**笔记**
+
+1. 分割，利用快慢指针将链表分割成两部分
+2. 翻转，将右半边进行链表翻转
+3. 合并，将左右两边的链表逐个合并
+
+```
+1. 分割
+dummy -> 1 -> 2 -> 3 -> 4 -> null
+              ^         ^
+            slow       fast
+2. 翻转，将slow（不包含slow）和fast之间的链表翻转
+head: 1 -> 2 -> null;
+right: 4 -> 3 -> null;
+
+3. 合并
+// 第1次
+head: 1 -> 4 -> 2 -> null;
+      ^    ^
+    point curt
+// 结束后
+head: 1 -> 4 -> 2 -> null;
+                ^
+              point
+right: 3 -> null;
+// 第二次
+head: 1 -> 4 -> 2 -> 3 -> null;
+                ^    ^
+              point curt
+// 结束后
+head: 1 -> 4 -> 2 -> 3 -> null;
+                            ^
+                          point
+right: null
+```
+
+```java
+/**
+ * Definition for ListNode
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) {
+ *         val = x;
+ *         next = null;
+ *     }
+ * }
+ */
+
+public class Solution {
+    /**
+     * @param head: The head of linked list.
+     * @return: nothing
+     */
+    public void reorderList(ListNode head) {
+        // write your code here
+        if(head == null) {
+          return;
+        }
+        ListNode leftDummy = new ListNode(0);
+        leftDummy.next = head;
+        ListNode slow = leftDummy;
+        ListNode fast = leftDummy;
+        // dummy -> 1 -> 2 -> 3 -> 4 - null;
+        //               ^         ^
+        //              slow      fast
+        while(fast.next != null) {
+          slow = slow.next;
+          fast = fast.next;
+          if(fast.next != null) {
+            fast = fast.next;
+          }
+        }
+
+        ListNode right = reverse(slow, fast);
+        // slow.next = null;
+
+        ListNode pointer = head;
+        // ListNode right = rightDummy.next;
+        // 1 -> 2 -> 3 -> 4 -> null
+        // pointer: 1 -> 2 -> null;
+        // right: 4 -> 3 -> null;
+        while(right != null) {
+          // pointer: 1 -> 4 -> 2 -> null
+          // right: 3 -> null;
+          ListNode curt = right;
+          right = right.next;
+
+          curt.next = pointer.next;
+          pointer.next = curt;
+
+          pointer = curt.next;
+        }
+    }
+
+    private ListNode reverse(ListNode start, ListNode end) {
+      ListNode nk = end.next;
+
+      ListNode prev = null;
+      ListNode curt = start.next;
+      // dummy -> 1 -> 2 -> 3 -> 4 - null;
+      //                    ^    ^    ^
+      //                   curt  end  nk
+      while(curt != nk) {
+        ListNode temp = curt.next;
+        curt.next = prev;
+        prev = curt;
+        curt = temp;
+      }
+
+      start.next = null;
+      return prev;
+    }
+}
+```
+
+## <a name='170'>170. 旋转链表
+
+**[链接](https://www.lintcode.com/problem/rotate-list/)**
+
+**描述**
+
+给定一个链表，旋转链表，使得每个节点向右移动 k 个位置，其中 k 是一个非负数
+
+**样例**
+
+```
+样例 1:
+
+输入：1->2->3->4->5  k = 2
+输出：4->5->1->2->3
+样例 2:
+
+输入：3->2->1  k = 1
+输出：1->3->2
+```
+
+```java
+/**
+ * Definition for ListNode
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) {
+ *         val = x;
+ *         next = null;
+ *     }
+ * }
+ */
+
+public class Solution {
+    /**
+     * @param head: the List
+     * @param k: rotate to the right k places
+     * @return: the list after rotation
+     */
+    private int getLength(ListNode head) {
+        int length = 0;
+        while (head != null) {
+            length ++;
+            head = head.next;
+        }
+        return length;
+    }
+
+    public ListNode rotateRight(ListNode head, int n) {
+        if (head == null) {
+            return null;
+        }
+
+        int length = getLength(head);
+        n = n % length;
+
+        ListNode dummy = new ListNode(0);
+        dummy.next = head;
+        head = dummy;
+
+        ListNode tail = dummy;
+        for (int i = 0; i < n; i++) {
+            head = head.next;
+        }
+
+        while (head.next != null) {
+            tail = tail.next;
+            head = head.next;
+        }
+
+        head.next = dummy.next;
+        dummy.next = tail.next;
+        tail.next = null;
+        return dummy.next;
+    }
+
+}
+```
+
+## <a name='105'>105. 复制带随机指针的链表
+
+**[链接](https://www.lintcode.com/problem/copy-list-with-random-pointer/)**
+
+**描述**
+
+给出一个链表，每个节点包含一个额外增加的随机指针可以指向链表中的任何节点或空的节点。
+
+返回一个深拷贝的链表。
+
+```java
+/**
+ * Definition for singly-linked list with a random pointer.
+ * class RandomListNode {
+ *     int label;
+ *     RandomListNode next, random;
+ *     RandomListNode(int x) { this.label = x; }
+ * };
+ */
+public class Solution {
+    /**
+     * @param head: The head of linked list with a random pointer.
+     * @return: A new head of a deep copy of the list.
+     */
+    public RandomListNode copyRandomList(RandomListNode head) {
+        // write your code here
+        if(head == null) {
+          return head;
+        }
+        RandomListNode dummy = new RandomListNode(0);
+        dummy.next = head;
+        Map<RandomListNode, RandomListNode> map = new HashMap();
+
+        RandomListNode prev = dummy;
+        while(head != null) {
+          RandomListNode newNode = null;
+          if(map.containsKey(head)) {
+            newNode = map.get(head);
+          } else {
+            newNode = new RandomListNode(head.label);
+            map.put(head, newNode);
+          }
+          prev.next = newNode;
+
+          if(head.random != null) {
+            if(map.containsKey(head.random)) {
+              newNode.random = map.get(head.random);
+            } else {
+              RandomListNode newRandom = new RandomListNode(head.random.label);
+              map.put(head.random, newRandom);
+              newNode.random = newRandom;
+            }
+          }
+
+          prev = newNode;
+          head = head.next;
+        }
+
+        return dummy.next;
     }
 }
 ```

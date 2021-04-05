@@ -4,6 +4,13 @@ class ListNode {
     this.next = null;
   }
 }
+class RandomListNode {
+  constructor(label) {
+    this.label = label;
+    this.next = null;
+    this.random = null;
+  }
+}
 // 450. K 组翻转链表
 class Solution450 {
   reverseKGroup(head, k) {
@@ -221,4 +228,253 @@ class Solution36 {
   }
 }
 
-Solution165.test();
+// 511. 交换链表当中两个节点
+class Solution511 {
+  /**
+   *
+   * @param {ListNode} head
+   * @param {int} v1
+   * @param {int} v2
+   */
+  swapNodes(head, v1, v2) {
+    const dummy = new ListNode(0);
+    dummy.next = head;
+    head = dummy;
+    this.swap(head, v1, v2);
+    return dummy.next;
+  }
+  swap(head, v1, v2) {
+    const ns = [];
+    while (head != null) {
+      const curt = head.next;
+      if (curt != null && (curt.val === v1 || curt.val === v2)) {
+        ns.push(head);
+      }
+      head = head.next;
+    }
+
+    if (ns.length < 2) {
+      return;
+    }
+
+    const leftDummy = ns[0];
+    const rightDummy = ns[1];
+
+    let left = leftDummy.next;
+    let right = rightDummy.next;
+
+    let temp = left.next;
+    leftDummy.next = right;
+    rightDummy.next = left;
+    left.next = right.next;
+    right.next = temp;
+  }
+  static test() {
+    const solution = new Solution511();
+    // 1 -> 2 -> 3 -> 4 -> 5 -> null
+    const n1 = new ListNode(1);
+    const n2 = new ListNode(2);
+    const n3 = new ListNode(3);
+    const n4 = new ListNode(4);
+    const n5 = new ListNode(5);
+    n1.next = n2;
+    n2.next = n3;
+    n3.next = n4;
+    n4.next = n5;
+    const res = solution.swapNodes(n1, 2, 5);
+    console.log(JSON.stringify(res));
+  }
+}
+
+// 99. 重排链表
+class Solution99 {
+  /**
+   *
+   * @param {ListNode} head
+   */
+  reorderList(head) {
+    if (head == null) {
+      return head;
+    }
+    const dummy = new ListNode(0);
+    dummy.next = head;
+    let slow = dummy;
+    let fast = dummy;
+    while (fast.next != null) {
+      slow = slow.next;
+      fast = fast.next;
+      if (fast.next != null) {
+        fast = fast.next;
+      }
+    }
+
+    let right = this.reverse(slow, fast);
+    let pointer = head;
+    while (right != null) {
+      // 获取单独节点
+      const curt = right;
+      right = right.next;
+
+      curt.next = pointer.next;
+      pointer.next = curt;
+
+      pointer = curt.next;
+    }
+  }
+  reverse(start, end) {
+    let nk = end.next;
+    let prev = null;
+    let curt = start.next;
+
+    while (curt != nk) {
+      const temp = curt.next;
+      curt.next = prev;
+      prev = curt;
+      curt = temp;
+    }
+
+    // 切断原来的链表
+    start.next = null;
+    return prev;
+  }
+  static test() {
+    const solution = new Solution99();
+    // 1 -> 2 -> 3 -> 4 -> 5 -> null
+    const n1 = new ListNode(1);
+    const n2 = new ListNode(2);
+    const n3 = new ListNode(3);
+    const n4 = new ListNode(4);
+    const n5 = new ListNode(5);
+    n1.next = n2;
+    n2.next = n3;
+    n3.next = n4;
+    n4.next = n5;
+    solution.reorderList(n1);
+    console.log(JSON.stringify(n1));
+  }
+}
+
+// 170 · 旋转链表
+class Solution170 {
+  /**
+   *
+   * @param {ListNode} head
+   * @param {int} k
+   */
+  rotateRight(head, k) {
+    if (head == null) {
+      return head;
+    }
+    const length = this.getLength(head);
+    k = k % length;
+
+    const dummy = new ListNode(0);
+    dummy.next = head;
+    head = dummy;
+
+    let tail = dummy;
+    for (let i = 0; i < k; i++) {
+      head = head.next;
+    }
+
+    while (head.next != null) {
+      tail = tail.next;
+      head = head.next;
+    }
+
+    // 5 -> 1 -> 2 ->3 ->4 ->5 -> 循环
+    head.next = dummy.next;
+    // dummy -> 4 -> 5 -> 1 -> 2 -> 3 -> 4 -> 5 -> 循环
+    dummy.next = tail.next;
+    // dummy -> 4 -> 5 -> 1 -> 2 -> 3 -> null;
+    tail.next = null;
+    return dummy.next;
+  }
+  getLength(head) {
+    let length = 0;
+    while (head != null) {
+      length++;
+      head = head.next;
+    }
+    return length;
+  }
+  static test() {
+    const solution = new Solution170();
+    // 1 -> 2 -> 3 -> 4 -> 5 -> null
+    const n1 = new ListNode(1);
+    const n2 = new ListNode(2);
+    const n3 = new ListNode(3);
+    const n4 = new ListNode(4);
+    const n5 = new ListNode(5);
+    n1.next = n2;
+    n2.next = n3;
+    n3.next = n4;
+    n4.next = n5;
+    const res = solution.rotateRight(n1, 2);
+    console.log(JSON.stringify(res));
+  }
+}
+
+// 105. 复制带随机指针的链表
+class Solution105 {
+  /**
+   *
+   * @param {RandomListNode} head
+   */
+  copyRandomList(head) {
+    if (head == null) {
+      return head;
+    }
+
+    const dummy = new RandomListNode(0);
+    const map = new Map();
+    let prev = dummy;
+    let newNode = null;
+    while (head != null) {
+      if (map.has(head)) {
+        newNode = map.get(head);
+      } else {
+        newNode = new RandomListNode(head.label);
+        map.set(head, newNode);
+      }
+
+      prev.next = newNode;
+
+      if (head.random) {
+        let random = null;
+        if (map.has(head.random)) {
+          random = map.get(head.random);
+        } else {
+          random = new RandomListNode(head.random.label);
+          map.set(head.random, random);
+        }
+        newNode.random = random;
+      }
+
+      prev = newNode;
+      head = head.next;
+    }
+    return dummy.next;
+  }
+  static test() {
+    const solution = new Solution105();
+    // 1 -> 2 -> 3 -> 4 -> 5 -> null
+    const n1 = new RandomListNode(1);
+    const n2 = new RandomListNode(2);
+    const n3 = new RandomListNode(3);
+    const n4 = new RandomListNode(4);
+    const n5 = new RandomListNode(5);
+    n1.next = n2;
+    n2.next = n3;
+    n3.next = n4;
+    n4.next = n5;
+    n2.random = n5;
+    n5.random = n1;
+    n3.random = n1;
+    const res = solution.copyRandomList(n1, 2);
+    // console.log(JSON.stringify(res));
+    console.log(res);
+  }
+}
+
+Solution105.test();
