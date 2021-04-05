@@ -5,7 +5,8 @@
 1. <a href="#450">450. K 组翻转链表(困难)</a>
 2. <a href="#96">96. 链表划分(简单)</a>
 3. <a href="#165">165. 合并两个排序链表(简单)</a>
-4. <a href="#36">36 · 翻转链表 II(中等)</a>
+4. <a href="#36">36. 翻转链表 II(中等)</a>
+5. <a href="#511">511. 交换链表当中两个节点(中等)</a>
 
 ## <a name='450'>450. K 组翻转链表
 
@@ -388,6 +389,92 @@ public class Solution {
 
       head.next = prev;
       start.next = curt;
+    }
+}
+```
+
+## <a name='511'>511. 交换链表当中两个节点
+
+**[链接](https://www.lintcode.com/problem/swap-two-nodes-in-linked-list/)**
+
+**描述**
+
+给你一个链表以及两个权值 v1 和 v2，交换链表中权值为 v1 和 v2 的这两个节点。保证链表中节点权值各不相同，如果没有找到对应节点，那么什么也不用做。
+
+**样例**
+
+```
+样例 1:
+
+输入: 1->2->3->4->null, v1 = 2, v2 = 4
+输出: 1->4->3->2->null
+样例 2:
+
+输入: 1->null, v1 = 2, v2 = 1
+输出: 1->null
+```
+
+```java
+/**
+ * Definition for ListNode
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) {
+ *         val = x;
+ *         next = null;
+ *     }
+ * }
+ */
+
+public class Solution {
+    /**
+     * @param head: a ListNode
+     * @param v1: An integer
+     * @param v2: An integer
+     * @return: a new head of singly-linked list
+     */
+    public ListNode swapNodes(ListNode head, int v1, int v2) {
+        // write your code here
+        ListNode dummy = new ListNode(0);
+        dummy.next = head;
+        head = dummy;
+        swap(head, v1, v2);
+        return dummy.next;
+    }
+
+    private void swap(ListNode head, int v1, int v2) {
+      // ListNode n1 = head;
+      // ListNode n2 = head;
+      List<ListNode> ns = new ArrayList();
+      // int i = 0;
+      while(head != null) {
+        ListNode curt = head.next;
+        if(curt != null && (curt.val == v1 || curt.val == v2)) {
+          ns.add(head);
+        }
+        head = head.next;
+      }
+
+      if(ns.size() < 2) {
+        return;
+      }
+
+      ListNode leftDummy = ns.get(0);
+      ListNode rightDummy = ns.get(1);
+
+      // v1 = 2, v2 = 4
+      // head -> 1 -> 2 -> 3 -> 4 -> null
+      //         ^    ^    ^    ^      ^
+      //        ld   left  rd right  temp
+      ListNode left = leftDummy.next;
+      ListNode right = rightDummy.next;
+
+      ListNode temp = right.next;
+      leftDummy.next = right;
+      rightDummy.next = left;
+      right.next = left.next;
+      left.next = temp;
     }
 }
 ```
