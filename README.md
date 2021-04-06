@@ -14,6 +14,7 @@
 | 题型                               |
 | ---------------------------------- |
 | [正则表达式](./src/regex/index.md) |
+| [排序](./src/sort/index.md)        |
 
 | lintcode                                                     |
 | ------------------------------------------------------------ |
@@ -21,4 +22,4 @@
 | [二叉树](./src/lintcode/binary-tree/index.md)                |
 | [宽度优先搜索](./src/lintcode/breadth-first-search/index.md) |
 | [深度优先搜索](./src/lintcode/depth-first-search/index.md)   |
-| [链表和数组](./src/lintcode/linked-list-array/index.md)   |
+| [链表和数组](./src/lintcode/linked-list-array/index.md)      |
