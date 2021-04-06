@@ -1,4 +1,4 @@
-// 快速排序
+// 快速排序 Version 1
 class SolutionQuickSort {
   sortList(list) {
     if (list == null || list.length <= 1) {
@@ -33,6 +33,35 @@ class SolutionQuickSort {
         right--;
       }
     }
+
+    this.quickList(list, start, right);
+    this.quickList(list, left, end);
+  }
+  static test() {
+    const solution = new SolutionQuickSort();
+    const arr = [5, 2, 3, 1, 6, 4];
+    const res = solution.sortList(arr);
+    console.log(res);
+  }
+}
+
+// 快速排序 Version 2
+class SolutionQuickSort {
+  sortList(list) {
+    if (list == null || list.length <= 1) {
+      return list;
+    }
+
+    this.quickList(list, 0, list.length - 1);
+    return list;
+  }
+  quickList(list, start, end) {
+    if (start >= end) {
+      return;
+    }
+    const index = start + parseInt((end - start) / 2);
+    const pivot = list[index];
+
 
     this.quickList(list, start, right);
     this.quickList(list, left, end);
