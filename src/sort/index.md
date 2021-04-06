@@ -13,8 +13,8 @@
 | -------------------------------------- | ---------- | ---------- |
 | <a href="#bubble-sort">冒泡排序</a>    | O(n^2)     | O(1)       |
 | <a href="#insertion-sort">插入排序</a> | O(n^2)     | O(1)       |
-| <a href="#quick-sort">快速排序</a>     | a          | b          |
-| <a href="#merge-sort">归并排序</a>     | a          | b          |
+| <a href="#quick-sort">快速排序</a>     | O(nlgn)    | O(1)       |
+| <a href="#merge-sort">归并排序</a>     | O(nlgn)    | O(n)       |
 
 ## <a name='bubble-sort'>冒泡排序
 
