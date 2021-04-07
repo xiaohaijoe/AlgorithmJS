@@ -55,18 +55,32 @@ class SolutionQuickSort2 {
     this.quickList(list, 0, list.length - 1);
     return list;
   }
-  quickList(list, start, end) {
-    if (start >= end) {
+  quickList(list, left, right) {
+    if (left >= right) {
       return;
     }
-    const index = start + parseInt((end - start) / 2);
-    const pivot = list[index];
 
-    this.quickList(list, start, right);
-    this.quickList(list, left, end);
+    let pivot = list[right];
+    let loc = left - 1;
+    for (let i = left; i < right; i++) {
+      if (list[i] < pivot) {
+        loc++;
+        this.swap(list, i, loc);
+      }
+    }
+    loc++;
+    this.swap(list, loc, right);
+
+    this.quickList(list, left, loc - 1);
+    this.quickList(list, loc + 1, right);
+  }
+  swap(list, i1, i2) {
+    const temp = list[i1];
+    list[i1] = list[i2];
+    list[i2] = temp;
   }
   static test() {
-    const solution = new SolutionQuickSort();
+    const solution = new SolutionQuickSort2();
     const arr = [5, 2, 3, 1, 6, 4];
     const res = solution.sortList(arr);
     console.log(res);
@@ -121,81 +135,4 @@ class SolutionInsertionSort {
   }
 }
 
-class SolutionQS {
-  sortList(A) {
-    this.quickSort(A, 0, A.length - 1);
-    return A;
-  }
-  quickSort(A, start, end) {
-    if (start >= end) {
-      return;
-    }
-
-    const pivot = A[start + parseInt((end - start) / 2)];
-    let left = start;
-    let right = end;
-    while (left <= right) {
-      while (left <= right && A[left] < pivot) {
-        left++;
-      }
-      while (left <= right && A[right] > pivot) {
-        right--;
-      }
-      if (left <= right) {
-        const temp = A[left];
-        A[left] = A[right];
-        A[right] = temp;
-
-        left++;
-        right--;
-      }
-    }
-
-    this.quickSort(A, start, right);
-    this.quickSort(A, left, end);
-  }
-  static test() {
-    const solution = new SolutionQS();
-    const arr = [5, 2, 3, 1, 6, 4];
-    const res = solution.sortList(arr);
-    console.log(res);
-  }
-}
-
-class SolutionQS2 {
-  sortList(A) {
-    this.quickSort(A, 0, A.length - 1);
-    return A;
-  }
-  quickSort(A, left, right) {
-    if (left >= right) {
-      return;
-    }
-    const pivot = A[right];
-    let loc = left - 1;
-    for (let i = left; i < A.length - 1; i++) {
-      if (A[i] < pivot) {
-        loc++;
-        this.swap(A, i, loc);
-      }
-    }
-
-    loc++;
-    this.swap(A, right, loc);
-
-    this.quickSort(A, left, loc - 1);
-    this.quickSort(A, loc + 1, right);
-  }
-  swap(A, i1, i2) {
-    const temp = A[i1];
-    A[i1] = A[i2];
-    A[i2] = temp;
-  }
-  static test() {
-    const solution = new SolutionQS2();
-    const arr = [5, 2, 3, 1, 6, 4];
-    const res = solution.sortList(arr);
-    console.log(res);
-  }
-}
-SolutionQS2.test();
+SolutionQuickSort2.test();
