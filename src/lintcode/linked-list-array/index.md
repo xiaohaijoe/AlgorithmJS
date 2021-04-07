@@ -12,6 +12,9 @@
 8. <a href="#105">105. 复制带随机指针的链表(中等)</a>
 9. <a href="#102">102. 带环链表(中等)</a>
 10. <a href="#103">103. 带环链表 II(困难)</a>
+11. <a href="#98">98. 链表排序(中等)</a>
+12. <a href="#1359">1359. 有序数组转换为二叉搜索树(简单)</a>
+12. <a href="#6">6. 合并排序数组(简单)</a>
 
 ## <a name='450'>450. K 组翻转链表
 
@@ -882,6 +885,7 @@ a+b+(l-b)+b = 2*(a+b)
 所以a=c
 
 ```
+
 ```java
 /**
  * Definition for ListNode
@@ -925,6 +929,329 @@ public class Solution {
         }
 
         return head;
+    }
+}
+```
+
+## <a name='98'>98. 链表排序
+
+**[链接](https://www.lintcode.com/problem/sort-list/)**
+
+**描述**
+
+在 O(n log n) 时间复杂度和常数级的空间复杂度下给链表排序。
+
+**样例**
+
+```
+样例 1:
+	输入:  1->3->2->null
+	输出:  1->2->3->null
+
+样例 2:
+	输入: 1->7->2->6->null
+	输出: 1->2->6->7->null
+```
+
+**快速排序 Quick Sort**
+
+```java
+/**
+ * Definition for ListNode
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) {
+ *         val = x;
+ *         next = null;
+ *     }
+ * }
+ */
+
+public class Solution {
+    /**
+     * @param head: The head of linked list.
+     * @return: You should return the head of the sorted linked list, using constant space complexity.
+     */
+    public ListNode sortList(ListNode head) {
+        // write your code here
+        if(head == null || head.next == null) {
+            return head;
+        }
+
+        ListNode mid = getMedian(head);
+
+        ListNode leftDummy = new ListNode(0), leftTail = leftDummy;
+        ListNode rightDummy = new ListNode(0), rightTail = rightDummy;
+        ListNode middleDummy = new ListNode(0), middleTail = middleDummy;
+
+        while(head != null) {
+            if(head.val < mid.val) {
+                leftTail.next = head;
+                leftTail = leftTail.next;
+            } else if(head.val > mid.val) {
+                rightTail.next = head;
+                rightTail = rightTail.next;
+            } else {
+                middleTail.next = head;
+                middleTail = middleTail.next;
+            }
+            head = head.next;
+        }
+
+        leftTail.next = null;
+        rightTail.next = null;
+        middleTail.next = null;
+
+        ListNode left = sortList(leftDummy.next);
+        ListNode right = sortList(rightDummy.next);
+
+        return concat(left, middleDummy.next, right);
+    }
+
+    private ListNode getMedian(ListNode head) {
+        ListNode slow = head;
+        ListNode fast = head.next;
+        while(fast != null && fast.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+        return slow;
+    }
+
+    private ListNode getTail(ListNode node) {
+        if(node == null) {
+            return node;
+        }
+        while(node.next != null) {
+            node = node.next;
+        }
+        return node;
+    }
+
+    private ListNode concat(ListNode left, ListNode middle, ListNode right) {
+        ListNode dummy = new ListNode(0), tail = dummy;
+
+        tail.next = left; tail = getTail(tail);
+        tail.next = middle; tail = getTail(tail);
+        tail.next = right; tail = getTail(tail);
+        return dummy.next;
+    }
+}
+```
+
+**归并排序 Merge Sort**
+
+```javascript
+/**
+ * Definition for ListNode
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) {
+ *         val = x;
+ *         next = null;
+ *     }
+ * }
+ */
+
+public class Solution {
+    /**
+     * @param head: The head of linked list.
+     * @return: You should return the head of the sorted linked list, using constant space complexity.
+     */
+    public ListNode sortList(ListNode head) {
+        // write your code here
+        if(head == null || head.next == null) {
+            return head;
+        }
+
+        ListNode mid = getMedian(head);
+
+        ListNode right = sortList(mid.next);
+        mid.next = null;
+        ListNode left = sortList(head);
+
+        return merge(left, right);
+    }
+
+    private ListNode merge(ListNode left, ListNode right) {
+        ListNode dummy = new ListNode(0), tail = dummy;
+        while(left != null && right != null) {
+            if(left.val < right.val) {
+                tail.next = left;
+                left = left.next;
+            } else {
+                tail.next = right;
+                right = right.next;
+            }
+            tail = tail.next;
+        }
+        if(left != null){
+            tail.next = left;
+        }
+        if(right != null) {
+            tail.next = right;
+        }
+        return dummy.next;
+    }
+
+    private ListNode getMedian(ListNode head) {
+        ListNode slow = head;
+        ListNode fast = head.next;
+        while(fast != null && fast.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+        return slow;
+    }
+
+}
+```
+
+## <a name='1359'>1359. 有序数组转换为二叉搜索树
+
+**[链接](https://www.lintcode.com/problem/1359/)**
+
+**描述**
+
+给定一个数组，其中元素按升序排序，将其转换为高度平衡的 BST。
+
+对于这个问题，高度平衡的二叉树被定义为二叉树，其中每个节点的两个子树的深度从不相差超过 1。
+
+**样例**
+
+```
+样例 1:
+
+输入: [-10,-3,0,5,9],
+输出: [0,-3,9,-10,#,5],
+解释:
+针对该数组的其中一个解为 [0,-3,9,-10,null,5], 其对应的平衡BST树如下:
+      0
+     / \
+   -3   9
+   /   /
+ -10  5
+ 对于这棵树，你应该返回值为0的根节点。
+样例 2:
+
+输入: [1,3]
+输出: [3,1]
+解释:
+针对该数组的其中一个解为 [3,1], 其对应的平衡BST树如下:
+  3
+ /
+1
+对于这棵树，你应该返回值为3的根节点。
+```
+
+```java
+/**
+ * Definition of TreeNode:
+ * public class TreeNode {
+ *     public int val;
+ *     public TreeNode left, right;
+ *     public TreeNode(int val) {
+ *         this.val = val;
+ *         this.left = this.right = null;
+ *     }
+ * }
+ */
+
+public class Solution {
+    /**
+     * @param nums: the sorted array
+     * @return: the root of the tree
+     */
+    public TreeNode convertSortedArraytoBinarySearchTree(int[] nums) {
+        // Write your code here.
+        if(nums == null) {
+            return null;
+        }
+
+        TreeNode result = recursion(nums, 0, nums.length - 1);
+        return result;
+    }
+
+    private TreeNode recursion(int[] nums, int start, int end) {
+        if(start > end) {
+            return null;
+        }
+        int mid = start + (end - start)/2;
+        TreeNode node = new TreeNode(nums[mid]);
+        node.left = recursion(nums, start, mid - 1);
+        node.right = recursion(nums, mid + 1, end);
+
+        return node;
+    }
+}
+```
+
+## <a name='6'>6. 合并排序数组
+
+**[链接](https://www.lintcode.com/problem/merge-two-sorted-arrays/)**
+
+**描述**
+
+合并按升序排序的整数数组 A 和 B，新数组也需升序排序。
+
+**样例**
+
+```
+样例
+Example 1:
+
+Input:
+
+A = [1]
+B = [1]
+Output:
+
+[1,1]
+Explanation:
+
+return array merged.
+Example 2:
+
+Input:
+
+A = [1,2,3,4]
+B = [2,4,5,6]
+Output:
+
+[1,2,2,3,4,4,5,6]
+```
+
+```java
+public class Solution {
+    /**
+     * @param A: sorted integer array A
+     * @param B: sorted integer array B
+     * @return: A new sorted integer array
+     */
+    public int[] mergeSortedArray(int[] A, int[] B) {
+        // write your code here
+        int length = A.length + B.length;
+        int[] result = new int[length];
+        int i = 0, j = 0, index = 0;
+        while(i < A.length && j < B.length) {
+            if(A[i] < B[j]) {
+                result[index++] = A[i++];
+            } else if (A[i] > B[j]) {
+                result[index++] = B[j++];
+            } else {
+                result[index++] = A[i++];
+                result[index++] = B[j++];
+            }
+        }
+        while(i < A.length) {
+            result[index++] = A[i++];
+        }
+        while(j < B.length) {
+            result[index++] = B[j++];
+        }
+        return result;
     }
 }
 ```
