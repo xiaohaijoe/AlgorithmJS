@@ -776,4 +776,75 @@ class Solution6 {
     console.log(res);
   }
 }
-Solution6.test();
+
+// 64. 合并排序数组（简单版）
+class Solution64 {
+  /**
+   *
+   * @param {int[]} A
+   * @param {int} m
+   * @param {int[]} B
+   * @param {int} n
+   */
+  mergeSortedArray(A, m, B, n) {
+    let i = m - 1;
+    let j = n - 1;
+    let index = m + n - 1;
+    while (i >= 0 && j >= 0) {
+      if (A[i] > B[j]) {
+        this.swap(A, index--, i--);
+      } else if (A[i] < B[j]) {
+        A[index--] = B[j--];
+      } else {
+        this.swap(A, index--, i--);
+        A[index--] = B[j--];
+      }
+    }
+
+    while (i >= 0) {
+      this.swap(A, index--, i--);
+    }
+    while (j >= 0) {
+      A[index--] = B[j--];
+    }
+  }
+  swap(arr, i1, i2) {
+    [arr[i1], arr[i2]] = [arr[i2], arr[i1]];
+  }
+  static test() {
+    const solution = new Solution64();
+    const A = new Array(10);
+    A.splice(0, 4, ...[3, 5, 7, 9]);
+    const B = [4, 6, 8, 9, 10, 12];
+    solution.mergeSortedArray(A, 4, B, 6);
+    console.log(A);
+  }
+}
+
+// 547. 两数组的交集
+class Solution547 {
+  /**
+   * 
+   * @param {int[]} nums1 
+   * @param {int[]} nums2 
+   */
+  intersection(nums1, nums2) {
+    const set = new Set(nums1);
+    const result = [...nums2.reduce((newSet, num) => {
+      if(set.has(num)) {
+        newSet.add(num);
+      }
+      return newSet;
+    }, new Set())];
+    return result;
+  }
+
+  static test() {
+    const solution = new Solution547();
+    const nums1 = [1,2,2,1,3];
+    const nums2 = [1,1,3];
+    const res = solution.intersection(nums1, nums2);
+    console.log(res);
+  }
+}
+Solution547.test();
