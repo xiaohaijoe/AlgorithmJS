@@ -11,6 +11,13 @@ class RandomListNode {
     this.random = null;
   }
 }
+class TreeNode {
+  constructor(val) {
+    this.val = val;
+    this.left = null;
+    this.right = null;
+  }
+}
 // 450. K 组翻转链表
 class Solution450 {
   reverseKGroup(head, k) {
@@ -511,6 +518,7 @@ class Solution102 {
   }
 }
 
+// 103. 带环链表 II
 class Solution103 {
   /**
    *
@@ -553,4 +561,219 @@ class Solution103 {
     console.log(res);
   }
 }
-Solution103.test();
+
+// 98. 链表排序
+class Solution98 {
+  /**
+   *
+   * @param {ListNode} head
+   */
+  sortListQuick(head) {
+    // 快速排序
+    if (head == null || head.next == null) {
+      return head;
+    }
+
+    let mid = this.getMedian(head);
+
+    let leftDummy = new ListNode(0),
+      leftTail = leftDummy;
+    let rightDummy = new ListNode(0),
+      rightTail = rightDummy;
+    let middleDummy = new ListNode(0),
+      middleTail = middleDummy;
+
+    while (head != null) {
+      if (head.val < mid.val) {
+        leftTail.next = head;
+        leftTail = leftTail.next;
+      } else if (head.val > mid.val) {
+        rightTail.next = head;
+        rightTail = rightTail.next;
+      } else {
+        middleTail.next = head;
+        middleTail = middleTail.next;
+      }
+      head = head.next;
+    }
+
+    leftTail.next = null;
+    rightTail.next = null;
+    middleTail.next = null;
+
+    const left = this.sortListQuick(leftDummy.next);
+    const right = this.sortListQuick(rightDummy.next);
+
+    return this.concat(left, middleDummy.next, right);
+  }
+  /**
+   *
+   * @param {ListNode} head
+   */
+  sortListMerge(head) {
+    // 归并排序
+    if (head == null || head.next == null) {
+      return head;
+    }
+
+    const mid = this.getMedian(head);
+
+    const right = this.sortListMerge(mid.next);
+    mid.next = null;
+    const left = this.sortListMerge(head);
+
+    // console.log("left", left);
+    // console.log("right", right);
+    return this.merge(left, right);
+  }
+
+  merge(left, right) {
+    let dummy = new ListNode(0);
+    let tail = dummy;
+
+    while (left != null && right != null) {
+      if (left.val < right.val) {
+        tail.next = left;
+        left = left.next;
+      } else if (left.val >= right.val) {
+        tail.next = right;
+        right = right.next;
+      }
+      tail = tail.next;
+    }
+
+    if (left != null) {
+      tail.next = left;
+    }
+    if (right != null) {
+      tail.next = right;
+    }
+    return dummy.next;
+  }
+
+  concat(left, middle, right) {
+    const dummy = new ListNode(0);
+    let tail = dummy;
+    tail.next = left;
+    tail = this.getTail(tail);
+    tail.next = middle;
+    tail = this.getTail(tail);
+    tail.next = right;
+
+    return dummy.next;
+  }
+
+  getTail(head) {
+    if (head == null) {
+      return head;
+    }
+    while (head.next != null) {
+      head = head.next;
+    }
+    return head;
+  }
+
+  getMedian(head) {
+    if (head == null || head.next == null) {
+      return head;
+    }
+    let slow = head;
+    let fast = head.next;
+    while (fast != null && fast.next != null) {
+      slow = slow.next;
+      fast = fast.next.next;
+    }
+    return slow;
+  }
+
+  static test() {
+    const solution = new Solution98();
+    const n1 = new ListNode(5);
+    const n2 = new ListNode(3);
+    const n3 = new ListNode(4);
+    const n4 = new ListNode(1);
+    const n5 = new ListNode(2);
+    n1.next = n2;
+    n2.next = n3;
+    n3.next = n4;
+    n4.next = n5;
+    const res = solution.sortListMerge(n1);
+    console.log(JSON.stringify(res));
+  }
+}
+
+// 1359. 有序数组转换为二叉搜索树
+class Solution1359 {
+  /**
+   *
+   * @param {int[]} nums
+   */
+  convertSortedArraytoBinarySearchTree(nums) {
+    if (nums == null) {
+      return null;
+    }
+
+    // const node = new TreeNode()
+    const result = this.recursion(nums, 0, nums.length - 1);
+    return result;
+  }
+
+  recursion(nums, left, right) {
+    if (left > right) {
+      return null;
+    }
+
+    const mid = parseInt((right + left) / 2);
+    const node = new TreeNode(nums[mid]);
+    node.left = this.recursion(nums, left, mid - 1);
+    node.right = this.recursion(nums, mid + 1, right);
+
+    return node;
+  }
+  static test() {
+    const solution = new Solution1359();
+    const nums = [0, 1, 3, 4, 5, 7];
+    const res = solution.convertSortedArraytoBinarySearchTree(nums);
+    console.log(res);
+  }
+}
+
+// 6. 合并排序数组
+class Solution6 {
+  /**
+   *
+   * @param {int[]} A
+   * @param {int[]} B
+   */
+  mergeSortedArray(A, B) {
+    let i = 0,
+      j = 0;
+    const result = [];
+    while (i < A.length && j < B.length) {
+      if (A[i] < B[j]) {
+        result.push(A[i++]);
+      } else if (A[i] > B[j]) {
+        result.push(B[j++]);
+      } else {
+        result.push(A[i++]);
+        result.push(B[j++]);
+      }
+    }
+
+    if (i < A.length) {
+      result.push(...A.slice(i, A.length));
+    }
+    if (j < B.length) {
+      result.push(...B.slice(j, B.length));
+    }
+    return result;
+  }
+  static test() {
+    const solution = new Solution6();
+    const A = [0, 1, 3, 4, 5, 7];
+    const B = [0, 1, 3, 4];
+    const res = solution.mergeSortedArray(A, B);
+    console.log(res);
+  }
+}
+Solution6.test();

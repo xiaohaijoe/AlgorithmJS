@@ -14,7 +14,8 @@
 10. <a href="#103">103. 带环链表 II(困难)</a>
 11. <a href="#98">98. 链表排序(中等)</a>
 12. <a href="#1359">1359. 有序数组转换为二叉搜索树(简单)</a>
-12. <a href="#6">6. 合并排序数组(简单)</a>
+13. <a href="#6">6. 合并排序数组(简单)</a>
+14. <a href="#64">64. 合并排序数组（简单版）(简单)</a>
 
 ## <a name='450'>450. K 组翻转链表
 
@@ -1252,6 +1253,70 @@ public class Solution {
             result[index++] = B[j++];
         }
         return result;
+    }
+}
+```
+
+## <a name='64'>64. 合并排序数组（简单版）
+
+**[链接](https://www.lintcode.com/problem/64/)**
+
+**描述**
+
+合并两个排序的整数数组 A 和 B 变成一个新的数组。
+
+**样例**
+
+```
+样例 1:
+
+输入：[1, 2, 3]  3  [4,5]  2
+输出：[1,2,3,4,5]
+解释:
+经过合并新的数组为[1,2,3,4,5]
+样例 2:
+
+输入：[1,2,5] 3 [3,4] 2
+输出：[1,2,3,4,5]
+解释：
+经过合并新的数组为[1,2,3,4,5]
+```
+
+```java
+public class Solution {
+    /*
+     * @param A: sorted integer array A which has m elements, but size of A is m+n
+     * @param m: An integer
+     * @param B: sorted integer array B which has n elements
+     * @param n: An integer
+     * @return: nothing
+     */
+    public void mergeSortedArray(int[] A, int m, int[] B, int n) {
+        // write your code here
+        int i = m - 1;
+        int j = n - 1;
+        int index = m + n - 1;
+        while(j >= 0 && i >=0) {
+          if(A[i] > B[j]) {
+            swap(A, index--, i--);
+          } else if(A[i] < B[j]) {
+            A[index--] = B[j--];
+          } else {
+            swap(A, index--, i--);
+            A[index--] = B[j--];
+          }
+        }
+
+        while(j >= 0) {
+          A[index--] = B[j--];
+        }
+
+    }
+
+    private void swap(int[] arr, int l, int r) {
+      int temp = arr[l];
+      arr[l] = arr[r];
+      arr[r] = temp;
     }
 }
 ```
