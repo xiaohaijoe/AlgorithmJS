@@ -824,27 +824,130 @@ class Solution64 {
 // 547. 两数组的交集
 class Solution547 {
   /**
-   * 
-   * @param {int[]} nums1 
-   * @param {int[]} nums2 
+   *
+   * @param {int[]} nums1
+   * @param {int[]} nums2
    */
   intersection(nums1, nums2) {
     const set = new Set(nums1);
-    const result = [...nums2.reduce((newSet, num) => {
-      if(set.has(num)) {
-        newSet.add(num);
-      }
-      return newSet;
-    }, new Set())];
+    const result = [
+      ...nums2.reduce((newSet, num) => {
+        if (set.has(num)) {
+          newSet.add(num);
+        }
+        return newSet;
+      }, new Set()),
+    ];
     return result;
   }
 
   static test() {
     const solution = new Solution547();
-    const nums1 = [1,2,2,1,3];
-    const nums2 = [1,1,3];
+    const nums1 = [1, 2, 2, 1, 3];
+    const nums2 = [1, 1, 3];
     const res = solution.intersection(nums1, nums2);
     console.log(res);
   }
 }
-Solution547.test();
+
+// 41. 最大子数组
+class Solution41 {
+  /**
+   *
+   * @param {int[]} nums
+   */
+  maxSubArray(nums) {
+    let maxAns = Number.MIN_VALUE;
+    let sum = 0;
+
+    for (let i = 0; i < nums.length; i++) {
+      sum += nums[i];
+      maxAns = Math.max(maxAns, sum);
+      sum = Math.max(sum, 0); // 如果子串的值小于0，直接放弃子串
+    }
+
+    return maxAns;
+  }
+  static test() {
+    const solution = new Solution41();
+    const nums = [-2, 2, -3, 4, -1, 2, 1, -5, 3];
+    const res = solution.maxSubArray(nums);
+    console.log(res);
+  }
+}
+
+class Solution138 {
+  /**
+   *
+   * @param {int[]} nums
+   */
+  subarraySum(nums) {
+    const ans = [];
+    const map = new Map();
+
+    map.set(0, -1);
+    let sum = 0;
+    for (let i = 0; i < nums.length; i++) {
+      sum += nums[i];
+      if (map.has(sum)) {
+        ans.push(map.get(sum) + 1);
+        ans.push(i);
+        return ans;
+      }
+
+      map.set(sum, i);
+    }
+
+    return ans;
+  }
+  static test() {
+    const solution = new Solution138();
+    const nums = [2, 2, -3, 4, -1, 2, 1, -5, 3];
+    const res = solution.subarraySum(nums);
+    console.log(res);
+  }
+}
+
+// 139. 最接近零的子数组和
+class Solution139 {
+  /**
+   *
+   * @param {int[]} nums
+   */
+  subarraySumClosest(nums) {
+    class Pair {
+      constructor(sum, index) {
+        this.sum = sum;
+        this.index = index;
+      }
+    }
+
+    let pairs = [new Pair(0, 0)];
+    let prev = 0;
+    for (let i = 1; i <= nums.length; i++) {
+      prev = prev + nums[i - 1];
+      pairs.push(new Pair(prev, i));
+    }
+
+    pairs = pairs.sort((a, b) => a.sum - b.sum);
+
+    let result = [];
+    let ans = Number.MAX_VALUE;
+    for (let i = 1; i <= nums.length; i++) {
+      if (ans > pairs[i].sum - pairs[i - 1].sum) {
+        ans = pairs[i].sum - pairs[i - 1].sum;
+        let temp = [pairs[i].index, pairs[i - 1].index].sort((a, b) => a - b);
+        result[0] = temp[0];
+        result[1] = temp[1] - 1;
+      }
+    }
+    return result;
+  }
+  static test() {
+    const solution = new Solution139();
+    const nums = [-3, 1, 1, -3, 5];
+    const res = solution.subarraySumClosest(nums);
+    console.log(res);
+  }
+}
+Solution139.test();

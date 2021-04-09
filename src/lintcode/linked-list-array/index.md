@@ -16,7 +16,10 @@
 12. <a href="#1359">1359. 有序数组转换为二叉搜索树(简单)</a>
 13. <a href="#6">6. 合并排序数组(简单)</a>
 14. <a href="#64">64. 合并排序数组（简单版）(简单)</a>
-14. <a href="#547">547. 两数组的交集(中等)</a>
+15. <a href="#41">41. 最大子数组(简单)</a>
+16. <a href="#138">138. 子数组之和(简单)</a>
+17. <a href="#65">65. 两个排序数组的中位数(困难)（战术性放弃）</a>
+18. <a href="#139">139. 最接近零的子数组和(中等)</a>
 
 ## <a name='450'>450. K 组翻转链表
 
@@ -1322,52 +1325,197 @@ public class Solution {
 }
 ```
 
-## <a name='547'>547. 两数组的交集
+## <a name='41'>41. 最大子数组
 
-**[链接](https://www.lintcode.com/problem/intersection-of-two-arrays/)**
+**[链接](https://www.lintcode.com/problem/maximum-subarray/)**
 
 **描述**
 
-给出两个数组，写出一个方法求出它们的交集
+给定一个整数数组，找到一个具有最大和的子数组，返回其最大和。
+
+每个子数组的数字在数组中的位置应该是连续的。
 
 **样例**
 
 ```
-例1:
+样例1:
 
-输入: nums1 = [1, 2, 2, 1], nums2 = [2, 2],
-输出: [2].
-例2:
+输入：[−2,2,−3,4,−1,2,1,−5,3]
+输出：6
+解释：符合要求的子数组为[4,−1,2,1]，其最大和为 6。
+样例2:
 
-输入: nums1 = [1, 2], nums2 = [2],
-输出: [2].
+输入：[1,2,3,4]
+输出：10
+解释：符合要求的子数组为[1,2,3,4]，其最大和为 10。
 ```
 
 ```java
 public class Solution {
     /**
-     * @param nums1: an integer array
-     * @param nums2: an integer array
-     * @return: an integer array
+     * @param nums: A list of integers
+     * @return: A integer indicate the sum of max subarray
      */
-    public int[] intersection(int[] nums1, int[] nums2) {
+    public int maxSubArray(int[] nums) {
         // write your code here
-        Set<Integer> set = new HashSet<Integer>();
-        for(int i = 0 ; i < nums1.length ; i++) {
-            set.add(nums1[i]);
+        int maxAns = Integer.MIN_VALUE; // 全局最大值之和
+        int sum = 0; // 当前子数组的和
+
+        for(int i = 0 ; i < nums.length ; i++) {
+          sum += nums[i];
+          maxAns = Math.max(maxAns, sum);
+          sum = Math.max(sum, 0);
         }
-        Set<Integer> set2 = new HashSet<Integer>();
-        for(int i = 0 ; i < nums2.length; i++) {
-            if(set.contains(nums2[i])) {
-                set2.add(nums2[i]);
-            }
+
+        return maxAns;
+    }
+}
+```
+
+## <a name='41'>41. 最大子数组
+
+**[链接](https://www.lintcode.com/problem/subarray-sum/)**
+
+**描述**
+
+给定一个整数数组，找到和为 00 的子数组。
+
+你的代码应该返回满足要求的子数组的起始位置和结束位置
+
+**样例**
+
+```
+样例 1:
+
+输入: [-3, 1, 2, -3, 4]
+输出: [0,2] 或 [1,3]
+样例解释： 返回任意一段和为0的区间即可。
+样例 2:
+
+输入: [-3, 1, -4, 2, -3, 4]
+输出: [1,5]
+```
+
+```java
+public class Solution {
+    /**
+     * @param nums: A list of integers
+     * @return: A list of integers includes the index of the first number and the index of the last number
+     */
+    public List<Integer> subarraySum(int[] nums) {
+        // write your code here
+        List<Integer> ans = new ArrayList<Integer>();
+        Map<Integer, Integer> map = new HashMap();
+        int sum = 0;
+        map.put(0, -1);
+
+        for(int i = 0 ; i < nums.length ; i++) {
+          sum += nums[i];
+
+          if(map.containsKey(sum)) {
+            ans.add(map.get(sum) + 1);
+            ans.add(i);
+          }
+          // 把当前的和，存起来
+          map.put(sum, i);
         }
-        int[] arr = new int[set2.size()];
-        int i = 0;
-        for(Integer num : set2) {
-            arr[i++] = num;
+
+        return ans;
+    }
+}
+```
+
+## <a name='65'>65 · 两个排序数组的中位数
+
+**[链接](https://www.lintcode.com/problem/median-of-two-sorted-arrays/)**
+
+**描述**
+
+两个排序的数组 A 和 B 分别含有 m 和 n 个数，找到两个排序数组的中位数，要求时间复杂度应为 O(log (m+n))。
+
+**样例**
+
+```
+Example 1
+
+Input:
+A = [1,2,3,4,5,6]
+B = [2,3,4,5]
+Output: 3.5
+Example 2
+
+Input:
+A = [1,2,3]
+B = [4,5]
+Output: 3
+```
+
+## <a name='139'>139. 最接近零的子数组和
+
+**[链接](https://www.lintcode.com/problem/subarray-sum-closest/)**
+
+**描述**
+
+给定一个整数数组，找到一个和最接近于零的子数组。
+
+返回满足要求的子数组的起始位置和结束位置。
+
+**样例**
+
+```
+样例1
+
+输入:
+[-3,1,1,-3,5]
+输出:
+[0,2]
+解释: [0,2], [1,3], [1,1], [2,2], [0,4]
+```
+
+```java
+class Pair {
+  public int sum;
+  public int index;
+  public Pair(int sum, int index) {
+    this.sum = sum;
+    this.index = index;
+  }
+}
+public class Solution {
+    /*
+     * @param nums: A list of integers
+     * @return: A list of integers includes the index of the first number and the index of the last number
+     */
+    public int[] subarraySumClosest(int[] nums) {
+        // write your code here
+
+        Pair[] pairs = new Pair[nums.length + 1];
+        pairs[0] = new Pair(0, 0);
+        int prev = 0;
+        for(int i = 1 ; i <= nums.length ; i++) {
+          pairs[i] = new Pair(prev + nums[i-1], i);
+          prev = pairs[i].sum;
         }
-        return arr;
+
+        Arrays.sort(pairs, new Comparator<Pair>() {
+          public int compare(Pair a, Pair b) {
+            return a.sum - b.sum;
+          }
+        });
+
+        int[] result = new int[2];
+        int ans = Integer.MAX_VALUE;
+        for(int i = 1 ; i <= nums.length ; i++) {
+          if(ans > pairs[i].sum - pairs[i - 1].sum) {
+            ans = pairs[i].sum - pairs[i-1].sum;
+            int[] temp = new int[]{pairs[i-1].index, pairs[i].index};
+            Arrays.sort(temp);
+            result[0] = temp[0];
+            result[1] = temp[1] - 1;
+          }
+        }
+
+        return result;
     }
 }
 ```
