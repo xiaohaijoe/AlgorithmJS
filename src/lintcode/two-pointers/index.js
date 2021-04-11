@@ -375,4 +375,35 @@ class Solution57 {
     console.log(res);
   }
 }
-Solution57.test();
+
+// 382. 三角形计数
+class SOlution382 {
+  /**
+   *
+   * @param {int[]} S
+   */
+  triangleCount(S) {
+    let count = 0;
+    for (let i = 0; i < S.length; i++) {
+      let left = 0;
+      let right = i - 1;
+
+      while (left < right) {
+        if (S[left] + S[right] > S[i]) {
+          count += right - left;
+          right--;
+        } else {
+          left++;
+        }
+      }
+    }
+    return count;
+  }
+  static test() {
+    const solution = new SOlution382();
+    const nums = [3, 4, 6, 7, 8, 13, 20, 21];
+    const res = solution.triangleCount(nums);
+    console.log(res);
+  }
+}
+SOlution382.test();

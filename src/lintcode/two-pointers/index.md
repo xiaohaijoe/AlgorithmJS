@@ -13,6 +13,7 @@
 9. <a href="#608">608. 两数和 II-输入已排序的数组(中等)</a>
 10. <a href="#587">587. 两数之和 - 不同组成(中等)</a>
 11. <a href="#57">57. 三数之和(中等)</a>
+12. <a href="#382">382. 三角形计数(中等)</a>
 
 ## <a name='604'>604. 滑动窗口内数的和
 
@@ -728,6 +729,67 @@ public class Solution {
           left++;
         }
       }
+    }
+}
+```
+
+## <a name='382'>382. 三角形计数
+
+**[链接](https://www.lintcode.com/problem/triangle-count/)**
+
+**描述**
+
+给定一个整数数组，在该数组中，寻找三个数，分别代表三角形三条边的长度，问，可以寻找到多少组这样的三个数来组成三角形？
+
+**样例**
+
+```
+样例 1:
+
+输入: [3, 4, 6, 7]
+输出: 3
+解释:
+可以组成的是 (3, 4, 6),
+           (3, 6, 7),
+           (4, 6, 7)
+样例 2:
+
+输入: [4, 4, 4, 4]
+输出: 4
+解释:
+任何三个数都可以构成三角形
+所以答案为 C(3, 4) = 4
+```
+
+```java
+public class Solution {
+    /**
+     * @param S: A list of integers
+     * @return: An integer
+     */
+    public int triangleCount(int[] S) {
+        // write your code here
+        if(S == null || S.length < 3) {
+          return 0;
+        }
+
+        Arrays.sort(S);
+        int count = 0;
+        for(int i = 0; i < S.length ; i++) {
+          int left = 0;
+          int right = i - 1;
+          int target = S[i];
+          while(left < right) {
+            if(S[left] + S[right] > target) {
+              count+=(right-left);
+              right--;
+            } else {
+              left++;
+            }
+          }
+        }
+
+        return count;
     }
 }
 ```
