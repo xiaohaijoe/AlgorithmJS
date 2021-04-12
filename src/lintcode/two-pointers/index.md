@@ -14,6 +14,14 @@
 10. <a href="#587">587. 两数之和 - 不同组成(中等)</a>
 11. <a href="#57">57. 三数之和(中等)</a>
 12. <a href="#382">382. 三角形计数(中等)</a>
+13. <a href="#59">59. 最接近的三数之和(中等)</a>
+14. <a href="#58">58. 四数之和(中等)</a>
+15. <a href="#31">31. 数组划分(中等)</a>
+16. <a href="#5">5. 第 k 大元素(中等)</a>
+17. <a href="#373">373. 奇偶分割数组(简单)</a>
+18. <a href="#49">49. 字符大小写排序(中等)</a>
+19. <a href="#148">148. 颜色分类(中等)</a>
+20. <a href="#143">143. 颜色分类 II(中等)</a>
 
 ## <a name='604'>604. 滑动窗口内数的和
 
@@ -790,6 +798,654 @@ public class Solution {
         }
 
         return count;
+    }
+}
+```
+
+## <a name='59'>59. 最接近的三数之和
+
+**[链接](https://www.lintcode.com/problem/3sum-closest/)**
+
+**描述**
+
+给一个包含 n 个整数的数组 S, 找到和与给定整数 target 最接近的三元组，返回这三个数的和。
+
+**样例**
+
+```
+例1:
+
+输入:[2,7,11,15],3
+输出:20
+解释:
+2+7+11=20
+例2:
+
+输入:[-1,2,1,-4],1
+输出:2
+解释:
+-1+2+1=2
+```
+
+```java
+public class Solution {
+    /**
+     * @param numbers: Give an array numbers of n integer
+     * @param target: An integer
+     * @return: return the sum of the three integers, the sum closest target.
+     */
+    public int threeSumClosest(int[] numbers, int target) {
+        // write your code here
+        Arrays.sort(numbers);
+
+        int nearest = Integer.MAX_VALUE;
+
+        for(int i = 0 ; i < numbers.length; i++) {
+          int left = i + 1;
+          int right = numbers.length - 1;
+
+          while(left < right) {
+            int sum = numbers[i] + numbers[left] + numbers[right];
+            if(sum == target) {
+              return sum;
+            }
+            if(Math.abs(sum - target) < Math.abs(nearest - target)) {
+              nearest = sum;
+            }
+            if(sum > target) {
+              right--;
+            }else {
+              left++;
+            }
+          }
+        }
+        return nearest;
+    }
+}
+```
+
+## <a name='58'>58. 四数之和
+
+**[链接](https://www.lintcode.com/problem/4sum/)**
+
+**描述**
+
+给一个包含 n 个数的整数数组 S，在 S 中找到所有使得和为给定整数 target 的四元组(a, b, c, d)。
+
+**样例**
+
+```
+例1:
+
+输入:[2,7,11,15],3
+输出:[]
+
+例2:
+
+输入:[1,0,-1,0,-2,2],0
+输出:
+[[-1, 0, 0, 1]
+,[-2, -1, 1, 2]
+,[-2, 0, 0, 2]]
+```
+
+```java
+public class Solution {
+    /**
+     * @param numbers: Give an array
+     * @param target: An integer
+     * @return: Find all unique quadruplets in the array which gives the sum of zero
+     */
+    public List<List<Integer>> fourSum(int[] numbers, int target) {
+        // write your code here
+        Arrays.sort(numbers);
+        List<List<Integer>> results = new ArrayList();
+        for(int i = 0 ; i < numbers.length - 3; i++) {
+          if (i != 0 && numbers[i] == numbers[i - 1]) {
+            continue;
+          }
+          for(int j = i+1; j < numbers.length - 2; j++) {
+            if (j != i + 1 && numbers[j] == numbers[j - 1])
+              continue;
+
+            int left = j+1;
+            int right = numbers.length - 1;
+
+            while(left < right) {
+              int sum = numbers[i] + numbers[j] + numbers[left] + numbers[right];
+              if(sum == target) {
+                List<Integer> arr = new ArrayList();
+                arr.add(numbers[i]);
+                arr.add(numbers[j]);
+                arr.add(numbers[left]);
+                arr.add(numbers[right]);
+
+                results.add(arr);
+
+                left++;
+                right--;
+                while (left < right && numbers[left] == numbers[left - 1]) {
+                    left++;
+                }
+                while (left < right && numbers[right] == numbers[right + 1]) {
+                    right--;
+                }
+              } else if(sum > target) {
+                right--;
+              } else {
+                left++;
+              }
+            }
+
+          }
+        }
+        return results;
+    }
+}
+```
+
+## <a name='31'>31. 数组划分
+
+**[链接](https://www.lintcode.com/problem/partition-array/)**
+
+**描述**
+
+给出一个整数数组 nums 和一个整数 k。划分数组（即移动数组 nums 中的元素），使得：
+
+所有小于 k 的元素移到左边
+
+所有大于等于 k 的元素移到右边
+
+返回数组划分的位置，即数组中第一个位置 i，满足 nums[i] 大于等于 k。
+
+**样例**
+
+```
+例1:
+
+输入:
+[],9
+输出:
+0
+
+例2:
+
+输入:
+[3,2,2,1],2
+输出:1
+解释:
+真实的数组为[1,2,2,3].所以返回 1
+```
+
+```java
+public class Solution {
+    /**
+     * @param nums: The integer array you should partition
+     * @param k: An integer
+     * @return: The index after partition
+     */
+    public int partitionArray(int[] nums, int k) {
+        // write your code here
+        if(nums == null || nums.length == 0) {
+          return 0;
+        }
+
+        int left = 0;
+        int right = nums.length - 1;
+
+        while(left <= right) {
+          while(left <= right && nums[left] < k) {
+            left++;
+          }
+          while(left <= right && nums[right] >= k) {
+            right--;
+          }
+          if(left <= right) {
+            int temp = nums[left];
+            nums[left] = nums[right];
+            nums[right] = temp;
+
+            left++;
+            right--;
+          }
+        }
+
+        return left;
+    }
+}
+```
+
+## <a name='5'>5. 第 k 大元素
+
+**[链接](https://www.lintcode.com/problem/kth-largest-element/)**
+
+**描述**
+
+在数组中找到第 k 大的元素。
+
+**样例**
+
+```
+Example 1:
+
+Input:
+
+n = 1
+nums = [1,3,4,2]
+Output:
+
+4
+Example 2:
+
+Input:
+
+n = 3
+nums = [9,3,2,4,8]
+Output:
+
+4
+```
+
+```java
+public class Solution {
+    /**
+     * @param n: An integer
+     * @param nums: An array
+     * @return: the Kth largest element
+     */
+    public int kthLargestElement(int n, int[] nums) {
+        // write your code here
+        if(nums == null || nums.length == 0) {
+          return -1;
+        }
+
+        return partition(nums, 0, nums.length - 1, nums.length - n);
+    }
+
+    private int partition(int[] nums, int start, int end, int n) {
+      if(start >= end) {
+        return nums[n];
+      }
+
+      int left = start;
+      int right = end;
+      int pivot = nums[(start + end) / 2];
+      while(left <= right) {
+        while(left <= right && nums[left] < pivot) {
+          left++;
+        }
+        while(left <= right && nums[right] > pivot) {
+          right--;
+        }
+        if(left <= right) {
+          int temp = nums[left];
+          nums[left] = nums[right];
+          nums[right] = temp;
+
+          left++;
+          right--;
+        }
+      }
+
+      if(right >= n) {
+        return partition(nums, start, right, n);
+      }
+      if(left <= n) {
+        return partition(nums, left, end, n);
+      }
+      return nums[n];
+    }
+}
+```
+
+## <a name='373'>373. 奇偶分割数组
+
+**[链接](https://www.lintcode.com/problem/partition-array-by-odd-and-even/)**
+
+**描述**
+
+分割一个整数数组，使得奇数在前偶数在后。
+
+**样例**
+
+```
+样例1:
+
+输入: [1,2,3,4]
+输出: [1,3,2,4]
+样例2:
+
+输入: [1,4,2,3,5,6]
+输出: [1,3,5,4,2,6]
+```
+
+```java
+public class Solution {
+    /*
+     * @param nums: an array of integers
+     * @return: nothing
+     */
+    public void partitionArray(int[] nums) {
+        // write your code here
+        if(nums == null || nums.length <= 1) {
+          return;
+        }
+
+        partition(nums, 0, nums.length - 1);
+    }
+
+    private void partition(int[] nums, int start, int end) {
+      if(start >= end) {
+        return;
+      }
+
+      int left = start;
+      int right = end;
+
+      while(left <= right) {
+        while(left <= right && nums[left] % 2 == 1) {
+          left++;
+        }
+        while(left <= right && nums[right] % 2 == 0) {
+          right--;
+        }
+        if(left <= right) {
+          int temp = nums[left];
+          nums[left] = nums[right];
+          nums[right] = temp;
+
+          left++;
+          right--;
+        }
+      }
+    }
+}
+```
+
+## <a name='144'>144. 交错正负数
+
+**[链接](https://www.lintcode.com/problem/interleaving-positive-and-negative-numbers/)**
+
+**描述**
+
+给出一个含有正整数和负整数的数组，重新排列成一个正负数交错的数组。
+
+**样例**
+
+```
+样例 1
+
+输入 : [-1, -2, -3, 4, 5, 6]
+输出 : [-1, 5, -2, 4, -3, 6]
+解释 : 或者任何满足条件的答案
+```
+
+**笔记**
+
+先把数组按负数在前和正数在后排列，然后再前后交错交换位置
+
+```java
+public class Solution {
+    /*
+     * @param A: An integer array.
+     * @return: nothing
+     */
+    public void rerange(int[] A) {
+        // write your code here
+        if(A == null || A.length <= 1) {
+          return;
+        }
+        int pos = 0;
+        int neg = 0;
+        for(int i = 0 ; i < A.length ; i++) {
+          if(A[i] > 0) {
+            pos++;
+          }else {
+            neg++;
+          }
+        }
+
+        partition(A, pos > neg);
+        interleave(A, pos == neg);
+    }
+
+    private void partition(int[] A, boolean startPositive) {
+      int flag = startPositive ? 1 : -1;
+      int left = 0;
+      int right = A.length - 1;
+
+      while(left < right) {
+        while(left < right && A[left] * flag > 0) {
+          left++;
+        }
+        while(left < right && A[right] * flag < 0) {
+          right--;
+        }
+
+        if(left < right) {
+          int temp = A[left];
+          A[left] = A[right];
+          A[right] = temp;
+
+          left++;
+          right--;
+        }
+      }
+    }
+
+    private void interleave(int[] A, boolean hasSameLength) {
+      int left = 1;
+      int right = A.length - 1;
+      if(hasSameLength) {
+        right = A.length - 2;
+      }
+      while(left < right) {
+        int temp = A[left];
+        A[left] = A[right];
+        A[right] = temp;
+
+        left+=2;
+        right-=2;
+      }
+    }
+}
+```
+
+## <a name='49'>49. 字符大小写排序
+
+**[链接](https://www.lintcode.com/problem/sort-letters-by-case/)**
+
+**描述**
+
+给定一个只包含字母的字符串，按照先小写字母后大写字母的顺序进行排序。
+
+**样例**
+
+```
+样例 1:
+	输入:  "abAcD"
+	输出:  "acbAD"
+
+样例 2:
+	输入: "ABC"
+	输出:  "ABC"
+
+```
+
+```java
+public class Solution {
+    /*
+     * @param chars: The letter array you should sort by Case
+     * @return: nothing
+     */
+    public void sortLetters(char[] chars) {
+        // write your code here
+        if(chars == null || chars.length <= 1) {
+          return;
+        }
+
+        int left = 0;
+        int right = chars.length - 1;
+
+        while(left < right) {
+          while(left < right && chars[left] >= 'a' && chars[left] <= 'z') {
+            left++;
+          }
+          while(left < right && chars[right] >= 'A' && chars[right] <= 'Z') {
+            right--;
+          }
+          if(left < right) {
+            char temp = chars[left];
+            chars[left] = chars[right];
+            chars[right] = temp;
+
+            left++;
+            right--;
+          }
+        }
+    }
+}
+```
+
+## <a name='148'>148. 颜色分类
+
+**[链接](https://www.lintcode.com/problem/sort-colors/)**
+
+**描述**
+
+给定一个包含红，白，蓝且长度为 n 的数组，将数组元素进行分类使相同颜色的元素相邻，并按照红、白、蓝的顺序进行排序。
+
+我们可以使用整数 0，1 和 2 分别代表红，白，蓝。
+
+**样例**
+
+```
+样例 1
+
+输入 : [1, 0, 1, 2]
+输出 : [0, 1, 1, 2]
+解释 : 原地排序。
+
+```
+
+```java
+public class Solution {
+    /**
+     * @param nums: A list of integer which is 0, 1 or 2
+     * @return: nothing
+     */
+    public void sortColors(int[] nums) {
+        // write your code here
+
+        if(nums == null || nums.length == 0) {
+          return;
+        }
+        partition(nums,0, nums.length -1);
+    }
+
+    private void partition(int[] nums, int start, int end) {
+      int left = start;
+      int right = end;
+      int mid = 0;
+
+      while(mid <= right) {
+        if(nums[mid] == 0) {
+          swap(nums, mid, left);
+          mid++;
+          left++;
+        } else if(nums[mid] == 2) {
+          swap(nums, mid, right);
+          right--;
+        } else {
+          mid++;
+        }
+      }
+    }
+
+    private void swap(int[] nums, int left, int right) {
+      int temp = nums[left];
+      nums[left] = nums[right];
+      nums[right] = temp;
+    }
+}
+```
+
+## <a name='143'>143. 颜色分类 II
+
+**[链接](https://www.lintcode.com/problem/sort-colors-ii/)**
+
+**描述**
+
+给定一个有 n 个对象（包括 k 种不同的颜色，并按照 1 到 k 进行编号）的数组，将对象进行分类使相同颜色的对象相邻，并按照 1,2，...k 的顺序进行排序。
+
+**样例**
+
+```
+样例1
+
+输入:
+[3,2,2,1,4]
+4
+输出:
+[1,2,2,3,4]
+样例2
+
+输入:
+[2,1,1,2,2]
+2
+输出:
+[1,1,2,2,2]
+
+```
+
+```java
+public class Solution {
+    /**
+     * @param colors: A list of integer
+     * @param k: An integer
+     * @return: nothing
+     */
+    public void sortColors2(int[] colors, int k) {
+        // write your code here
+        if(colors == null || colors.length <= 1) {
+          return;
+        }
+        partition(colors, 0, colors.length - 1, 1, k);
+    }
+
+    private void partition(int[] colors, int start, int end, int colorFrom, int colorTo) {
+      if (colorFrom == colorTo) {
+          return;
+      }
+
+      if (start >= end) {
+          return;
+      }
+      int left = start;
+      int right = end;
+      int colorMid = (colorFrom + colorTo)/2;
+      while(left <= right) {
+        while(left <= right && colors[left] <= colorMid) {
+          left++;
+        }
+        while(left <= right && colors[right] > colorMid) {
+          right--;
+        }
+        if(left <= right) {
+          swap(colors, left, right);
+          left++;
+          right--;
+        }
+      }
+
+      partition(colors, start, right, colorFrom, colorMid);
+      partition(colors, left, end, colorMid+1, colorTo);
+    }
+
+    private void swap(int[] colors, int left, int right){
+      int temp = colors[left];
+      colors[left] = colors[right];
+      colors[right] = temp;
     }
 }
 ```
