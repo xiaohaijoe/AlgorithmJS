@@ -3,6 +3,7 @@
 **索引**
 
 1. <a href="#129">129. 重哈希(中等)</a>
+1. <a href="#134">134. LRU 缓存策略(困难)</a>
 
 ## <a name='129'>129. 重哈希
 
@@ -108,4 +109,148 @@ public class Solution {
     }
 };
 
+```
+
+## <a name='129'>129. 重哈希
+
+**[链接](https://www.lintcode.com/problem/rehashing/)**
+
+**描述**
+
+为最近最少使用（LRU）缓存策略设计一个数据结构，它应该支持以下操作：获取数据和写入数据。
+
+- get(key) 获取数据：如果缓存中存在 key，则获取其数据值（通常是正数），否则返回-1。
+- set(key, value) 写入数据：如果 key 还没有在缓存中，则设置或插入其数据值。当缓存达到上限，它应该在写入新数据之前删
+
+除最近最少使用的数据用来腾出空闲位置。
+
+最终, 你需要返回每次 get 的数据.
+
+**样例**
+
+```
+样例 1:
+
+输入：
+LRUCache(2)
+set(2, 1)
+set(1, 1)
+get(2)
+set(4, 1)
+get(1)
+get(2)
+输出：[1,-1,1]
+解释：
+cache上限为2，set(2,1)，set(1, 1)，get(2) 然后返回 1，set(4,1) 然后 delete (1,1)，因为 （1,1）最少使用，get(1) 然后返回 -1，get(2) 然后返回 1。
+样例 2:
+
+输入：
+LRUCache(1)
+set(2, 1)
+get(2)
+set(3, 2)
+get(2)
+get(3)
+输出：[1,-1,2]
+解释：
+cache上限为 1，set(2,1)，get(2) 然后返回 1，set(3,2) 然后 delete (2,1)，get(2) 然后返回 -1，get(3) 然后返回 2。
+```
+
+```java
+class ListNode {
+    public int key;
+    public int value;
+    public ListNode next;
+    public ListNode(int key, int value) {
+        this.key = key;
+        this.value = value;
+        this.next = null;
+    }
+}
+public class LRUCache {
+    private ListNode dummy;
+    private ListNode tail;
+    private int capacity;
+    private int size;
+    private Map<Integer, ListNode> keyToPrev;
+    /*
+    * @param capacity: An integer
+    */public LRUCache(int capacity) {
+        // do intialization if necessary
+        this.dummy = new ListNode(0,0);
+        this.tail = this.dummy;
+        this.keyToPrev = new HashMap<Integer, ListNode>();
+        this.capacity = capacity;
+    }
+
+    /*
+     * @param key: An integer
+     * @return: An integer
+     */
+    public int get(int key) {
+        // write your code here
+        ListNode prev = keyToPrev.get(key);
+        if(prev == null) {
+            return -1;
+        }
+        moveToTail(prev.next.key);
+
+        return tail.value;
+    }
+
+    private void moveToTail(int key) {
+        ListNode prev = keyToPrev.get(key);
+        ListNode curt = prev.next;
+
+        if(tail == curt) {
+            return;
+        }
+
+        prev.next = prev.next.next;
+        tail.next = curt;
+        curt.next = null;
+
+        if(prev.next != null) {
+            keyToPrev.put(prev.next.key, prev);
+        }
+        keyToPrev.put(curt.key, tail);
+        tail = curt;
+
+    }
+
+    /*
+     * @param key: An integer
+     * @param value: An integer
+     * @return: nothing
+     */
+    public void set(int key, int value) {
+        // write your code here
+        if(get(key) != -1) {
+            // 如果队列里有这个节点了，就取出来，放在链表尾部
+            ListNode prev = keyToPrev.get(key);
+            prev.next.value = value;
+            return;
+        }
+
+        if(size < capacity) {
+            size++;
+            ListNode curt = new ListNode(key, value);
+            tail.next = curt;
+
+            keyToPrev.put(key, tail);
+            tail = curt;
+            return;
+        }
+        // 如果超过了大小，就把链表头去掉
+        ListNode first = dummy.next;
+        keyToPrev.remove(first.key);
+
+        first.key = key;
+        first.value = value;
+        keyToPrev.put(key, dummy);
+
+        moveToTail(key);
+
+    }
+}
 ```
