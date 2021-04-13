@@ -20,6 +20,7 @@
 16. <a href="#138">138. 子数组之和(简单)</a>
 17. <a href="#65">65. 两个排序数组的中位数(困难)（战术性放弃）</a>
 18. <a href="#139">139. 最接近零的子数组和(中等)</a>
+19. <a href="#104">104. 合并 k 个排序链表(中等)</a>
 
 ## <a name='450'>450. K 组翻转链表
 
@@ -1518,4 +1519,89 @@ public class Solution {
         return result;
     }
 }
+```
+
+## <a name='104'>104. 合并 k 个排序链表
+
+**[链接](https://www.lintcode.com/problem/merge-k-sorted-lists/)**
+
+**描述**
+
+合并 k 个排序链表，并且返回合并后的排序链表。尝试分析和描述其复杂度。
+
+**样例**
+
+```
+样例 1:
+
+输入:   [2->4->null,null,-1->null]
+输出:  -1->2->4->null
+样例 2:
+
+输入: [2->6->null,5->null,7->null]
+输出:  2->5->6->7->null
+```
+
+```java
+/**
+ * Definition for ListNode.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int val) {
+ *         this.val = val;
+ *         this.next = null;
+ *     }
+ * }
+ */
+public class Solution {
+    /**
+     * @param lists: a list of ListNode
+     * @return: The head of one sorted list.
+     */
+    public ListNode mergeKLists(List<ListNode> lists) {
+        // write your code here
+        if(lists == null || lists.size() == 0) {
+          return null;
+        }
+
+        return helper(lists, 0, lists.size() - 1);
+    }
+
+    private ListNode helper(List<ListNode> lists, int start, int end) {
+      if(start >= end) {
+        return lists.get(start);
+      }
+
+      int mid = (start+end)/2;
+      ListNode left = helper(lists, start, mid);
+      ListNode right = helper(lists, mid+1, end);
+
+      return merge(left, right);
+    }
+
+    private ListNode merge(ListNode left, ListNode right) {
+      ListNode dummy = new ListNode(0);
+      ListNode head = dummy;
+      while(left != null && right != null) {
+        if(left.val < right.val) {
+          head.next = left;
+          left = left.next;
+        } else {
+          head.next = right;
+          right = right.next;
+        }
+        head = head.next;
+      }
+
+      if(left != null) {
+        head.next = left;
+      }
+      if(right != null) {
+        head.next = right;
+      }
+      return dummy.next;
+    }
+}
+
 ```

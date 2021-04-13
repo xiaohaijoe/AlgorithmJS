@@ -3,7 +3,14 @@
 **索引**
 
 1. <a href="#129">129. 重哈希(中等)</a>
-1. <a href="#134">134. LRU 缓存策略(困难)</a>
+2. <a href="#134">134. LRU 缓存策略(困难)</a>
+3. <a href="#105">105. 复制带随机指针的链表(中等)</a>
+4. <a href="#171">171. 乱序字符串(中等)</a>
+5. <a href="#124">124. 最长连续序列(中等)</a>
+6. <a href="#4">4. 丑数 II(中等)</a>
+7. <a href="#545">545. 前 K 大数 II(中等)</a>
+8. <a href="#612">612. K 个最近的点(中等)</a>
+9. <a href="#648612">486. 合并 k 个排序数组(中等)</a>
 
 ## <a name='129'>129. 重哈希
 
@@ -252,5 +259,679 @@ public class LRUCache {
         moveToTail(key);
 
     }
+}
+```
+
+## <a name='105'>105. 复制带随机指针的链表
+
+**[链接](https://www.lintcode.com/problem/copy-list-with-random-pointer/)**
+
+**描述**
+
+A linked list is given such that each node contains an additional random pointer which could point to any node in the list or null.
+
+Return a deep copy of the list.
+
+```java
+/**
+ * Definition for singly-linked list with a random pointer.
+ * class RandomListNode {
+ *     int label;
+ *     RandomListNode next, random;
+ *     RandomListNode(int x) { this.label = x; }
+ * };
+ */
+public class Solution {
+    /**
+     * @param head: The head of linked list with a random pointer.
+     * @return: A new head of a deep copy of the list.
+     */
+    public RandomListNode copyRandomList(RandomListNode head) {
+        // write your code here
+        if(head == null) {
+          return null;
+        }
+        RandomListNode dummy = new RandomListNode(0);
+        Map<RandomListNode, RandomListNode> map = new HashMap();
+
+        RandomListNode prev = dummy;
+        while(head != null) {
+          RandomListNode node = null;
+          if(map.containsKey(head)) {
+            node = map.get(head);
+          } else {
+            node = new RandomListNode(head.label);
+            map.put(head, node);
+          }
+          prev.next = node;
+          if(head.random != null) {
+            if(map.containsKey(head.random)) {
+              node.random = map.get(head.random);
+            } else {
+              RandomListNode newRandom = new RandomListNode(head.random.label);
+              map.put(head.random, newRandom);
+              node.random = newRandom;
+            }
+          }
+
+          prev = node;
+          head = head.next;
+        }
+
+        return dummy.next;
+    }
+}
+```
+
+## <a name='171'>171. 乱序字符串
+
+**[链接](https://www.lintcode.com/problem/anagrams/)**
+
+**描述**
+
+给出一个字符串数组 S，找到其中所有的乱序字符串(Anagram)。如果一个字符串是乱序字符串，那么他存在一个字母集合相同，但顺序不同的字符串也在 S 中。
+
+**样例**
+
+```
+样例1:
+
+输入:["lint", "intl", "inlt", "code"]
+输出:["lint", "inlt", "intl"]
+样例 2:
+
+输入:["ab", "ba", "cd", "dc", "e"]
+输出: ["ab", "ba", "cd", "dc"]
+```
+
+```java
+public class Solution {
+    /**
+     * @param strs: A list of strings
+     * @return: A list of strings
+     */
+    public List<String> anagrams(String[] strs) {
+        // write your code here
+        List<String> result = new ArrayList();
+        if(strs == null || strs.length == 0) {
+          return result;
+        }
+
+        Map<String, ArrayList<String>> map = new HashMap<String, ArrayList<String>>();
+        for(int i = 0 ; i < strs.length ; i++) {
+          char[] c =  strs[i].toCharArray();
+          Arrays.sort(c);
+          String s = String.valueOf(c);
+          if(!map.containsKey(s)) {
+            ArrayList<String> arr = new ArrayList();
+            map.put(s, arr);
+          }
+          map.get(s).add(strs[i]);
+        }
+
+        for(Map.Entry<String, ArrayList<String>> entry : map.entrySet()) {
+            if (entry.getValue().size() >= 2) {
+                result.addAll(entry.getValue());
+            }
+        }
+
+        return result;
+    }
+}
+```
+
+## <a name='124'>124. 最长连续序列
+
+**[链接](https://www.lintcode.com/problem/longest-consecutive-sequence/)**
+
+**描述**
+
+给定一个未排序的整数数组，找出最长连续序列的长度。
+
+**样例**
+
+```
+样例 1
+
+输入 : [100, 4, 200, 1, 3, 2]
+输出 : 4
+解释 : 这个最长的连续序列是 [1, 2, 3, 4]. 返回所求长度 4
+
+```
+
+```java
+public class Solution {
+    /**
+     * @param num: A list of integers
+     * @return: An integer
+     */
+    public int longestConsecutive(int[] num) {
+        // write your code here
+        if(num == null || num.length == 0) {
+          return 0;
+        }
+        int count = 0;
+        Set<Integer> set = new HashSet();
+        for(int i = 0 ; i < num.length ; i++) {
+          set.add(num[i]);
+        }
+
+        for(int i = 0 ; i < num.length ; i++) {
+          if(set.contains(num[i])) {
+            set.remove(num[i]);
+
+            int right = num[i] + 1;
+            int left = num[i] - 1;
+            while(set.contains(right)) {
+              set.remove(right);
+              right++;
+            }
+            while(set.contains(left)) {
+              set.remove(left);
+              left--;
+            }
+
+            count = Math.max(count, right - left - 1);
+          }
+        }
+        return count;
+    }
+}
+```
+
+## <a name='4'>4. 丑数 II
+
+**[链接](https://www.lintcode.com/problem/ugly-number-ii/)**
+
+**描述**
+
+如果一个数的质数因子为 2，3，5 ，那么这个数称之为丑数。
+
+前 10 个丑数分别为 1, 2, 3, 4, 5, 6, 8, 9, 10, 12...设计一个算法，找出第 N 个丑数。
+
+**样例**
+
+```
+样例 1：
+
+输入：
+
+n = 9
+输出：
+
+10
+解释：
+
+[1,2,3,4,5,6,8,9,10,....],第9个丑数为10
+样例 2：
+
+输入：
+
+n = 1
+输出：
+
+1
+
+```
+
+**笔记(最小堆)**
+
+- 解题思路
+- 很容易想到的方法是：从 1 起检验每个数是否为丑数，直到找到 n 个丑数为止。但是随着 n 的增大，绝大部分数字都不是丑数，我们枚举的效率非常低。因此，换个角度思考，如果我们只生成丑数，且生成 n 个，这道题就迎刃而解。
+- 不难发现生成丑数的规律：如果已知丑数 ugly，那么 ugly \* 2，ugly \* 3 和 ugly \* 5 也都是丑数。
+- 既然求第 n 小的丑数，可以采用最小堆来解决。每次弹出堆中最小的丑数，然后检查它分别乘以 2、3 和 5 后的数是否生成过，如果是第一次生成，那么就放入堆中。第 n 个弹出的数即为第 n 小的丑数。
+
+```java
+public class Solution {
+    /**
+     * @param n: An integer
+     * @return: return a  integer as description.
+     */
+    public int nthUglyNumber(int n) {
+        // write your code here
+        PriorityQueue<Long> heap = new PriorityQueue<Long>();
+        heap.add(1L);
+
+        HashSet<Long> set = new HashSet<Long>();
+        set.add(1L);
+
+        int[] factors = new int[]{2,3,5};
+
+        long currUgly = 1;
+        for(int i = 0 ; i < n ; i++) {
+          currUgly = heap.poll();
+
+          for(int factor : factors) {
+            long newUgly = currUgly * factor;
+            if(!set.contains(newUgly)) {
+              set.add(newUgly);
+              heap.add(newUgly);
+            }
+          }
+        }
+        return (int)currUgly;
+    }
+}
+```
+
+**笔记（动态规划）**
+
+- 解题思路
+- 在最小堆方法中，我们的思路是把当前丑数能生成的丑数都加入到堆中，然后再弹出最小值。如果我们能知道下一个最小的丑数，每次只生成最小的那个，就可以节省最小值查询的时间消耗。
+- 采用动态规划的方法，用一个有序数组 dp 记录前 n 个丑数。三个指针 l2，l3 和 l5 指向 dp 中的元素，最小的丑数只可能出现在 dp[l2]的 2 倍、dp[l3]的 3 倍和 dp[l5]的 5 倍三者中间。通过移动三个指针，就能保证生成的丑数是有序的。
+
+```javascript
+public class Solution {
+    /**
+     * @param n: An integer
+     * @return: return a  integer as description.
+     */
+    public int nthUglyNumber(int n) {
+        // write your code here
+        int[] dp = new int[n];
+        dp[0] = 1;
+
+        int l2 = 0,l3=0,l5=0;
+        for(int i = 1 ; i < n ; i++) {
+          dp[i] = Math.min(Math.min(dp[l2]*2, dp[l3]*3), dp[l5]*5);
+          if(dp[i] == dp[l2] * 2) {
+            l2++;
+          }
+          if(dp[i] == dp[l3] * 3) {
+            l3++;
+          }
+          if(dp[i] == dp[l5] * 5) {
+            l5++;
+          }
+        }
+        return dp[n - 1];
+    }
+}
+```
+
+## <a name='545'>545. 前 K 大数 II
+
+**[链接](https://www.lintcode.com/problem/top-k-largest-numbers-ii/)**
+
+**描述**
+
+实现一个数据结构，提供下面两个接口
+
+1. add(number) 添加一个元素
+2. topk() 返回此数据结构中最大的 k 个数字。当我们创建数据结构时，k 是给定的。
+
+**样例**
+
+```
+样例1
+
+输入:
+s = new Solution(3);
+s.add(3)
+s.add(10)
+s.topk()
+s.add(1000)
+s.add(-99)
+s.topk()
+s.add(4)
+s.topk()
+s.add(100)
+s.topk()
+
+输出:
+[10, 3]
+[1000, 10, 3]
+[1000, 10, 4]
+[1000, 100, 10]
+
+解释:
+s = new Solution(3);
+>> 生成了一个新的数据结构, 并且 k = 3.
+s.add(3)
+s.add(10)
+s.topk()
+>> 返回 [10, 3]
+s.add(1000)
+s.add(-99)
+s.topk()
+>> 返回 [1000, 10, 3]
+s.add(4)
+s.topk()
+>> 返回 [1000, 10, 4]
+s.add(100)
+s.topk()
+>> 返回 [1000, 100, 10]
+样例2
+
+输入:
+s = new Solution(1);
+s.add(3)
+s.add(10)
+s.topk()
+s.topk()
+
+输出:
+[10]
+[10]
+
+解释:
+s = new Solution(1);
+>> 生成了一个新的数据结构, 并且 k = 1.
+s.add(3)
+s.add(10)
+s.topk()
+>> 返回 [10]
+s.topk()
+>> 返回 [10]
+
+```
+
+```java
+public class Solution {
+    private PriorityQueue<Integer> minHeap;
+    private int k;
+    /*
+    * @param k: An integer
+    */public Solution(int k) {
+        // do intialization if necessary
+        this.k = k;
+        this.minHeap = new PriorityQueue();
+    }
+
+    /*
+     * @param num: Number to be added
+     * @return: nothing
+     */
+    public void add(int num) {
+        // write your code here
+        if(minHeap.size() < k) {
+          minHeap.offer(num);
+          return;
+        }
+        if(num > minHeap.peek()) {
+          minHeap.poll();
+          minHeap.offer(num);
+        }
+    }
+
+    /*
+     * @return: Top k element
+     */
+    public List<Integer> topk() {
+        // write your code here
+        List<Integer> result = new ArrayList();
+        Iterator it = minHeap.iterator();
+        while(it.hasNext()) {
+          result.add((Integer)it.next());
+        }
+        Collections.sort(result, Collections.reverseOrder());
+        return result;
+    }
+}
+```
+
+## <a name='612'>612. K 个最近的点
+
+**[链接](https://www.lintcode.com/problem/k-closest-points/)**
+
+**描述**
+
+在二维空间里给定一些 points 和一个 origin，从 points 中找到 k 个离 origin 欧几里得距离最近的点。
+
+按照欧几里得距离由小到大返回。
+
+如果两个点有相同欧几里得距离，则按照 x 值来排序；若 x 值也相同，就再按照 y 值排序。
+
+**样例**
+
+```
+例1:
+
+输入: points = [[4,6],[4,7],[4,4],[2,5],[1,1]], origin = [0, 0], k = 3
+输出: [[1,1],[2,5],[4,4]]
+例2:
+
+输入: points = [[0,0],[0,9]], origin = [3, 1], k = 1
+输出: [[0,0]]
+```
+
+```java
+/**
+ * Definition for a point.
+ * class Point {
+ *     int x;
+ *     int y;
+ *     Point() { x = 0; y = 0; }
+ *     Point(int a, int b) { x = a; y = b; }
+ * }
+ */
+
+// Version 1
+public class Solution {
+    /**
+     * @param points: a list of points
+     * @param origin: a point
+     * @param k: An integer
+     * @return: the k closest points
+     */
+    public Point[] kClosest(Point[] points, Point origin, int k) {
+        // write your code here
+        Point[] result = new Point[k];
+        PriorityQueue<Point> heap = new PriorityQueue<Point>(k, new Comparator<Point>() {
+          @Override
+          public int compare(Point a, Point b) {
+              int diff = getDistance(b, origin) - getDistance(a, origin);
+              if(diff == 0) {
+                diff = b.x - a.x;
+              }
+              if(diff == 0) {
+                diff = b.y - a.y;
+              }
+              return diff;
+          }
+        });
+
+        for(int i = 0 ; i < points.length ; i++) {
+          heap.offer(points[i]);
+          if(heap.size() > k) {
+            heap.poll();
+          }
+        }
+
+        while(heap.size() > 0) {
+          result[--k] = heap.poll();
+        }
+        return result;
+    }
+    private int getDistance(Point a, Point b) {
+      return (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y);
+    }
+}
+
+// Version 2
+/**
+ * Definition for a point.
+ * class Point {
+ *     int x;
+ *     int y;
+ *     Point() { x = 0; y = 0; }
+ *     Point(int a, int b) { x = a; y = b; }
+ * }
+ */
+
+public class Solution {
+    /**
+     * @param points: a list of points
+     * @param origin: a point
+     * @param k: An integer
+     * @return: the k closest points
+     */
+    public Point[] kClosest(Point[] points, Point origin, int k) {
+        // write your code here
+        Point[] result = new Point[k];
+
+        Arrays.sort(points, new Comparator<Point>(){
+          @Override
+          public int compare(Point a, Point b) {
+            int diff = getDistance(a, origin) - getDistance(b, origin);
+            if(diff == 0) {
+              diff = a.x - b.x;
+            }
+            if(diff == 0) {
+              diff = a.y - b.y;
+            }
+            return diff;
+          }
+        });
+
+        for(int i = 0 ; i < k ; i++) {
+          result[i] = points[i];
+        }
+        return result;
+    }
+    private int getDistance(Point a, Point b) {
+      return (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y);
+    }
+}
+```
+
+## <a name='486'>486. 合并 k 个排序数组
+
+**[链接](https://www.lintcode.com/problem/merge-k-sorted-arrays/)**
+
+**描述**
+
+将 k 个有序数组合并为一个大的有序数组。
+
+**样例**
+
+```
+样例 1:
+
+输入:
+  [
+    [1, 3, 5, 7],
+    [2, 4, 6],
+    [0, 8, 9, 10, 11]
+  ]
+输出: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+样例 2:
+
+输入:
+  [
+    [1,2,3],
+    [1,2]
+  ]
+输出: [1,1,2,2,3]
+```
+
+```java
+// Version 1
+public class Solution {
+    /**
+     * @param arrays: k sorted integer arrays
+     * @return: a sorted array
+     */
+    public int[] mergekSortedArrays(int[][] arrays) {
+        // write your code here
+        if(arrays == null || arrays.length == 0) {
+          return null;
+        }
+        return helper(arrays, 0, arrays.length - 1);
+    }
+    private int[] helper(int[][] arrays, int start, int end) {
+      if(start >= end) {
+        return arrays[start];
+      }
+
+      int mid = start + (end - start) / 2;
+      int[] left = helper(arrays, start, mid);
+      int[] right = helper(arrays, mid+1,end);
+      return merge(left, right);
+    }
+
+    private int[] merge(int[] left, int[] right) {
+      int[] result = new int[left.length + right.length];
+
+      int p1 = 0;
+      int p2 = 0;
+      int i = 0;
+      while(p1 < left.length && p2 < right.length) {
+        if(left[p1] < right[p2]) {
+          result[i] = left[p1];
+          p1++;
+        } else {
+          result[i] = right[p2];
+          p2++;
+        }
+        i++;
+      }
+
+      while(p1 < left.length) {
+        result[i++] = left[p1];
+        p1++;
+      }
+      while(p2 < right.length) {
+        result[i++] = right[p2];
+        p2++;
+      }
+      return result;
+    }
+}
+
+// Version 2
+// 使用heap
+class Element {
+  public int row;
+  public int col;
+  public int val;
+  public Element(int row, int col, int val) {
+    this.row = row;
+    this.col = col;
+    this.val = val;
+  }
+}
+public class Solution {
+    private Comparator<Element> ElementComparator = new Comparator<Element>() {
+      @Override
+      public int compare(Element a, Element b) {
+        return a.val - b.val;
+      }
+    };
+    /**
+     * @param arrays: k sorted integer arrays
+     * @return: a sorted array
+     */
+    public int[] mergekSortedArrays(int[][] arrays) {
+        // write your code here
+        if(arrays == null || arrays.length == 0) {
+          return null;
+        }
+        Queue<Element> queue = new PriorityQueue(arrays.length, ElementComparator);
+
+        int totalSize = 0;
+        for(int i = 0 ; i < arrays.length ; i++) {
+          if(arrays[i].length > 0) {
+            Element elem = new Element(i, 0, arrays[i][0]);
+            queue.offer(elem);
+            totalSize += arrays[i].length;
+          }
+        }
+
+        int[] result = new int[totalSize];
+        int index = 0;
+        while(!queue.isEmpty()) {
+          Element elem = queue.poll();
+          result[index++] = elem.val;
+          if(elem.col + 1 < arrays[elem.row].length) {
+            elem.col++;
+            elem.val = arrays[elem.row][elem.col];
+            queue.offer(elem);
+          }
+        }
+
+        return result;
+    }
+
 }
 ```
