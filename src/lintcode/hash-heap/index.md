@@ -10,7 +10,10 @@
 6. <a href="#4">4. 丑数 II(中等)</a>
 7. <a href="#545">545. 前 K 大数 II(中等)</a>
 8. <a href="#612">612. K 个最近的点(中等)</a>
-9. <a href="#648612">486. 合并 k 个排序数组(中等)</a>
+9. <a href="#486">486. 合并 k 个排序数组(中等)</a>
+10. <a href="#81">81. 寻找数据流的中位数(困难)</a>
+11. <a href="#544">544. 前 K 大数(中等)</a>
+12. <a href="#401">401. 排序矩阵中的从小到大第 k 个数(中等)</a>
 
 ## <a name='129'>129. 重哈希
 
@@ -933,5 +936,397 @@ public class Solution {
         return result;
     }
 
+}
+```
+
+## <a name='81'>81. 寻找数据流的中位数
+
+**[链接](https://www.lintcode.com/problem/81/)**
+
+**描述**
+
+```
+本题将给出一个整数数据流，你将实现如下两个函数：
+
+- 函数 add(val) ：从数据流中获得一个数字。
+- 函数 getMedian() ：返回你从数据流获得的所有数字的 中位数。
+  本题的 中位数 不等同于数学定义里的 中位数 。
+  本题的中位数是指将所有数字排序后得到数组的中间值，如果有数组 A 中有 n 个数，则中位数为 A[(n - 1) / 2] 。
+  比如：数组 A=[1,2,3] 的中位数是 A[(3-1)/2] = A[1] = 2，数组 A=[1,19] 的中位数是 A[(2-1)/2] = A[0] = 1 。
+
+```
+
+**样例**
+
+```
+样例 1：
+
+输入：
+
+add(1)
+getMedian()
+add(2)
+getMedian()
+add(3)
+getMedian()
+add(4)
+getMedian()
+add(5)
+getMedian()
+输出：
+
+1
+1
+2
+2
+3
+解释：
+
+[1] 和 [1,2] 的中位数是 1，
+[1,2,3] 和 [1,2,3,4] 的中位数是 2，
+[1,2,3,4,5] 的中位数是 3。
+
+样例 2：
+
+输入：
+
+add(4)
+getMedian()
+add(5)
+getMedian()
+add(1)
+getMedian()
+add(3)
+getMedian()
+add(2)
+getMedian()
+add(6)
+getMedian()
+add(0)
+getMedian()
+输出：
+
+4
+4
+4
+3
+3
+3
+3
+解释：
+
+[4], [4,5] 和 [4,5,1] 的中位数是 4，
+[4,5,1,3], [4,5,1,3,2], [4,5,1,3,2,6] 和 [4,5,1,3,2,6,0] 的中位数是 3。
+
+```
+
+```java
+public class Solution {
+    private PriorityQueue<Integer> minHeap;
+    private PriorityQueue<Integer> maxHeap;
+    private int median;
+    private boolean isFirst = true;
+    public Solution() {
+        // do initialize if it is necessary
+        this.minHeap = new PriorityQueue();
+        this.maxHeap = new PriorityQueue<>(new Comparator<Integer>() {
+          @Override
+          public int compare(Integer a, Integer b) {
+            return b - a;
+          }
+        });
+    }
+
+    /**
+     * @param val: An integer
+     * @return: nothing
+     */
+    public void add(int val) {
+        // write your code here
+        if(isFirst) {
+          this.median = val;
+          isFirst = false;
+          return;
+        }
+
+        if(val < this.median) {
+          this.maxHeap.offer(val);
+        } else {
+          this.minHeap.offer(val);
+        }
+        // 比较堆中数字数量，调整堆和中位数
+        if (this.maxHeap.size() > this.minHeap.size()) {
+                this.minHeap.add(this.median);
+                this.median = this.maxHeap.poll();
+        }
+        if (this.maxHeap.size() < this.minHeap.size() - 1) {
+            this.maxHeap.add(this.median);
+            this.median = this.minHeap.poll();
+        }
+    }
+
+    /**
+     * @return: return the median of the data stream
+     */
+    public int getMedian() {
+        // write your code here
+        return this.median;
+    }
+}
+```
+
+## <a name='544'>544. 前 K 大数
+
+**[链接](https://www.lintcode.com/problem/top-k-largest-numbers/)**
+
+**描述**
+
+在一个数组中找到前 K 大的数
+
+**样例**
+
+```
+样例
+样例1
+
+输入: [3, 10, 1000, -99, 4, 100] 并且 k = 3
+输出: [1000, 100, 10]
+样例2
+
+输入: [8, 7, 6, 5, 4, 3, 2, 1] 并且 k = 5
+输出: [8, 7, 6, 5, 4]
+
+```
+
+```java
+// Version 1
+// heap
+public class Solution {
+    /**
+     * @param nums: an integer array
+     * @param k: An integer
+     * @return: the top k largest numbers in array
+     */
+    public int[] topk(int[] nums, int k) {
+        // write your code here
+        int[] result = new int[k];
+
+        PriorityQueue<Integer> queue = new PriorityQueue();
+
+        for(int i = 0 ; i < nums.length ; i++){
+          if(queue.size() >= k) {
+            if(queue.peek() < nums[i]) {
+              queue.poll();
+              queue.offer(nums[i]);
+            }
+          } else {
+            queue.offer(nums[i]);
+          }
+
+        }
+
+        while(!queue.isEmpty()) {
+          result[--k] = queue.poll();
+        }
+        return result;
+    }
+}
+
+
+// Version 2
+// quick sort
+public class Solution {
+    /**
+     * @param nums: an integer array
+     * @param k: An integer
+     * @return: the top k largest numbers in array
+     */
+    public int[] topk(int[] nums, int k) {
+        // write your code here
+        helper(nums, 0, nums.length - 1);
+        int[] result = new int[k];
+        for(int i = 0 ; i < k ; i++) {
+          result[i] = nums[i];
+        }
+        return result;
+    }
+
+    private void helper(int[] nums, int start, int end) {
+      if(start >= end) {
+        return;
+      }
+
+      int left = start;
+      int right = end;
+      int pivot = nums[(start+end)/2];
+      while(left <= right) {
+        while(left <= right && nums[left] > pivot) {
+          left++;
+        }
+        while(left <= right && nums[right] < pivot) {
+          right--;
+        }
+        if(left <= right) {
+          int temp = nums[left];
+          nums[left] = nums[right];
+          nums[right] = temp;
+
+          left++;
+          right--;
+        }
+      }
+
+      helper(nums, start, right);
+      helper(nums, left, end);
+    }
+}
+```
+
+## <a name='401'>401. 排序矩阵中的从小到大第 k 个数
+
+**[链接](https://www.lintcode.com/problem/kth-smallest-number-in-sorted-matrix/)**
+
+**描述**
+
+在一个排序矩阵中找从小到大的第 k 个整数。
+
+排序矩阵的定义为：每一行递增，每一列也递增。
+
+**样例**
+
+```
+样例 1:
+
+输入:
+[
+  [1 ,5 ,7],
+  [3 ,7 ,8],
+  [4 ,8 ,9],
+]
+k = 4
+输出: 5
+样例 2:
+
+输入:
+[
+  [1, 2],
+  [3, 4]
+]
+k = 3
+输出: 3
+
+```
+
+```java
+
+// Version 1
+// heap
+class Element {
+  public int col;
+  public int row;
+  public int val;
+  public Element(int row, int col,  int val) {
+    this.row = row;
+    this.col = col;
+    this.val = val;
+  }
+}
+public class Solution {
+    /**
+     * @param matrix: a matrix of integers
+     * @param k: An integer
+     * @return: the kth smallest number in the matrix
+     */
+    public int kthSmallest(int[][] matrix, int k) {
+        // write your code here
+        PriorityQueue<Element> queue = new PriorityQueue<Element>(k,new Comparator<Element>() {
+          public int compare(Element a, Element b) {
+            return a.val - b.val;
+          }
+        });
+        for(int i = 0 ; i < matrix.length; i++) {
+          if(matrix[i].length > 0) {
+            queue.offer(new Element(i,0,matrix[i][0]));
+          }
+        }
+
+        int index = 1;
+        while(!queue.isEmpty()) {
+          Element elem = queue.poll();
+          if(index == k) {
+            return elem.val;
+          }
+          if(elem.col + 1 < matrix[elem.row].length) {
+            elem.col++;
+            elem.val = matrix[elem.row][elem.col];
+            queue.offer(elem);
+          }
+          index++;
+        }
+        return -1;
+    }
+}
+
+
+// Version 2
+// binary search
+class ResultType {
+    public int num;
+    public boolean exists;
+    public ResultType(boolean e, int n) {
+        exists = e;
+        num = n;
+    }
+}
+public class Solution {
+    /**
+     * @param matrix: a matrix of integers
+     * @param k: An integer
+     * @return: the kth smallest number in the matrix
+     */
+    public int kthSmallest(int[][] matrix, int k) {
+        // write your code here
+        int n = matrix.length;
+        int m = matrix[0].length;
+
+        int left = matrix[0][0];
+        int right = matrix[n-1][m-1];
+
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            ResultType type = check(mid, matrix);
+            if (type.exists && type.num == k) {
+                return mid;
+            } else if (type.num < k) {
+                left = mid + 1;
+            } else {
+                right = mid - 1;
+            }
+        }
+
+        return left;
+    }
+
+    public ResultType check(int value, int[][] matrix) {
+      int n = matrix.length;
+      int m = matrix[0].length;
+      
+      boolean exists = false;
+      int num = 0;
+      int i = n - 1, j = 0;
+      while (i >= 0 && j < m) {
+          if (matrix[i][j] == value)
+              exists = true;
+              
+          if (matrix[i][j] <= value) {
+              num += i + 1;
+              j += 1;
+          } else {
+              i -= 1;
+          }
+      }
+      
+      return new ResultType(exists, num);
+    }
 }
 ```
