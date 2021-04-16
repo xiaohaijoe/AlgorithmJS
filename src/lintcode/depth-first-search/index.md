@@ -36,6 +36,7 @@
 **[链接](https://www.lintcode.com/problem/combination-sum/)**
 
 **描述**
+
 给定一个候选数字的集合 candidates 和一个目标值 target.
 
 找到 candidates 中所有的和为 target 的组合.
@@ -116,6 +117,7 @@ public class Solution {
 **[链接](https://www.lintcode.com/problem/combination-sum-ii/)**
 
 **描述**
+
 给定一个数组 num 和一个整数 target.
 
 找到 num 中所有的数字之和为 target 的组合.
@@ -187,6 +189,7 @@ public class Solution {
 **[链接](https://www.lintcode.com/problem/palindrome-partitioning/)**
 
 **描述**
+
 给定字符串 s, 需要将它分割成一些子串, 使得每个子串都是回文串.
 
 返回所有可能的分割方案.
