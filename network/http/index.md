@@ -2,8 +2,8 @@
 
 **索引**
 
-1. <a href="compare">http 1.0/1.1/2.0/3.0 区别</a>
-2. <a href="https">https</a>
+1. <a href="#compare">http 1.0/1.1/2.0/3.0 区别</a>
+2. <a href="#https">https</a>
 
 ## <a name='compare'>http 1.0/1.1/2.0/3.0 区别
 

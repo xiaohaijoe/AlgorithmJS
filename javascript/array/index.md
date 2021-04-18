@@ -2,14 +2,14 @@
 
 **索引**
 
-1. <a href="empty-item">Array 中的 empty item 是什么</a>
-2. <a href="reduce">reduce</a>
-3. <a href="reduceRight">reduceRight</a>
-4. <a href="map">map</a>
-5. <a href="filter">filter</a>
-6. <a href="every">every</a>
-7. <a href="some">some</a>
-8. <a href="flat">flat</a>
+1. <a href="#empty-item">Array 中的 empty item 是什么</a>
+2. <a href="#reduce">reduce</a>
+3. <a href="#reduceRight">reduceRight</a>
+4. <a href="#map">map</a>
+5. <a href="#filter">filter</a>
+6. <a href="#every">every</a>
+7. <a href="#some">some</a>
+8. <a href="#flat">flat</a>
 
 ## <a name='empty-item'>Array 中的 empty item 是什么
 
