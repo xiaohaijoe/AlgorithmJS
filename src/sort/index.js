@@ -87,6 +87,52 @@ class SolutionQuickSort2 {
   }
 }
 
+class SolutionMergeSort {
+  mergeSort(arr) {
+    const res = this.divideConquer(arr, 0, arr.length - 1);
+    return res;
+  }
+  divideConquer(arr, start, end) {
+    if (start >= end) {
+      return [arr[start]];
+    }
+
+    const mid = start + parseInt((end - start) / 2);
+    const left = this.divideConquer(arr, start, mid);
+    const right = this.divideConquer(arr, mid + 1, end);
+
+    return this.merge(left, right);
+  }
+
+  merge(left, right) {
+    let p1 = 0;
+    let p2 = 0;
+    const result = [];
+    while (p1 < left.length && p2 < right.length) {
+      if (left[p1] < right[p2]) {
+        result.push(left[p1++]);
+      } else {
+        result.push(right[p2++]);
+      }
+    }
+
+    while (p1 < left.length) {
+      result.push(left[p1++]);
+    }
+    while (p2 < right.length) {
+      result.push(right[p2++]);
+    }
+    return result;
+  }
+  static test() {
+    const solution = new SolutionMergeSort();
+    const arr = [5, 2, 3, 1, 6, 4, 9, 10, -1];
+    const res = solution.mergeSort(arr);
+    console.log(res);
+  }
+}
+// SolutionMergeSort.test();
+
 // 冒泡排序
 class SolutionBubbleSort {
   sortList(list) {
@@ -135,4 +181,4 @@ class SolutionInsertionSort {
   }
 }
 
-SolutionQuickSort2.test();
+// SolutionQuickSort2.test();
