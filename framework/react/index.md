@@ -2,10 +2,19 @@
 
 1. <a href="#process">执行过程</a>
 2. <a href="#double-cache">双缓冲机制</a>
+3. <a href="#diff">diff 算法</a>
 
 ## <a name='process'>执行过程
 
 **准备阶段**
+
+1. beginWork
+
+![协调阶段遍历](assets/2.png)
+
+![协调阶段遍历](assets/3.png)
+
+beginWork(绿色)/completeWork(蓝色) 遍历规则
 
 ```javascript
 ReactDOM {
@@ -49,14 +58,6 @@ ReactDOM {
 ```
 
 **reconcile（协调）阶段**
-
-1. beginWork
-
-![协调阶段遍历](assets/2.png)
-
-![协调阶段遍历](assets/3.png)
-
-beginWork 遍历规则
 
 ```javascript
 .performUnitOfWork() {
@@ -239,9 +240,23 @@ ReactFiberCommitWork {
 
 ## <a name='double-cache'>双缓冲机制
 
-![遍历规则](assets/1.png)
-![双缓冲](assets/1.png)
-
 ![双缓冲](assets/1.png)
 
 双缓冲根 Fiber，reconcileChildren 阶段
+
+## <a name='diff'>diff 算法
+
+主要是 reconcileChildren -> reconcileChildrenArray()的遍历
+
+1. 第一遍历新数组，新老数组 index 进行对比，通过 updateSlot 方法找到可以复用的节点，直到找到不可复用的节点就退出循环
+
+![diff](assets/4.jpg)
+
+2. 第一遍历完之后，删除剩余的老节点，追加剩余的新节点的过程。如果是新节点已遍历完成，就将剩余的老节点批量删除。
+3. 如果是老节点遍历完成仍有新节点剩余，则将新节点插入。
+
+![diff](assets/5.jpg)
+
+4. 把所有老数组元素按 key 或 index 放 Map 里，然后遍历新数组，插入老数组的元素，这是移动的情况。
+
+![diff](assets/6.jpg)
