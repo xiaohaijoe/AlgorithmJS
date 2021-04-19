@@ -12,6 +12,7 @@
 10. <a href="#433">433. 岛屿的个数（中等）</a>
 11. <a href="#598">598. 僵尸矩阵（中等）</a>
 12. <a href="#120">120. 单词接龙（困难）</a>
+13. <a href="#1225">1225. 岛的周长（简单）</a>
 
 ## BFS 应用范围
 
@@ -1410,6 +1411,110 @@ public class Solution {
         }
       }
       return nextWords;
+    }
+}
+```
+
+## <a name='1225'>1225. 岛的周长
+
+**[链接](https://www.lintcode.com/problem/1225/)**
+
+**描述**
+
+给定一张用二维数组表示的网格地图，其中 1 表示陆地单元格，0 表示水域单元格。网格地图中的单元格视为水平/垂直相连（斜向不相连）。这个网格地图四周完全被水域包围着，并且其中有且仅有一个岛（定义为一块或多块相连的陆地单元格）。这个岛不包含湖（定义为不和外围水域相连的水域单元格）。一个地图单元格是边长为 1 的一个正方形；网格地图是一个矩形，并且它的长和宽不超过 100。你要做的是求出这个岛的周长。
+
+**样例**
+
+```
+样例
+[[0,1,0,0],
+ [1,1,1,0],
+ [0,1,0,0],
+ [1,1,0,0]]
+
+答案：16
+```
+
+```java
+class Island {
+  public int x;
+  public int y;
+  public int length;
+  public Island(int x, int y, int length) {
+    this.x = x;
+    this.y = y;
+    this.length = length;
+  }
+}
+public class Solution {
+    private int[] deltaX = new int[]{-1, 0, 1, 0};
+    private int[] deltaY = new int[]{0, 1, 0, -1};
+
+    private int length = 0;
+    /**
+     * @param grid: a 2D array
+     * @return: the perimeter of the island
+     */
+    public int islandPerimeter(int[][] grid) {
+        // Write your code here
+        int n = grid.length;
+        int m = grid[0].length;
+        Island[][] paths = new Island[n][m];
+
+        Queue<Island> queue = new LinkedList();
+        for(int i = 0 ; i < n ; i++) {
+          if(!queue.isEmpty()) {
+            break;
+          }
+          for(int j = 0 ; j < m ; j++) {
+            if(grid[i][j] == 1) {
+              Island island = new Island(i,j,4);
+              queue.offer(island);
+              paths[i][j] = island;
+              length += 4;
+              break;
+            }
+          }
+        }
+        bfs(grid, queue, paths);
+
+        return length;
+    }
+
+    private void bfs(int[][]grid, Queue<Island> queue, Island[][] paths) {
+      while(!queue.isEmpty()) {
+        Island island = queue.poll();
+        for(int direction = 0 ; direction < 4 ; direction++) {
+          int newX = island.x + deltaX[direction];
+          int newY = island.y + deltaY[direction];
+          if(isValid(grid, newX, newY, island, paths)) {
+            if(paths[newX][newY] != null) {
+              if(paths[newX][newY].length > 0) {
+                paths[newX][newY].length -= 1;
+                length -= 1;
+              }
+              continue;
+            }
+            Island newIsland = new Island(newX, newY,3);
+            paths[newX][newY] = newIsland;
+            length += 3;
+            queue.offer(newIsland);
+          }
+        }
+      }
+    }
+
+    private boolean isValid(int[][] grid, int x, int y, Island island, Island[][] paths) {
+      if(x < 0 || x >= grid.length) {
+        return false;
+      }
+      if(y < 0 || y >= grid[0].length) {
+        return false;
+      }
+      if(grid[x][y] == 1) {
+        return true;
+      }
+      return false;
     }
 }
 ```

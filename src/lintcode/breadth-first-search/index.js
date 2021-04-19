@@ -997,4 +997,108 @@ class Solution120 {
     console.log(res);
   }
 }
-Solution120.test();
+
+// 1225 · 岛的周长
+class Island {
+  constructor(x, y, length) {
+    this.x = x;
+    this.y = y;
+    this.length = length;
+  }
+}
+class Solution1225 {
+  constructor() {
+    this.length = 0;
+  }
+  islandPerimeter(grid) {
+    let n = grid.length;
+    let m = grid[0].length;
+    let paths = new Array(n).fill([]).map((_) => {
+      return new Array(m).fill(null);
+    });
+
+    const queue = [];
+    for (let i = 0; i < n; i++) {
+      if (queue.length > 0) {
+        break;
+      }
+      for (let j = 0; j < m; j++) {
+        if (grid[i][j] == 1) {
+          const island = new Island(i, j, 4);
+          queue.push(island);
+          paths[i][j] = island;
+          this.length = 4;
+          break;
+        }
+      }
+    }
+
+    this.bfs(grid, queue, paths);
+    return this.length;
+  }
+  bfs(grid, queue, paths) {
+    const deltaX = [-1, 0, 1, 0];
+    const deltaY = [0, 1, 0, -1];
+    while (queue.length > 0) {
+      const island = queue.shift();
+      for (let direct = 0; direct < 4; direct++) {
+        const newX = island.x + deltaX[direct];
+        const newY = island.y + deltaY[direct];
+        if (this.isValid(grid, newX, newY, island, paths)) {
+          if (paths[newX][newY] != null) {
+            // 如果对面是一个已计算过的岛屿，
+            if (paths[newX][newY].length > 0)
+              paths[newX][newY].length -= 1;
+              this.length -= 1;
+            continue;
+          }
+          const newIsland = new Island(newX, newY, 3);
+          this.length += 3;
+          paths[newX][newY] = newIsland;
+          queue.push(newIsland);
+        }
+      }
+    }
+  }
+  isValid(grid, x, y) {
+    if (x < 0 || x >= grid.length) {
+      return false;
+    }
+    if (y < 0 || y >= grid[0].length) {
+      return false;
+    }
+    if (grid[x][y] == 1) {
+      return true;
+    }
+    return false;
+  }
+
+  static test() {
+    const solution = new Solution1225();
+    const islands = [
+      [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 0],
+      [0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 0],
+      [0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+      [0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+      [0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0],
+      [1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+      [1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+      [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+      [0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+      [0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+      [0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0],
+      [0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0],
+      [0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0],
+      [0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0],
+      [0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0],
+    ];
+    const res = solution.islandPerimeter(islands);
+    console.log(res);
+  }
+}
+Solution1225.test();
