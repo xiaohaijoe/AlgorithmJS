@@ -11,7 +11,8 @@
 9. <a href="#95">95. 验证二叉查找树（中等）</a>
 10. <a href="#86">86. 二叉查找树迭代器（困难）</a>
 11. <a href="#448">448. 二叉查找树的中序后继（中等）</a>
-11. <a href="#85">85. 在二叉查找树中插入节点（简单）</a>
+12. <a href="#85">85. 在二叉查找树中插入节点（简单）</a>
+13. <a href="#593">593. 根据前序和后序遍历构造二叉树（中等）</a>
 
 ## 分治法(Divide Conquer Algorithm)
 
@@ -1281,6 +1282,7 @@ public class Solution {
 **[链接](https://www.lintcode.com/problem/insert-node-in-a-binary-search-tree/)**
 
 **描述**
+
 给定一棵二叉查找树和一个新的树节点，将节点插入到树中。
 
 你需要保证该树仍然是一棵二叉查找树。
@@ -1358,6 +1360,127 @@ public class Solution {
             root.right = node;
         }
         return root;
+    }
+}
+```
+
+## <a name='593'>593. 根据前序和后序遍历构造二叉树
+
+**[链接](https://www.lintcode.com/problem/1593/)**
+
+**描述**
+
+返回与给定的前序和后序遍历匹配的任何二叉树。
+
+pre 和 post 遍历中的值是不同的正整数。
+
+**样例**
+
+```
+样例 1:
+
+输入：pre = [1,2,4,5,3,6,7], post = [4,5,2,6,7,3,1]
+输出：[1,2,3,4,5,6,7]
+解释：
+     1
+    / \
+   2   3
+  / \ / \
+ 4  5 6  7
+样例 2:
+
+输入：pre = [1,2,3,4], post = [3,2,4,1]
+输出：[1,2,4,3]
+解释：
+   1
+  / \
+ 2   4
+ /
+3
+```
+
+**笔记**
+
+题解： 左边分支有 L 个节点。左边分支头节点是 pre1,但是也是左边分支后序遍历的最后一个。所以 pre1 = postL-1。因此，L = post.indexOf(pre1) + 1。 在递归过程中，左边分支节点位于 pre1 : L + 1 和 post0 : L 中，右边分支节点位于 preL+1 : N 和 postL : N-1 中。(不包括区间右端点)
+
+```javascript
+const pre = [1, 2, 4, 5, 3, 6, 7];
+//           ^  ^     ^        ^
+//           |  +1  +1+len     |
+//        preStart           preEnd
+
+//      len: position - postStart
+//            |-----|
+const post = [4, 5, 2, 6, 7, 3, 1];
+//            ^     ^           ^
+//            |    pos          |
+//        postStart          postEnd
+// root.left: 
+// 左子树前序遍历pre: preStart + 1 ~ preStart + 1 + (position - postStart)
+// 左子树后序遍历post: postStart ~ position 
+// root.right: 
+// 右子树前序遍历pre: preStart + 1 + (position - postStart) + 1 ~ preEnd
+// 右子树后序遍历post: position + 1 ~ postEnd - 1
+```
+
+```java
+/**
+ * Definition of TreeNode:
+ * public class TreeNode {
+ *     public int val;
+ *     public TreeNode left, right;
+ *     public TreeNode(int val) {
+ *         this.val = val;
+ *         this.left = this.right = null;
+ *     }
+ * }
+ */
+
+public class Solution {
+    public TreeNode constructFromPrePost(int[] pre, int[] post) {
+        // write your code here
+        return buildTree(pre, 0, pre.length - 1, post, 0, post.length - 1);
+    }
+
+    private TreeNode buildTree(int[] pre, int preStart, int preEnd, int[] post, int postStart, int postEnd) {
+      if(preStart > preEnd) {
+        return null;
+      }
+      if(postStart > preEnd) {
+        return null;
+      }
+
+      TreeNode root = new TreeNode(pre[preStart]);
+
+      if (preStart == preEnd || postStart == postEnd) {
+        return root;
+      }
+      int position = 0;
+      for(int i = 0; i < post.length ; i++) {
+        if(post[i] == pre[preStart+1]) {
+          position = i;
+        }
+      }
+
+      // 前序遍历开始-结束，后序遍历开始-结束
+      root.left = buildTree(
+        pre,
+        preStart + 1,
+        preStart + 1 + position - postStart,
+        post,
+        postStart,
+        position
+        );
+      root.right = buildTree(
+        pre,
+        preStart + 1 + position - postStart + 1 ,
+        preEnd,
+        post,
+        position + 1,
+        postEnd - 1
+        );
+
+      return root;
     }
 }
 ```

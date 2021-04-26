@@ -681,7 +681,63 @@ class Solution85 {
     console.log(res);
   }
 }
-Solution85.test();
-// Solution11.test();
-// SolutionPostOrder.test();
-// Solution448.test();
+
+// 1593. 根据前序和后序遍历构造二叉树
+class Solution1593 {
+  constructFromPrePost(pre, post) {
+    return this.buildTree(pre, 0, pre.length - 1, post, 0, post.length - 1);
+  }
+  buildTree(pre, preStart, preEnd, post, postStart, postEnd) {
+    console.log(preStart, preEnd, postStart, postEnd);
+    if (preStart > preEnd) {
+      return null;
+    }
+    if (postStart > postEnd) {
+      return null;
+    }
+
+    const root = new TreeNode(pre[preStart]);
+
+    if (preStart == preEnd || postStart == postEnd) {
+      return root;
+    }
+    let position = -1;
+    // 找到子节点的分界线
+    for (let i = 0; i < post.length; i++) {
+      if (post[i] == pre[preStart + 1]) {
+        position = i;
+        break;
+      }
+    }
+    let leftLen = position - postStart;
+    // let rightLen = postEnd - position - 1;
+    root.left = this.buildTree(
+      pre,
+      preStart + 1,
+      preStart + 1 + leftLen,// preStart + 1 + position - postStart,
+      post,
+      postStart,
+      position
+    );
+    root.right = this.buildTree(
+      pre,
+      // preEnd - postEnd + position + 2,
+      preStart + 1 + (position - postStart) + 1,
+      preEnd,
+      post,
+      position + 1,
+      postEnd - 1
+    );
+
+    return root;
+  }
+  static test() {
+    const solution = new Solution1593();
+
+    const pre = [1, 2, 4, 5, 3, 6, 7];
+    const post = [4, 5, 2, 6, 7, 3, 1];
+    const res = solution.constructFromPrePost(pre, post);
+    console.log(res);
+  }
+}
+Solution1593.test();

@@ -333,4 +333,29 @@ class Solution622 {
     console.log(res);
   }
 }
-Solution622.test();
+
+// 92. 背包问题
+class Solution92 {
+  backPack(m, A) {
+    const dp = new Array(m + 1).fill(0);
+
+    if (A.length == 0 || m == 0) {
+      return 0;
+    }
+    for (let i = 0; i < A.length; i++) {
+      for (let j = m; j >= A[i]; j--) {
+        dp[j] = Math.max(dp[j], dp[j - A[i]] + A[i]);
+      }
+    }
+    return dp[m];
+  }
+  static test() {
+    const sol = new Solution92();
+    const stones = 10;
+    const A = [3, 4, 8, 5];
+    // const A = [12, 3, 7, 4, 5, 13, 2, 8, 4, 7, 6, 5, 7];
+    const res = sol.backPack(stones, A);
+    console.log(res);
+  }
+}
+Solution92.test();
