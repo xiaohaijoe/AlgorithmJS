@@ -86,7 +86,7 @@ instance2.sayAge(); // 27
   - 一次在是创建子类原型时调用(<code>SubType.prototype = new SuperType();</code>)
   - 另一次是在子类构造函数中调用(<code>SuperType.call(this);</code>)
 
-![alt 属性文本](./assets/inherit_1.png)
+<img src="./assets/inherit_1.png" height = "400" alt="属性文本"/>
 
 ### 原型式继承
 
