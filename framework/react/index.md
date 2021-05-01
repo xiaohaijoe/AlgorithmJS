@@ -10,6 +10,7 @@
 
 1. beginWork
 
+<img src="./assets/2.png" height = "300" alt="协调阶段遍历"/>
 ![协调阶段遍历](assets/2.png){:height="50%"}
 
 ![协调阶段遍历](assets/3.png){:height="50%"}
