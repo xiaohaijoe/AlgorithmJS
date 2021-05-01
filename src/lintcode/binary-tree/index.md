@@ -1415,10 +1415,10 @@ const post = [4, 5, 2, 6, 7, 3, 1];
 //            ^     ^           ^
 //            |    pos          |
 //        postStart          postEnd
-// root.left: 
+// root.left:
 // 左子树前序遍历pre: preStart + 1 ~ preStart + 1 + (position - postStart)
-// 左子树后序遍历post: postStart ~ position 
-// root.right: 
+// 左子树后序遍历post: postStart ~ position
+// root.right:
 // 右子树前序遍历pre: preStart + 1 + (position - postStart) + 1 ~ preEnd
 // 右子树后序遍历post: position + 1 ~ postEnd - 1
 ```
