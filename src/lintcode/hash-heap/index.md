@@ -121,9 +121,9 @@ public class Solution {
 
 ```
 
-## <a name='129'>129. 重哈希
+## <a name='134'>134. LRU 缓存策略
 
-**[链接](https://www.lintcode.com/problem/rehashing/)**
+**[链接](https://www.lintcode.com/problem/134/)**
 
 **描述**
 
