@@ -6,7 +6,7 @@ class SolutionBind {
         args = Array.prototype.slice.call(arguments, 1);
 
       return function () {
-        fn.apply(_this, args.concat(arguments));
+        return fn.apply(_this, args.concat(arguments));
       };
     };
   }
