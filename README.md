@@ -5,6 +5,7 @@
 | [对象](./javascript/object/index.md)     |
 | [Promise](./javascript/promise/index.md) |
 | [数组](./javascript/array/index.md)      |
+| [Function](./javascript/function/index.md)      |
 
 ## 框架
 
