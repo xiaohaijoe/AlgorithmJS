@@ -2,12 +2,15 @@
 
 | Javascript 基础                                 |
 | ----------------------------------------------- |
-| [对象](./javascript/object/index.md)            |
+| [Basic](./javascript/basic/index.md)          |
+| [Object](./javascript/object/index.md)          |
 | [Promise](./javascript/promise/index.md)        |
-| [数组](./javascript/array/index.md)             |
+| [Array](./javascript/array/index.md)            |
 | [Function](./javascript/function/index.md)      |
+| [DOM](./javascript/dom/index.md)      |
 | [导入导出](./javascript/import-export/index.md) |
 | [Event Loop](./javascript/event-loop/index.md)  |
+| [严格模式](./javascript/use-strict/index.md)    |
 
 ## 框架
 

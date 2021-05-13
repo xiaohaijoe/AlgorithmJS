@@ -4,6 +4,8 @@
 
 1. <a href="#compare">http 1.0/1.1/2.0/3.0 区别</a>
 2. <a href="#https">https</a>
+3. <a href="#同源策略">同源策略</a>
+4. <a href="#cors">CORS 请求</a>
 
 ## <a name='compare'>http 1.0/1.1/2.0/3.0 区别
 
@@ -52,26 +54,26 @@
     </tr>
     <tr>
         <td>多路复用 (Multiplexing)</td>
-        <td>x</td>
-        <td>x</td>
+        <td>❌</td>
+        <td>❌</td>
         <td>多路复用允许同时通过单一的 HTTP/2 连接发起多重的请求-响应消息。在 HTTP/1.1 协议中浏览器客户端在同一时间，针对同一域名下的请求有一定数量限制。超过限制数目的请求会被阻塞。这也是为何一些站点会有多个静态资源 CDN 域名的原因之一，拿 Twitter 为例，http://twimg.com，目的就是变相的解决浏览器针对同一域名的请求限制阻塞问题。而 HTTP/2 的多路复用(Multiplexing) 则允许同时通过单一的 HTTP/2 连接发起多重的请求-响应消息。因此 HTTP/2 可以很容易的去实现多流并行而不用依赖建立多个 TCP 连接，HTTP/2 把 HTTP 协议通信的基本单位缩小为一个一个的帧，这些帧对应着逻辑流中的消息。并行地在同一个 TCP 连接上双向交换消息。</td>
     </tr>
     <tr>
         <td>二进制分帧</td>
-        <td>x</td>
-        <td>x</td>
+        <td>❌</td>
+        <td>❌</td>
         <td>HTTP/2在 应用层(HTTP/2)和传输层(TCP or UDP)之间增加一个二进制分帧层。在不改动 HTTP/1.x 的语义、方法、状态码、URI 以及首部字段的情况下, 解决了HTTP1.1 的性能限制，改进传输性能，实现低延迟和高吞吐量。在二进制分帧层中， HTTP/2 会将所有传输的信息分割为更小的消息和帧（frame）,并对它们采用二进制格式的编码 ，其中 HTTP1.x 的首部信息会被封装到 HEADER frame，而相应的 Request Body 则封装到 DATA frame 里面。</td>
     </tr>
     <tr>
         <td>首部压缩（Header Compression）</td>
-        <td>x</td>
-        <td>x</td>
+        <td>❌</td>
+        <td>❌</td>
         <td>HTTP/1.1并不支持 HTTP 首部压缩，为此 SPDY 和 HTTP/2 应运而生， SPDY 使用的是通用的DEFLATE 算法，而 HTTP/2 则使用了专门为首部压缩而设计的 HPACK 算法。</td>
     </tr>
     <tr>
         <td>服务端推送（Server Push）</td>
-        <td>x</td>
-        <td>x</td>
+        <td>❌</td>
+        <td>❌</td>
         <td>服务端推送是一种在客户端请求之前发送数据的机制。在 HTTP/2 中，服务器可以对客户端的一个请求发送多个响应。Server Push 让 HTTP1.x 时代使用内嵌资源的优化手段变得没有意义；如果一个请求是由你的主页发起的，服务器很可能会响应主页内容、logo 以及样式表，因为它知道客户端会用到这些东西。</td>
     </tr>
 </table>
@@ -92,3 +94,55 @@ HTTPS 在传输数据之前需要客户端（浏览器）与服务端（网站�
 5. 浏览器解密并计算握手消息的 HASH，如果与服务端发来的 HASH 一致，此时握手过程结束，之后所有的通信数据将由之前浏览器生成的随机密码并利用对称加密算法进行加密。
 
 默认 HTTP 的端口号为 80，HTTPS 的端口号为 443。
+
+## <a name='同源策略'> 同源策略
+
+- 协议相同
+- 域名相同
+- 端口号相同
+
+限制：
+
+- 无法读取非同源网页的 Cookie, LocalStorage 和 IndexedDB
+- 无法接触非同源网页的 DOM
+- 无法向非同源地址发送 ajax 请求（可以发送，但浏览器会拒绝接受响应）
+
+**规避同源策略**
+
+同源策略规定，ajax 请求只能发给同源的网址，否则就报错，除了架设服务器代理（浏览器请求同源服务器，再由后者请求外部服务），还有以下方法：
+
+1. JSONP：它的基本思想是网页通过添加一个\<script>元素，向服务器请求 JSON 数据，这种做法不受同源策略限制
+2. Websocket：它是一种通信协议，使用 ws://(非加密)和 wss://（加密）作为协议前缀。该协议不实行同源策略，只要服务支持，就可以通过它进行跨源通信。
+3. CORS：它是跨域资源共享的缩写，它是 W3C 标准。属于跨源 ajax 请求的根本解决办法。相比 JSONP 只能发 GET 请求，CORS 允许任何类型的请求。
+
+## <a name='cors'> CORS 请求
+
+CORS 请求分成两类：
+
+- 简单请求
+- 非简单请求
+
+### 1. 简单请求
+
+简单请求的请求方法只能是一下三种之一：
+
+- HEAD
+- GET
+- POST
+
+HTTP 的头信息不能超出一下几种字段
+
+- Accept
+- Accept-Language
+- Content-Language
+- Last-Event-ID
+- Content-Type：只限于三种值
+  - application/x-www-form-urlencoded
+  - multipart/form-data
+  - text/plain
+
+凡是不满足以上两个条件，就属于非简单请求。
+
+### 2. 非简单请求
+
+非简单请求的 CORS 请求，会在正式通信之前，增加一次 HTTP 查询请求，成为“预检”请求（preflight）。一旦服务器通过了“预检”请求，以后每次浏览器正常的 CORS 请求，就都跟简单请求一样。
