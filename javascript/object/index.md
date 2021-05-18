@@ -3,7 +3,7 @@
 **索引**
 
 1. <a href="#inherit">对象的继承</a>
-1. <a href="#inherit">对象的继承</a>
+2. <a href="#attribute-type">属性的类型</a>
 
 ## <a name='inherit'>对象的继承
 
@@ -90,7 +90,7 @@ instance2.sayAge(); // 27
 
 ### 原型式继承
 
-原型式继承适用于这种情况：你有一个对象，想在它的基础上再创建一个新对象。你需要把这个对象先传给 object()，然后再对返回的对象进行适当修改。在这个例子中，person 对象定义了另一个对象也应该共享的信息，把它传给 object()之后会返回一个新对象。这个新对象的原型是 person，意味着它的原型上既有原始值属性又有引用值属性。这
+原型式继承适用于这种情况：你有一个对象，想在它的基础上再创建一个新对象。你需要把这个对象先传给 object()，然后再对返回的对象进行适当修改。在这个例子中，person 对象定义了另一个对象也应该共享的信息，把它传给 object()之后会返回一个新对象。这个新对象的原型是 person，意味着它的原型上既有原始值属性又有引用值属性。
 
 ```javascript
 function object(o) {
@@ -189,3 +189,64 @@ SubType.prototype.sayAge = function () {
 
 - 这里只调用了一次 SuperType 构造函数，避免了 SubType.prototype 上不必要也用不到的属性
 - 因此可以说这个例子的效率更高。
+
+## <a name="attribute-type">属性类型
+
+属性分两种：**数据属性**和**访问器属性**。
+
+### 1. 数据属性
+
+数据属性包含一个保存数据值的位置。值会从这个位置读取，也会写入到这个位置。数据属性有 4 个特性描述它们的行为。
+
+- [[Configurable]]：表示属性是否可以通过 delete 删除并重新定义，是否可以修改它的特性，以及是否可以把它改为访问器属性。默认情况下，所有直接定义在对象上的属性的这个特性都是 true，如前面的例子所示。
+
+- [[Enumerable]]：表示属性是否可以通过 for in 循环返回。默认情况下，所有直接定义在对象上的属性的这个特性都是 true，如前面的例子所示。
+
+- [[Writable]]：表示属性的值是否可以被修改。默认情况下，所有直接定义在对象上的属性的这个特性都是 true，如前面的例子所示。
+
+- [[Value]]：包含属性实际的值。这就是前面提到的那个读取和写入属性值的位置。这个特性的默认值为 undefined。
+
+要修改属性的默认特性，就必须使用 Object.defineProperty()方法。这个方法接收 3 个参数：要给其添加属性的对象、属性的名称和一个描述符对象。最后一个参数，即描述符对象上的属性可以包含：configurable、enumerable、writable 和 value，跟相关特性的名称一一对应。根据要修改的特性，可以设置其中一个或多个值。比如：
+
+```javascript
+let person = {};
+Object.defineProperty(person, "name", {
+  writable: false,
+  value: "Nicholas",
+});
+console.log(person.name); // "Nicholas"
+person.name = "Greg";
+console.log(person.name); //"Nicholas"
+```
+
+### 2. 访问器属性
+
+访问器属性不包含数据值。相反，它们包含一个获取（getter）函数和一个设置（setter）函数，不过这两个函数不是必需的。在读取访问器属性时，会调用获取函数，这个函数的责任就是返回一个有效的值。在写入访问器属性时，会调用设置函数并传入新值，这个函数必须决定对数据做出什么修改。访问器属性有 4 个特性描述它们的行为。
+
+- [[Configurable]]：表示属性是否可以通过 delete 删除并重新定义，是否可以修改它的特性，以及是否可以把它改为数据属性。默认情况下，所有直接定义在对象上的属性的这个特性都是 true。
+
+- [[Enumerable]]：表示属性是否可以通过 for in 循环返回。默认情况下，所有直接定义在对象上的属性的这个特性都是 true。
+
+- [[Get]]：获取函数，在读取属性时调用。默认值为 undefined。
+
+- [[Set]]：设置函数，在写入属性时调用。默认值为 undefined。
+
+访问器属性是不能直接定义的，必须使用 Object.defineProperty()。下面是一个例子：
+
+```javascript
+// 定义一个对象，包含伪私有成员year_和公共成员edition
+let book = { year_: 2017, edition: 1 };
+Object.defineProperty(book, "year", {
+  get() {
+    return this.year_;
+  },
+  set(newValue) {
+    if (newValue > 2017) {
+      this.year_ = newValue;
+      this.edition += newValue2017;
+    }
+  },
+});
+book.year = 2018;
+console.log(book.edition); //2
+```

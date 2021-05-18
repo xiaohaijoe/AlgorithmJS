@@ -8,15 +8,32 @@
 
 ## <a name='process'>执行过程
 
-**准备阶段**
+React 运行一共有两个阶段：
 
-1. beginWork
+1. reconcile（协调）阶段，此过程可以中断，等浏览器空闲的时候，会从上一次中断的位置继续执行。
+   - 此阶段包含两个部分：
+   - beginWork：先遍历太子（大儿子），后遍历弟弟，再遍历叔叔
+     - 此阶段包含reconcile阶段，对比current(页面上正在显示的Fiber树)和workInProgress(需要更新的新Fiber树)之间的差异，即diff算法。
+     - diff算法的成果：设置Fiber的flags(新增或修改)，deletions(删除)，alternate属性
+     - 此阶段涉及到的class component生命周期有：constructor,componentWillMount,componentWillUpdate
+   - completeWork：从第一个根节点开始，所有 sibling 完成，自己才完成
+     - 此阶段的主要目的是收集所有Fiber的副作用（effects），并且把副作用保存到每个大儿子上 
+2. commit（提交）阶段，此阶段不可中断，需要一次性完成。
+   - 此阶段的成果是完成DOM操作（新增，更新，删除）
+   - 涉及到的生命周期：componentWillUnMount,componentDidMount,componentDidUpdate
+
+**准备阶段**
 
 <img src="./assets/2.png" height = "300" alt="协调阶段遍历"/>
 
+Fiber 节点之间的关系
+
 <img src="./assets/3.png" height = "300" alt="协调阶段遍历"/>
 
-beginWork(绿色)/completeWork(蓝色) 遍历规则
+- beginWork 遍历过程（绿色）：先遍历太子（大儿子），后遍历弟弟，再遍历叔叔
+- completeWork 遍历阶段（蓝色）：从第一个根节点开始，所有 sibling 完成，自己才完成。
+
+1. beginWork
 
 ```javascript
 ReactDOM {
@@ -244,7 +261,12 @@ ReactFiberCommitWork {
 
 <img src="./assets/1.png" height = "300" alt="双缓冲"/>
 
-双缓冲根 Fiber，reconcileChildren 阶段
+1. 在 React 中最多会同时存在两棵 Fiber 树，当前在屏幕中显示的内容对应的 Fiber 树叫做 current Fiber 树
+2. 当发生更新时，React 会在内存中重新构建一颗新的 Fiber 树，这颗正在构建的 Fiber 树叫做 workInProgress Fiber 树
+3. 双缓存技术中，workInProgress Fiber 树就是即将要显示在页面中的 Fiber 树，当这颗 Fiber 树构建完成后，React 会使用它直接替换 current Fiber 树达到快速更新 DOM 的目的，因为 workInProgress Fiber 树是在内存中构建的所以构建它的速度是非常快的。
+4. workInProgress Fiber 树在屏幕上呈现，它就会变成 current Fiber 树。
+在 current Fiber 节点对象中有一个 alternate 属性指向对应的 workInProgress Fiber 节点对象，在 workInProgress Fiber 节点中有一个 alternate 属性也指向对应的 current Fiber 节点对象。
+<!-- 双缓冲根 Fiber，reconcileChildren 阶段 -->
 
 ## <a name='diff'>diff 算法
 
@@ -349,7 +371,8 @@ ReactFiberCommitWork {
    - 用来命令 middleware 向 Store 发起一个 action。这个 effect 是非阻塞的。
 
 **Effect 组合器**
+
 1. race(effects)
-   - 创建一个 Effect 描述信息，用来命令 middleware 在多个 Effect 间运行竞赛（Race），其中一个完成后，那么另外一个 Effect默认被取消
+   - 创建一个 Effect 描述信息，用来命令 middleware 在多个 Effect 间运行竞赛（Race），其中一个完成后，那么另外一个 Effect 默认被取消
 2. all([...effects])
-   - 创建一个 Effect描述信息，用来命令 middleware 并行地运行多个 Effect，并等待它们全部完成
+   - 创建一个 Effect 描述信息，用来命令 middleware 并行地运行多个 Effect，并等待它们全部完成
